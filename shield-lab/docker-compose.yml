@@ -1,0 +1,41 @@
+# Origin Shield local lab (Phase 4 Step 3) — ISOLATED project (own network/volumes),
+# completely separate from the live brisk-control stack. Topology: 2 origins, 1
+# shield PoP, 2 edges. The brisk-shield-edge image is built by run.sh first.
+name: brisk-shield-lab
+
+services:
+  origin-a:
+    image: nginx:alpine
+    volumes:
+      - ./origin.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./content-a:/usr/share/nginx/html:ro
+
+  origin-b:
+    image: nginx:alpine
+    volumes:
+      - ./origin.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./content-b:/usr/share/nginx/html:ro
+
+  # The shield PoP — caches each zone under the same key the edges use, and pulls
+  # the REAL origin (no shield_upstream in its agent.yaml: loop guard).
+  shield:
+    image: brisk-shield-edge:latest
+    volumes:
+      - ./agent-shield.yaml:/etc/brisk/agent.yaml:ro
+    depends_on: [origin-a, origin-b]
+
+  edge1:
+    image: brisk-shield-edge:latest
+    volumes:
+      - ./agent-edge1.yaml:/etc/brisk/agent.yaml:ro
+    depends_on: [shield]
+    ports:
+      - "18443:443"
+
+  edge2:
+    image: brisk-shield-edge:latest
+    volumes:
+      - ./agent-edge2.yaml:/etc/brisk/agent.yaml:ro
+    depends_on: [shield]
+    ports:
+      - "18444:443"

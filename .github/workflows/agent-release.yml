@@ -1,0 +1,77 @@
+# Brisk agent release pipeline.
+#
+# Trigger: push a tag like `agent-v0.4.0`. CI builds the static linux brisk-agent binary,
+# stamps the tag in as the version, ed25519-signs the sha256 digest with the PRIVATE signing
+# key (held ONLY in the GitHub Actions secret BRISK_AGENT_SIGNING_KEY — never on a laptop or in
+# chat), and uploads the signed binary to the control plane's release store.
+#
+# CI uploads ONLY. It does NOT roll anything out. A human clicks "Deploy" in the dashboard
+# (or runs `briskctl`) to start a health-gated, one-PoP-at-a-time rollout. The signature — not
+# this pipeline — is the trust anchor: every edge re-verifies it against its own pinned public
+# keys before swapping, so a compromised CI still cannot ship an unsigned/forged binary.
+#
+# Required repo secrets:
+#   BRISK_AGENT_SIGNING_KEY  base64 ed25519 private key (from `briskctl keygen`)
+#   BRISK_CP_URL             control-plane base URL, e.g. https://control.example.com
+#   BRISK_ADMIN_TOKEN        admin API token with release-upload scope
+
+name: agent-release
+
+on:
+  push:
+    tags:
+      - "agent-v*"
+
+permissions:
+  contents: read
+
+jobs:
+  build-sign-upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+
+      - name: Derive version from tag
+        id: ver
+        run: echo "version=${GITHUB_REF_NAME#agent-}" >> "$GITHUB_OUTPUT"
+
+      - name: Build static linux agent
+        working-directory: brisk-agent
+        env:
+          CGO_ENABLED: "0"
+          GOOS: linux
+          GOARCH: amd64
+        run: |
+          go build -trimpath \
+            -ldflags "-s -w -X main.agentVersion=${{ steps.ver.outputs.version }}" \
+            -o "$RUNNER_TEMP/brisk-agent" .
+
+      - name: Build briskctl (release uploader)
+        working-directory: brisk-control
+        run: go build -o "$RUNNER_TEMP/briskctl" ./cmd/briskctl
+
+      - name: Write signing key to a temp file
+        run: |
+          printf '%s' "${{ secrets.BRISK_AGENT_SIGNING_KEY }}" > "$RUNNER_TEMP/signing.key"
+          chmod 600 "$RUNNER_TEMP/signing.key"
+
+      - name: Sign + upload release to control plane
+        env:
+          BRISK_CP_URL: ${{ secrets.BRISK_CP_URL }}
+          BRISK_ADMIN_TOKEN: ${{ secrets.BRISK_ADMIN_TOKEN }}
+        run: |
+          "$RUNNER_TEMP/briskctl" release push \
+            --version "${{ steps.ver.outputs.version }}" \
+            --bin "$RUNNER_TEMP/brisk-agent" \
+            --key "$RUNNER_TEMP/signing.key" \
+            --notes "CI build of ${GITHUB_REF_NAME} (${GITHUB_SHA})"
+
+      - name: Shred signing key
+        if: always()
+        run: shred -u "$RUNNER_TEMP/signing.key" 2>/dev/null || rm -f "$RUNNER_TEMP/signing.key"

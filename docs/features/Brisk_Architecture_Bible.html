@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Brisk — Architecture Bible</title>
+<style>
+  :root{
+    --bg:#0f1117; --panel:#171a23; --panel2:#1e222e; --ink:#e7e9ee; --muted:#9aa3b2;
+    --line:#2a2f3d; --accent:#6c7cff;
+    --ext:#7c8597; --ext-bg:#23262f;            /* external systems */
+    --data:#2bb8a3; --data-bg:#10302c;          /* data plane (edges) */
+    --ctrl:#8a7cff; --ctrl-bg:#1d1a3a;          /* control plane */
+    --dash:#ffb454; --dash-bg:#332313;          /* dashboard */
+    --db:#5ea0ef; --db-bg:#11243d;              /* storage */
+    --warn:#ff7b72;
+    --mono:ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:ui-sans-serif,system-ui,"Inter",Segoe UI,Roboto,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f6f7fb; --panel:#ffffff; --panel2:#f0f2f8; --ink:#1a1d27; --muted:#5a6275; --line:#e1e4ee;
+      --ext-bg:#eef0f5; --data-bg:#dcf3ee; --ctrl-bg:#e8e5ff; --dash-bg:#fdeccd; --db-bg:#dcebff; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;font-size:15.5px}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px 120px}
+  header.hero{padding:54px 22px 30px;border-bottom:1px solid var(--line);background:
+     radial-gradient(900px 360px at 20% -10%, rgba(108,124,255,.18), transparent 60%),
+     radial-gradient(700px 320px at 90% -20%, rgba(43,184,163,.16), transparent 60%);}
+  header.hero .wrap{padding-bottom:0}
+  h1{font-size:40px;margin:0 0 6px;letter-spacing:-.5px}
+  .sub{color:var(--muted);font-size:17px;max-width:760px}
+  .pill{display:inline-block;font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line);
+    border-radius:999px;padding:3px 10px;margin:10px 6px 0 0;background:var(--panel)}
+  h2{font-size:27px;margin:54px 0 6px;letter-spacing:-.3px;scroll-margin-top:20px}
+  h3{font-size:19px;margin:30px 0 6px}
+  h2 .num{color:var(--accent);font-family:var(--mono);font-size:18px;margin-right:10px}
+  p{margin:10px 0}
+  code{font-family:var(--mono);font-size:.86em;background:var(--panel2);border:1px solid var(--line);
+    border-radius:5px;padding:.5px 5px}
+  .lead{font-size:16.5px;color:var(--ink)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:18px 0}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin:14px 0 8px;font-size:13px;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .sw{width:13px;height:13px;border-radius:4px;display:inline-block;border:1px solid rgba(255,255,255,.15)}
+  .fig{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px;margin:16px 0;overflow-x:auto}
+  .fig svg{display:block;margin:0 auto;min-width:760px}
+  .cap{color:var(--muted);font-size:13px;text-align:center;margin:6px 0 2px}
+  table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--panel2);font-weight:600}
+  td code{white-space:nowrap}
+  .toc{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--line);z-index:20;
+    padding:9px 0;margin-bottom:6px}
+  .toc .wrap{display:flex;flex-wrap:wrap;gap:5px 14px;padding-top:0;padding-bottom:0}
+  .toc a{color:var(--muted);text-decoration:none;font-size:13px}
+  .toc a:hover{color:var(--ink)}
+  a{color:var(--accent)}
+  .note{border-left:3px solid var(--accent);background:var(--panel2);padding:10px 14px;border-radius:0 10px 10px 0;margin:14px 0}
+  .gold{border-left-color:var(--dash)}
+  .warnote{border-left-color:var(--warn)}
+  ul{margin:8px 0 8px 0;padding-left:22px} li{margin:4px 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:820px){.grid2{grid-template-columns:1fr}}
+  .k{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+  text{font-family:var(--sans)}
+</style>
+</head>
+<body>
+
+<header class="hero"><div class="wrap">
+  <h1>Brisk — Architecture Bible 🗺️</h1>
+  <div class="sub">The complete map of the Brisk CDN: every moving part, what it does, and how the
+  pieces connect. Open this any time you need to remember <em>where the code lives</em> and
+  <em>how a request flows</em>.</div>
+  <div>
+    <span class="pill">self-hosted CDN</span>
+    <span class="pill">Nginx + Go agent + Lua</span>
+    <span class="pill">Go control plane</span>
+    <span class="pill">React dashboard</span>
+    <span class="pill">Postgres/TimescaleDB · NATS · Bunny geo-DNS</span>
+    <span class="pill">generated 2026-06-17</span>
+  </div>
+</div></header>
+
+<nav class="toc"><div class="wrap">
+  <a href="#big">1 · Big picture</a>
+  <a href="#planes">2 · Two planes</a>
+  <a href="#request">3 · A visitor request</a>
+  <a href="#agent">4 · The edge (agent)</a>
+  <a href="#control">5 · The control plane</a>
+  <a href="#dash">6 · The dashboard</a>
+  <a href="#flows">7 · Key data flows</a>
+  <a href="#features">8 · Feature catalog</a>
+  <a href="#map">9 · Full file map</a>
+  <a href="#stack">10 · Stack &amp; rules</a>
+  <a href="#glossary">11 · Glossary</a>
+  <a href="#ref">12 · Reference appendices</a>
+</div></nav>
+
+<div class="wrap">
+
+<p class="lead">Brisk is a CDN you fully own — like Bunny / KeyCDN / Cloudflare, but built from free,
+proven pieces (Nginx for caching, a small Go <b>agent</b> on each edge, and a Go <b>control plane</b>
+with a React dashboard). It serves HLS video + static assets fast from servers near each visitor.</p>
+
+<div class="legend card">
+  <span><i class="sw" style="background:var(--ext)"></i> External (visitor, Bunny, origin, browser, CI)</span>
+  <span><i class="sw" style="background:var(--data)"></i> Data plane — the edges that serve traffic</span>
+  <span><i class="sw" style="background:var(--ctrl)"></i> Control plane — the brain</span>
+  <span><i class="sw" style="background:var(--dash)"></i> Dashboard — the human UI</span>
+  <span><i class="sw" style="background:var(--db)"></i> Storage / messaging</span>
+</div>
+
+<!-- ============================================================ 1 BIG PICTURE -->
+<h2 id="big"><span class="num">1</span>The big picture (30,000 ft)</h2>
+<p>Everything in Brisk is one of five things: <b>visitors</b>, the <b>edges</b> that serve them, the
+<b>control plane</b> that manages the edges, the <b>dashboard</b> a human uses, and the <b>external
+services</b> (Bunny DNS, your origins). Here is how they all connect.</p>
+
+<div class="fig"><svg viewBox="0 0 1120 620" xmlns="http://www.w3.org/2000/svg" font-size="13">
+  <defs>
+    <marker id="a" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 z" fill="#8a93a6"/></marker>
+  </defs>
+  <!-- visitor -->
+  <rect x="20" y="250" width="150" height="90" rx="12" fill="var(--ext-bg)" stroke="var(--ext)"/>
+  <text x="95" y="285" text-anchor="middle" fill="var(--ink)" font-weight="700">Visitor</text>
+  <text x="95" y="306" text-anchor="middle" fill="var(--muted)">browser / player</text>
+  <text x="95" y="324" text-anchor="middle" fill="var(--muted)" font-size="11">wants video/assets</text>
+
+  <!-- Bunny DNS -->
+  <rect x="20" y="70" width="150" height="86" rx="12" fill="var(--ext-bg)" stroke="var(--ext)"/>
+  <text x="95" y="104" text-anchor="middle" fill="var(--ink)" font-weight="700">Bunny geo-DNS</text>
+  <text x="95" y="124" text-anchor="middle" fill="var(--muted)" font-size="11">picks nearest edge</text>
+  <text x="95" y="140" text-anchor="middle" fill="var(--muted)" font-size="11">+ native failover</text>
+
+  <!-- EDGES -->
+  <rect x="300" y="210" width="300" height="190" rx="14" fill="var(--data-bg)" stroke="var(--data)"/>
+  <text x="450" y="234" text-anchor="middle" fill="var(--data)" font-weight="700">DATA PLANE — Edges (PoPs)</text>
+  <text x="450" y="251" text-anchor="middle" fill="var(--muted)" font-size="11">bare-metal · NY · FRA · BLR · scales out</text>
+  <g>
+    <rect x="320" y="266" width="120" height="116" rx="10" fill="var(--panel)" stroke="var(--data)"/>
+    <text x="380" y="288" text-anchor="middle" fill="var(--ink)" font-weight="700" font-size="12">one edge</text>
+    <rect x="332" y="298" width="96" height="32" rx="7" fill="var(--data-bg)" stroke="var(--data)"/>
+    <text x="380" y="318" text-anchor="middle" fill="var(--ink)" font-size="11">Nginx (cache)</text>
+    <rect x="332" y="338" width="96" height="32" rx="7" fill="var(--data-bg)" stroke="var(--data)"/>
+    <text x="380" y="358" text-anchor="middle" fill="var(--ink)" font-size="11">brisk-agent</text>
+  </g>
+  <rect x="460" y="266" width="118" height="116" rx="10" fill="var(--panel)" stroke="var(--data)" opacity=".55"/>
+  <text x="519" y="330" text-anchor="middle" fill="var(--muted)" font-size="11">…more</text>
+  <text x="519" y="348" text-anchor="middle" fill="var(--muted)" font-size="11">edges</text>
+
+  <!-- origin -->
+  <rect x="300" y="470" width="300" height="74" rx="12" fill="var(--ext-bg)" stroke="var(--ext)"/>
+  <text x="450" y="500" text-anchor="middle" fill="var(--ink)" font-weight="700">Your Origin(s)</text>
+  <text x="450" y="520" text-anchor="middle" fill="var(--muted)" font-size="11">WordPress / object store / app — the source of truth</text>
+
+  <!-- CONTROL PLANE -->
+  <rect x="720" y="60" width="370" height="330" rx="14" fill="var(--ctrl-bg)" stroke="var(--ctrl)"/>
+  <text x="905" y="84" text-anchor="middle" fill="var(--ctrl)" font-weight="700">CONTROL PLANE — the brain (Docker)</text>
+  <rect x="740" y="100" width="330" height="60" rx="9" fill="var(--panel)" stroke="var(--ctrl)"/>
+  <text x="905" y="125" text-anchor="middle" fill="var(--ink)" font-weight="700" font-size="12">brisk-control (Go API)</text>
+  <text x="905" y="144" text-anchor="middle" fill="var(--muted)" font-size="11">config · health · DNS · rollout · TLS · purge</text>
+  <rect x="740" y="172" width="158" height="56" rx="9" fill="var(--db-bg)" stroke="var(--db)"/>
+  <text x="819" y="196" text-anchor="middle" fill="var(--ink)" font-size="12" font-weight="700">Postgres /</text>
+  <text x="819" y="212" text-anchor="middle" fill="var(--ink)" font-size="12" font-weight="700">TimescaleDB</text>
+  <rect x="912" y="172" width="158" height="56" rx="9" fill="var(--db-bg)" stroke="var(--db)"/>
+  <text x="991" y="196" text-anchor="middle" fill="var(--ink)" font-size="12" font-weight="700">NATS</text>
+  <text x="991" y="212" text-anchor="middle" fill="var(--muted)" font-size="11">instant purge bus</text>
+  <!-- dashboard -->
+  <rect x="740" y="244" width="330" height="60" rx="9" fill="var(--dash-bg)" stroke="var(--dash)"/>
+  <text x="905" y="269" text-anchor="middle" fill="var(--ink)" font-weight="700" font-size="12">brisk-dashboard (React)</text>
+  <text x="905" y="288" text-anchor="middle" fill="var(--muted)" font-size="11">the panel a human clicks</text>
+  <!-- CI -->
+  <rect x="740" y="318" width="330" height="56" rx="9" fill="var(--ext-bg)" stroke="var(--ext)"/>
+  <text x="905" y="342" text-anchor="middle" fill="var(--ink)" font-size="12" font-weight="700">CI (GitHub Actions) — optional</text>
+  <text x="905" y="360" text-anchor="middle" fill="var(--muted)" font-size="11">build → sign → upload agent release</text>
+
+  <!-- admin -->
+  <rect x="900" y="430" width="190" height="64" rx="12" fill="var(--ext-bg)" stroke="var(--ext)"/>
+  <text x="995" y="458" text-anchor="middle" fill="var(--ink)" font-weight="700">You (admin)</text>
+  <text x="995" y="478" text-anchor="middle" fill="var(--muted)" font-size="11">browser → dashboard</text>
+
+  <!-- arrows -->
+  <line x1="95" y1="250" x2="95" y2="156" stroke="#8a93a6" marker-end="url(#a)"/>
+  <text x="40" y="200" fill="var(--muted)" font-size="11">1 DNS lookup</text>
+  <line x1="170" y1="300" x2="300" y2="300" stroke="#8a93a6" marker-end="url(#a)"/>
+  <text x="185" y="292" fill="var(--muted)" font-size="11">2 HTTPS to nearest edge</text>
+  <line x1="450" y1="400" x2="450" y2="470" stroke="#8a93a6" marker-end="url(#a)"/>
+  <text x="455" y="440" fill="var(--muted)" font-size="11">3 cache MISS → fetch origin</text>
+  <!-- edge <-> control -->
+  <line x1="600" y1="300" x2="740" y2="130" stroke="var(--ctrl)" marker-end="url(#a)"/>
+  <text x="612" y="210" fill="var(--ctrl)" font-size="11">agent pulls config /</text>
+  <text x="612" y="224" fill="var(--ctrl)" font-size="11">heartbeats / stats / self-update</text>
+  <line x1="912" y1="220" x2="600" y2="330" stroke="var(--ctrl)" stroke-dasharray="5 4" marker-end="url(#a)"/>
+  <text x="690" y="318" fill="var(--ctrl)" font-size="11">NATS purge fan-out</text>
+  <!-- control -> bunny -->
+  <line x1="740" y1="120" x2="170" y2="110" stroke="var(--ctrl)" stroke-dasharray="5 4" marker-end="url(#a)"/>
+  <text x="300" y="100" fill="var(--ctrl)" font-size="11">control writes geo-DNS records</text>
+  <!-- admin -> dash -->
+  <line x1="995" y1="430" x2="950" y2="304" stroke="var(--dash)" marker-end="url(#a)"/>
+  <!-- CI -> control -->
+  <line x1="905" y1="318" x2="905" y2="160" stroke="var(--ext)" stroke-dasharray="3 3" marker-end="url(#a)"/>
+</svg>
+<div class="cap">Figure 1 — the whole system. Solid = live traffic / management; dashed = control signals.</div>
+</div>
+
+<div class="note">The golden rule that shapes everything: <b>the data plane is independent of the
+control plane.</b> If the brain (control plane / dashboard) is down, the edges keep serving from their
+last saved config. <b>Dashboard down ≠ CDN down.</b></div>
+
+<!-- ============================================================ 2 PLANES -->
+<h2 id="planes"><span class="num">2</span>The two planes (the core idea)</h2>
+<div class="grid2">
+  <div class="card">
+    <h3 style="margin-top:4px;color:var(--data)">Data plane — the edges</h3>
+    <p>Bare-metal servers around the world, each running <b>Nginx</b> (does the actual caching +
+    serving) and a small <b>brisk-agent</b> (the Go program that configures Nginx and talks to the
+    brain). This is what your visitors hit. Built to be lightweight: one tiny static binary per edge,
+    all the box's resources go to caching.</p>
+    <p class="k">code: <code>brisk-agent/</code> · runs on: each PoP (NY, FRA, BLR…)</p>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:4px;color:var(--ctrl)">Control plane — the brain</h3>
+    <p>A Go API (<b>brisk-control</b>) + Postgres/TimescaleDB + NATS + the React <b>dashboard</b>,
+    all in Docker on one host. It stores all settings, decides DNS routing, watches edge health,
+    drives rollouts, issues TLS, and fans out purges. Edges <b>pull</b> from it; it never needs to
+    be public-facing for traffic.</p>
+    <p class="k">code: <code>brisk-control/</code> + <code>brisk-dashboard/</code> · runs on: one server</p>
+  </div>
+</div>
+
+<!-- ============================================================ 3 REQUEST -->
+<h2 id="request"><span class="num">3</span>What happens when a visitor loads a video</h2>
+<p>This is the hot path — the thing that has to be fast. The control plane is <b>not</b> involved in
+serving a request; it only set things up beforehand.</p>
+
+<div class="fig"><svg viewBox="0 0 1080 430" xmlns="http://www.w3.org/2000/svg" font-size="13">
+  <defs><marker id="b" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#8a93a6"/></marker></defs>
+  <rect x="20" y="170" width="130" height="80" rx="11" fill="var(--ext-bg)" stroke="var(--ext)"/>
+  <text x="85" y="205" text-anchor="middle" fill="var(--ink)" font-weight="700">Visitor</text>
+  <text x="85" y="225" text-anchor="middle" fill="var(--muted)" font-size="11">GET /video.m3u8</text>
+
+  <rect x="200" y="40" width="150" height="70" rx="11" fill="var(--ext-bg)" stroke="var(--ext)"/>
+  <text x="275" y="70" text-anchor="middle" fill="var(--ink)" font-weight="700">Bunny DNS</text>
+  <text x="275" y="90" text-anchor="middle" fill="var(--muted)" font-size="11">nearest healthy edge IP</text>
+
+  <rect x="200" y="160" width="270" height="190" rx="13" fill="var(--data-bg)" stroke="var(--data)"/>
+  <text x="335" y="184" text-anchor="middle" fill="var(--data)" font-weight="700">Nearest Edge — Nginx</text>
+  <rect x="218" y="198" width="234" height="40" rx="8" fill="var(--panel)" stroke="var(--data)"/>
+  <text x="335" y="223" text-anchor="middle" fill="var(--ink)" font-size="12">TLS 1.3 · WAF · hotlink · rate-limit · Lua rules</text>
+  <rect x="218" y="246" width="112" height="44" rx="8" fill="var(--panel)" stroke="var(--data)"/>
+  <text x="274" y="266" text-anchor="middle" fill="var(--ink)" font-size="12">cache HIT?</text>
+  <text x="274" y="282" text-anchor="middle" fill="var(--data)" font-size="11">serve from disk/RAM</text>
+  <rect x="340" y="246" width="112" height="44" rx="8" fill="var(--panel)" stroke="var(--data)"/>
+  <text x="396" y="266" text-anchor="middle" fill="var(--ink)" font-size="12">MISS →</text>
+  <text x="396" y="282" text-anchor="middle" fill="var(--warn)" font-size="11">go upstream</text>
+  <text x="335" y="318" text-anchor="middle" fill="var(--muted)" font-size="11">.m3u8 = never cache · .ts/.mp4 = slice 1MB + cache</text>
+  <text x="335" y="334" text-anchor="middle" fill="var(--muted)" font-size="11">request coalescing so 1000 viewers = 1 origin fetch</text>
+
+  <rect x="540" y="160" width="200" height="100" rx="12" fill="var(--data-bg)" stroke="var(--data)" opacity=".75"/>
+  <text x="640" y="190" text-anchor="middle" fill="var(--data)" font-weight="700" font-size="12">Shield edge (optional)</text>
+  <text x="640" y="210" text-anchor="middle" fill="var(--muted)" font-size="11">a chosen PoP that fronts</text>
+  <text x="640" y="226" text-anchor="middle" fill="var(--muted)" font-size="11">the origin → fewer origin hits</text>
+  <text x="640" y="246" text-anchor="middle" fill="var(--muted)" font-size="11">(collapses the long tail)</text>
+
+  <rect x="820" y="170" width="200" height="80" rx="12" fill="var(--ext-bg)" stroke="var(--ext)"/>
+  <text x="920" y="200" text-anchor="middle" fill="var(--ink)" font-weight="700">Origin</text>
+  <text x="920" y="220" text-anchor="middle" fill="var(--muted)" font-size="11">secret pull header so it</text>
+  <text x="920" y="236" text-anchor="middle" fill="var(--muted)" font-size="11">rejects non-Brisk traffic</text>
+
+  <line x1="150" y1="200" x2="200" y2="80" stroke="#8a93a6" marker-end="url(#b)"/>
+  <text x="120" y="135" fill="var(--muted)" font-size="11">1 resolve</text>
+  <line x1="150" y1="210" x2="200" y2="240" stroke="#8a93a6" marker-end="url(#b)"/>
+  <text x="120" y="245" fill="var(--muted)" font-size="11">2 HTTPS</text>
+  <line x1="452" y1="268" x2="540" y2="210" stroke="#8a93a6" marker-end="url(#b)"/>
+  <text x="470" y="235" fill="var(--muted)" font-size="11">3 MISS</text>
+  <line x1="740" y1="210" x2="820" y2="210" stroke="#8a93a6" marker-end="url(#b)"/>
+  <text x="748" y="200" fill="var(--muted)" font-size="11">4 fill</text>
+  <text x="660" y="300" fill="var(--data)" font-size="11">Response headers: Server: Brisk · X-Brisk-Cache: HIT/MISS/BYPASS · X-Brisk-Edge · X-Brisk-Request-Id</text>
+</svg>
+<div class="cap">Figure 2 — the request hot path. Most requests stop at step 2 (cache HIT).</div>
+</div>
+<p>See the dedicated explainer <a href="Brisk_Caching_Explained.html">Brisk_Caching_Explained.html</a>
+for the caching rules in depth.</p>
+
+<!-- ============================================================ 4 AGENT -->
+<h2 id="agent"><span class="num">4</span>Inside an edge — the <code>brisk-agent</code></h2>
+<p>The agent is the Go program on every PoP. It owns one job: <b>keep Nginx configured correctly and
+stay in touch with the brain.</b> It never serves visitor traffic itself — Nginx does that. The agent
+is a set of small packages, each with one responsibility, orchestrated by <code>main.go</code>'s loops.</p>
+
+<div class="fig"><svg viewBox="0 0 1080 500" xmlns="http://www.w3.org/2000/svg" font-size="12.5">
+  <defs><marker id="c" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#8a93a6"/></marker></defs>
+  <rect x="20" y="20" width="700" height="460" rx="14" fill="var(--data-bg)" stroke="var(--data)"/>
+  <text x="370" y="44" text-anchor="middle" fill="var(--data)" font-weight="700">brisk-agent (one static Go binary)</text>
+
+  <!-- main loops -->
+  <rect x="40" y="60" width="660" height="58" rx="9" fill="var(--panel)" stroke="var(--data)"/>
+  <text x="60" y="82" fill="var(--ink)" font-weight="700">main.go — the conductor</text>
+  <text x="60" y="102" fill="var(--muted)">boot self-check → loops: configPoll (ETag) · heartbeat (30s) · stats ship · purge consume · releaseLoop (self-update) · TLS renew</text>
+
+  <!-- packages grid -->
+  <g font-size="11.5">
+    <rect x="40" y="132" width="158" height="64" rx="8" fill="var(--panel)" stroke="var(--data)"/>
+    <text x="119" y="153" text-anchor="middle" fill="var(--ink)" font-weight="700">config</text>
+    <text x="119" y="170" text-anchor="middle" fill="var(--muted)">agent.yaml + overlay</text>
+    <text x="119" y="185" text-anchor="middle" fill="var(--muted)">ControlPlaneSource</text>
+
+    <rect x="210" y="132" width="158" height="64" rx="8" fill="var(--panel)" stroke="var(--data)"/>
+    <text x="289" y="153" text-anchor="middle" fill="var(--ink)" font-weight="700">client</text>
+    <text x="289" y="170" text-anchor="middle" fill="var(--muted)">HTTP to control plane</text>
+    <text x="289" y="185" text-anchor="middle" fill="var(--muted)">heartbeat·pull·release</text>
+
+    <rect x="380" y="132" width="158" height="64" rx="8" fill="var(--panel)" stroke="var(--data)"/>
+    <text x="459" y="153" text-anchor="middle" fill="var(--ink)" font-weight="700">nginx</text>
+    <text x="459" y="170" text-anchor="middle" fill="var(--muted)">render templates →</text>
+    <text x="459" y="185" text-anchor="middle" fill="var(--muted)">nginx -t → reload</text>
+
+    <rect x="550" y="132" width="150" height="64" rx="8" fill="var(--panel)" stroke="var(--data)"/>
+    <text x="625" y="153" text-anchor="middle" fill="var(--ink)" font-weight="700">tls</text>
+    <text x="625" y="170" text-anchor="middle" fill="var(--muted)">self-signed → LE</text>
+    <text x="625" y="185" text-anchor="middle" fill="var(--muted)">renew · OCSP</text>
+
+    <rect x="40" y="208" width="158" height="64" rx="8" fill="var(--panel)" stroke="var(--data)"/>
+    <text x="119" y="229" text-anchor="middle" fill="var(--ink)" font-weight="700">waf</text>
+    <text x="119" y="246" text-anchor="middle" fill="var(--muted)">Coraza + CRS v4</text>
+    <text x="119" y="261" text-anchor="middle" fill="var(--muted)">auth_request hook</text>
+
+    <rect x="210" y="208" width="158" height="64" rx="8" fill="var(--panel)" stroke="var(--data)"/>
+    <text x="289" y="229" text-anchor="middle" fill="var(--ink)" font-weight="700">stats</text>
+    <text x="289" y="246" text-anchor="middle" fill="var(--muted)">stub_status·cpu·bw</text>
+    <text x="289" y="261" text-anchor="middle" fill="var(--muted)">bounded buffer → ship</text>
+
+    <rect x="380" y="208" width="158" height="64" rx="8" fill="var(--panel)" stroke="var(--data)"/>
+    <text x="459" y="229" text-anchor="middle" fill="var(--ink)" font-weight="700">logship</text>
+    <text x="459" y="246" text-anchor="middle" fill="var(--muted)">tail JSON access log</text>
+    <text x="459" y="261" text-anchor="middle" fill="var(--muted)">→ control (drop-oldest)</text>
+
+    <rect x="550" y="208" width="150" height="64" rx="8" fill="var(--panel)" stroke="var(--data)"/>
+    <text x="625" y="229" text-anchor="middle" fill="var(--ink)" font-weight="700">purge</text>
+    <text x="625" y="246" text-anchor="middle" fill="var(--muted)">NATS consumer →</text>
+    <text x="625" y="261" text-anchor="middle" fill="var(--muted)">delete cache files</text>
+
+    <rect x="40" y="284" width="240" height="62" rx="8" fill="var(--panel)" stroke="var(--data)"/>
+    <text x="160" y="305" text-anchor="middle" fill="var(--ink)" font-weight="700">selfupdate</text>
+    <text x="160" y="322" text-anchor="middle" fill="var(--muted)">verify ed25519 sig → swap binary → restart</text>
+    <text x="160" y="337" text-anchor="middle" fill="var(--muted)">self-check → auto-rollback on failure</text>
+
+    <rect x="292" y="284" width="240" height="62" rx="8" fill="var(--panel)" stroke="var(--data)"/>
+    <text x="412" y="305" text-anchor="middle" fill="var(--ink)" font-weight="700">bootstrap</text>
+    <text x="412" y="322" text-anchor="middle" fill="var(--muted)">idempotent install: nginx modules,</text>
+    <text x="412" y="337" text-anchor="middle" fill="var(--muted)">Lua, geoip2, systemd, BBR, dirs</text>
+
+    <rect x="544" y="284" width="156" height="62" rx="8" fill="var(--panel)" stroke="var(--data)"/>
+    <text x="622" y="305" text-anchor="middle" fill="var(--ink)" font-weight="700">(Lua on Nginx)</text>
+    <text x="622" y="322" text-anchor="middle" fill="var(--muted)">brisk.lua + zones_data</text>
+    <text x="622" y="337" text-anchor="middle" fill="var(--muted)">cache rules · headers</text>
+  </g>
+
+  <!-- nginx box -->
+  <rect x="40" y="360" width="660" height="100" rx="9" fill="var(--ctrl-bg)" stroke="var(--data)"/>
+  <text x="60" y="384" fill="var(--ink)" font-weight="700">Nginx (the actual server) — what the agent configures &amp; reloads</text>
+  <text x="60" y="404" fill="var(--muted)">stable 1.30.x · ngx_brotli · slice module · headers-more · lua-nginx-module · geoip2 · stub_status</text>
+  <text x="60" y="424" fill="var(--muted)">serves visitors · caches to /var/cache/brisk (disk+RAM) · branded headers · TCP BBR</text>
+  <text x="60" y="444" fill="var(--data)">⟵ agent writes /etc/nginx/nginx.conf, runs <tspan font-family="var(--mono)">nginx -t</tspan> (never reload a bad config), then <tspan font-family="var(--mono)">nginx -s reload</tspan></text>
+
+  <!-- control plane on right -->
+  <rect x="760" y="120" width="300" height="120" rx="12" fill="var(--ctrl-bg)" stroke="var(--ctrl)"/>
+  <text x="910" y="150" text-anchor="middle" fill="var(--ctrl)" font-weight="700">Control plane</text>
+  <text x="910" y="172" text-anchor="middle" fill="var(--muted)" font-size="11">GET /agent/config (ETag/304)</text>
+  <text x="910" y="190" text-anchor="middle" fill="var(--muted)" font-size="11">POST /agent/heartbeat · /stats</text>
+  <text x="910" y="208" text-anchor="middle" fill="var(--muted)" font-size="11">GET /agent/release (self-update)</text>
+  <text x="910" y="226" text-anchor="middle" fill="var(--muted)" font-size="11">NATS purge subject</text>
+
+  <line x1="720" y1="164" x2="760" y2="170" stroke="var(--ctrl)" marker-end="url(#c)"/>
+  <text x="690" y="158" fill="var(--ctrl)" font-size="11">client pkg</text>
+</svg>
+<div class="cap">Figure 3 — the agent's packages and how they drive Nginx + talk to the brain.</div>
+</div>
+
+<table>
+  <tr><th>Package (<code>brisk-agent/</code>)</th><th>What it does</th></tr>
+  <tr><td><code>main.go</code></td><td>The conductor. Boot self-check, then runs the background loops (config poll, heartbeat, stats, purge, self-update, TLS renew).</td></tr>
+  <tr><td><code>config/</code></td><td>Loads <code>agent.yaml</code> (local truth) and overlays the zones pulled from the control plane (<code>ControlPlaneSource</code>), caching the last good config so the edge survives the brain being down.</td></tr>
+  <tr><td><code>client/</code></td><td>The authenticated link to the control plane: heartbeat, <code>PullConfig</code> (ETag-conditional), stats ship, and signed-release fetch/download.</td></tr>
+  <tr><td><code>nginx/</code></td><td>Renders the nginx.conf + per-zone vhosts from templates, validates with <code>nginx -t</code>, reloads only on success, rolls back on failure.</td></tr>
+  <tr><td><code>tls/</code></td><td>Two-phase certs: write a self-signed placeholder so Nginx can start, then obtain/renew the real Let's Encrypt cert; OCSP stapling, renewal margins.</td></tr>
+  <tr><td><code>waf/</code></td><td>OWASP Coraza engine + CRS v4 as an <code>auth_request</code> sub-service; per-zone custom rules, country rules, security-event buffer.</td></tr>
+  <tr><td><code>stats/</code></td><td>Scrapes Nginx stub_status + CPU/RAM/bandwidth, buffers samples (bounded, drop-oldest) and ships them to the control plane.</td></tr>
+  <tr><td><code>logship/</code></td><td>Tails the structured JSON access log and ships bounded batches to the control plane (feeds the Logs page + analytics).</td></tr>
+  <tr><td><code>purge/</code></td><td>Subscribes to the NATS purge subject and deletes the matching cache files (open-source Nginx has no purge directive).</td></tr>
+  <tr><td><code>selfupdate/</code></td><td>The over-the-air updater: verify ed25519 signature → atomic binary swap → restart → self-check → auto-rollback. The signature (not the channel) is the trust anchor.</td></tr>
+  <tr><td><code>bootstrap/</code></td><td>Idempotent first-run setup of the box: build the Nginx modules, geoip2, Lua, systemd unit, kernel BBR, directories, placeholder config.</td></tr>
+</table>
+
+<!-- ============================================================ 5 CONTROL -->
+<h2 id="control"><span class="num">5</span>Inside the brain — the <code>brisk-control</code> plane</h2>
+<p>The control plane is a Go API (chi router) on top of Postgres/TimescaleDB, plus a handful of
+<b>background loops</b> that keep the world in sync. Requests come from two kinds of caller: the
+<b>edges</b> (agent-token auth) and the <b>dashboard</b> (human/session or admin-token auth).</p>
+
+<div class="fig"><svg viewBox="0 0 1080 560" xmlns="http://www.w3.org/2000/svg" font-size="12.5">
+  <defs><marker id="d" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#8a93a6"/></marker></defs>
+  <!-- callers -->
+  <rect x="20" y="60" width="150" height="60" rx="10" fill="var(--data-bg)" stroke="var(--data)"/>
+  <text x="95" y="86" text-anchor="middle" fill="var(--ink)" font-weight="700" font-size="12">Edges</text>
+  <text x="95" y="104" text-anchor="middle" fill="var(--muted)" font-size="11">agent token</text>
+  <rect x="20" y="150" width="150" height="60" rx="10" fill="var(--dash-bg)" stroke="var(--dash)"/>
+  <text x="95" y="176" text-anchor="middle" fill="var(--ink)" font-weight="700" font-size="12">Dashboard</text>
+  <text x="95" y="194" text-anchor="middle" fill="var(--muted)" font-size="11">session / admin token</text>
+
+  <!-- API layer -->
+  <rect x="220" y="40" width="430" height="200" rx="13" fill="var(--ctrl-bg)" stroke="var(--ctrl)"/>
+  <text x="435" y="64" text-anchor="middle" fill="var(--ctrl)" font-weight="700">internal/api — chi router + handlers</text>
+  <g font-size="11">
+    <rect x="236" y="78" width="128" height="34" rx="7" fill="var(--panel)" stroke="var(--ctrl)"/><text x="300" y="100" text-anchor="middle" fill="var(--ink)">agent · auth</text>
+    <rect x="372" y="78" width="128" height="34" rx="7" fill="var(--panel)" stroke="var(--ctrl)"/><text x="436" y="100" text-anchor="middle" fill="var(--ink)">zones · rules</text>
+    <rect x="508" y="78" width="126" height="34" rx="7" fill="var(--panel)" stroke="var(--ctrl)"/><text x="571" y="100" text-anchor="middle" fill="var(--ink)">servers · drain</text>
+    <rect x="236" y="120" width="128" height="34" rx="7" fill="var(--panel)" stroke="var(--ctrl)"/><text x="300" y="142" text-anchor="middle" fill="var(--ink)">dns · routing</text>
+    <rect x="372" y="120" width="128" height="34" rx="7" fill="var(--panel)" stroke="var(--ctrl)"/><text x="436" y="142" text-anchor="middle" fill="var(--ink)">waf · shield</text>
+    <rect x="508" y="120" width="126" height="34" rx="7" fill="var(--panel)" stroke="var(--ctrl)"/><text x="571" y="142" text-anchor="middle" fill="var(--ink)">domains · tls</text>
+    <rect x="236" y="162" width="128" height="34" rx="7" fill="var(--panel)" stroke="var(--ctrl)"/><text x="300" y="184" text-anchor="middle" fill="var(--ink)">purge · logs</text>
+    <rect x="372" y="162" width="128" height="34" rx="7" fill="var(--panel)" stroke="var(--ctrl)"/><text x="436" y="184" text-anchor="middle" fill="var(--ink)">stats · health</text>
+    <rect x="508" y="162" width="126" height="34" rx="7" fill="var(--panel)" stroke="var(--ctrl)"/><text x="571" y="184" text-anchor="middle" fill="var(--ink)">releases · rollouts</text>
+    <rect x="236" y="204" width="398" height="28" rx="7" fill="var(--ctrl-bg)" stroke="var(--ctrl)"/>
+    <text x="435" y="223" text-anchor="middle" fill="var(--muted)">auth middleware → identity → RBAC Authorize chokepoint</text>
+  </g>
+
+  <!-- store + db -->
+  <rect x="220" y="262" width="430" height="70" rx="11" fill="var(--panel)" stroke="var(--ctrl)"/>
+  <text x="435" y="286" text-anchor="middle" fill="var(--ink)" font-weight="700">internal/store — typed pgx queries (one file per domain)</text>
+  <text x="435" y="306" text-anchor="middle" fill="var(--muted)" font-size="11">zones · servers · server_zones · rules · transforms · waf · tls · custom_domains · dns · logs · stats · purge · tokens · auth · releases · rollouts</text>
+  <rect x="270" y="352" width="330" height="56" rx="10" fill="var(--db-bg)" stroke="var(--db)"/>
+  <text x="435" y="376" text-anchor="middle" fill="var(--ink)" font-weight="700">Postgres / TimescaleDB</text>
+  <text x="435" y="394" text-anchor="middle" fill="var(--muted)" font-size="11">31 goose migrations · hypertables (stats, request_logs) · 7-day retention</text>
+
+  <!-- background loops -->
+  <rect x="690" y="40" width="370" height="370" rx="13" fill="var(--ctrl-bg)" stroke="var(--ctrl)"/>
+  <text x="875" y="64" text-anchor="middle" fill="var(--ctrl)" font-weight="700">Background loops (goroutines)</text>
+  <g font-size="11">
+    <rect x="706" y="80" width="338" height="44" rx="8" fill="var(--panel)" stroke="var(--ctrl)"/>
+    <text x="716" y="98" fill="var(--ink)" font-weight="700">health checker</text>
+    <text x="716" y="114" fill="var(--muted)">probes /healthz (5s) → marks edges up/down</text>
+    <rect x="706" y="130" width="338" height="46" rx="8" fill="var(--panel)" stroke="var(--ctrl)"/>
+    <text x="716" y="148" fill="var(--ink)" font-weight="700">dns reconciler + syncer</text>
+    <text x="716" y="164" fill="var(--muted)">diff desired vs Bunny → write Smart-Records + failover</text>
+    <rect x="706" y="182" width="338" height="46" rx="8" fill="var(--panel)" stroke="var(--ctrl)"/>
+    <text x="716" y="200" fill="var(--ink)" font-weight="700">load steerer (gated)</text>
+    <text x="716" y="216" fill="var(--muted)">samples pressure → nudges DNS weights</text>
+    <rect x="706" y="234" width="338" height="46" rx="8" fill="var(--panel)" stroke="var(--ctrl)"/>
+    <text x="716" y="252" fill="var(--ink)" font-weight="700">acme + customdomains managers</text>
+    <text x="716" y="268" fill="var(--muted)">issue/renew wildcard + per-tenant certs (lego)</text>
+    <rect x="706" y="286" width="338" height="46" rx="8" fill="var(--panel)" stroke="var(--ctrl)"/>
+    <text x="716" y="304" fill="var(--ink)" font-weight="700">rollout engine + release prune (gated)</text>
+    <text x="716" y="320" fill="var(--muted)">one-PoP-at-a-time soak-gated agent updates</text>
+    <rect x="706" y="338" width="338" height="46" rx="8" fill="var(--db-bg)" stroke="var(--db)"/>
+    <text x="716" y="356" fill="var(--ink)" font-weight="700">NATS publisher</text>
+    <text x="716" y="372" fill="var(--muted)">turns a purge request into a fan-out message</text>
+  </g>
+
+  <!-- external -->
+  <rect x="270" y="430" width="200" height="56" rx="10" fill="var(--ext-bg)" stroke="var(--ext)"/>
+  <text x="370" y="454" text-anchor="middle" fill="var(--ink)" font-weight="700" font-size="12">Bunny DNS API</text>
+  <text x="370" y="472" text-anchor="middle" fill="var(--muted)" font-size="11">geo Smart-Records</text>
+  <rect x="500" y="430" width="200" height="56" rx="10" fill="var(--ext-bg)" stroke="var(--ext)"/>
+  <text x="600" y="454" text-anchor="middle" fill="var(--ink)" font-weight="700" font-size="12">SSH (provision)</text>
+  <text x="600" y="472" text-anchor="middle" fill="var(--muted)" font-size="11">onboard a new edge</text>
+
+  <line x1="170" y1="90" x2="220" y2="110" stroke="var(--data)" marker-end="url(#d)"/>
+  <line x1="170" y1="180" x2="220" y2="150" stroke="var(--dash)" marker-end="url(#d)"/>
+  <line x1="435" y1="240" x2="435" y2="262" stroke="var(--ctrl)" marker-end="url(#d)"/>
+  <line x1="435" y1="332" x2="435" y2="352" stroke="var(--ctrl)" marker-end="url(#d)"/>
+  <line x1="706" y1="152" x2="470" y2="300" stroke="var(--ctrl)" stroke-dasharray="4 3" marker-end="url(#d)"/>
+  <line x1="706" y1="156" x2="470" y2="452" stroke="var(--ctrl)" stroke-dasharray="4 3" marker-end="url(#d)"/>
+</svg>
+<div class="cap">Figure 4 — the control plane: API → store → DB, plus the background loops that keep DNS, health, TLS, and rollouts in sync.</div>
+</div>
+
+<div class="grid2">
+<table>
+  <tr><th>Package (<code>internal/</code>)</th><th>What it does</th></tr>
+  <tr><td><code>api/</code></td><td>chi router + one handler file per domain (agent, zones, servers, dns, waf, shield, domains, tls, purge, logs, stats, health, releases, rollouts, …).</td></tr>
+  <tr><td><code>store/</code></td><td>Typed pgx queries, one file per domain. The only thing that touches the database.</td></tr>
+  <tr><td><code>migrate/</code></td><td>31 goose SQL migrations; run automatically on startup.</td></tr>
+  <tr><td><code>config/</code></td><td>Reads all <code>BRISK_*</code> / <code>BUNNY_*</code> env vars into a typed config.</td></tr>
+  <tr><td><code>identity/</code> · <code>auth/</code> · <code>adminauth/</code></td><td>RBAC core + the single Authorize chokepoint; sessions (argon2id), admin API tokens, the agent-token authenticator.</td></tr>
+  <tr><td><code>token/</code></td><td>Agent-token generation + sha256 prefix/hash verification.</td></tr>
+</table>
+<table>
+  <tr><th>Package (<code>internal/</code>)</th><th>What it does</th></tr>
+  <tr><td><code>dns/</code></td><td>Bunny client + reconciler (pure diff) + syncer (debounced/periodic) + region→location map + Smart-Record weights.</td></tr>
+  <tr><td><code>health/</code></td><td>Self-driven /healthz checker that drives DNS rotation (with all-down guards).</td></tr>
+  <tr><td><code>acme/</code> · <code>customdomains/</code></td><td>Issue + renew the managed wildcard cert and per-tenant custom-domain certs (lego, Bunny DNS-01).</td></tr>
+  <tr><td><code>provision/</code></td><td>SSH onboarding of a brand-new edge.</td></tr>
+  <tr><td><code>purge/</code></td><td>NATS JetStream publisher for instant cache purges.</td></tr>
+  <tr><td><code>rollout/</code> · <code>signing/</code></td><td>The self-service rollout engine (waves, soak-gate, pause/rollback) + ed25519 sign/verify.</td></tr>
+  <tr><td><code>cmd/brisk-control</code> · <code>cmd/briskctl</code></td><td>The server entrypoint (wires everything + starts the loops) and the operator CLI (keygen, release push).</td></tr>
+</table>
+</div>
+
+<!-- ============================================================ 6 DASHBOARD -->
+<h2 id="dash"><span class="num">6</span>The dashboard — the human UI</h2>
+<p>A React + TypeScript single-page app (Vite, Tailwind, TanStack Query). It is a <b>thin client</b>:
+it never talks to edges or the database directly — every screen is just <i>pages → hooks → the
+<code>api</code> client → the control plane</i>.</p>
+
+<div class="fig"><svg viewBox="0 0 1040 330" xmlns="http://www.w3.org/2000/svg" font-size="12.5">
+  <defs><marker id="e" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#8a93a6"/></marker></defs>
+  <rect x="20" y="20" width="660" height="290" rx="14" fill="var(--dash-bg)" stroke="var(--dash)"/>
+  <text x="350" y="44" text-anchor="middle" fill="var(--dash)" font-weight="700">brisk-dashboard (React SPA)</text>
+  <rect x="40" y="60" width="620" height="58" rx="9" fill="var(--panel)" stroke="var(--dash)"/>
+  <text x="60" y="82" fill="var(--ink)" font-weight="700">pages/</text>
+  <text x="60" y="101" fill="var(--muted)" font-size="11">overview · servers · server-detail · zones · zone-detail · analytics · logs · security · purge · dns · settings · login</text>
+  <rect x="40" y="128" width="300" height="58" rx="9" fill="var(--panel)" stroke="var(--dash)"/>
+  <text x="60" y="150" fill="var(--ink)" font-weight="700">hooks/ (TanStack Query)</text>
+  <text x="60" y="169" fill="var(--muted)" font-size="11">use-servers · use-zones · use-stats · use-health · use-dns · use-rollouts · use-audit …</text>
+  <rect x="356" y="128" width="304" height="58" rx="9" fill="var(--panel)" stroke="var(--dash)"/>
+  <text x="376" y="150" fill="var(--ink)" font-weight="700">components/</text>
+  <text x="376" y="169" fill="var(--muted)" font-size="11">layout · ui · servers · zones · analytics · charts · maps · dns · purge</text>
+  <rect x="40" y="196" width="300" height="50" rx="9" fill="var(--panel)" stroke="var(--dash)"/>
+  <text x="60" y="217" fill="var(--ink)" font-weight="700">app/ — providers + auth</text>
+  <text x="60" y="234" fill="var(--muted)" font-size="11">AuthProvider probes /auth/me</text>
+  <rect x="356" y="196" width="304" height="50" rx="9" fill="var(--panel)" stroke="var(--dash)"/>
+  <text x="376" y="217" fill="var(--ink)" font-weight="700">lib/ — api · types · format · geo · validators</text>
+  <rect x="40" y="256" width="620" height="40" rx="9" fill="var(--dash-bg)" stroke="var(--dash)"/>
+  <text x="350" y="281" text-anchor="middle" fill="var(--ink)" font-size="12"><tspan font-weight="700">lib/api.ts</tspan> — the single fetch wrapper · base URL = VITE_API_URL · sends cookies/bearer · 401 → login</text>
+
+  <rect x="740" y="120" width="280" height="90" rx="12" fill="var(--ctrl-bg)" stroke="var(--ctrl)"/>
+  <text x="880" y="150" text-anchor="middle" fill="var(--ctrl)" font-weight="700">brisk-control API</text>
+  <text x="880" y="172" text-anchor="middle" fill="var(--muted)" font-size="11">/api/v1/… (admin + agent groups)</text>
+  <text x="880" y="190" text-anchor="middle" fill="var(--muted)" font-size="11">CORS = BRISK_DASHBOARD_ORIGIN</text>
+
+  <line x1="680" y1="276" x2="740" y2="180" stroke="var(--ctrl)" marker-end="url(#e)"/>
+  <text x="690" y="240" fill="var(--ctrl)" font-size="11">HTTPS + cookie</text>
+</svg>
+<div class="cap">Figure 5 — the dashboard is pages → hooks → one api client → the control plane. Nothing else.</div>
+</div>
+
+<!-- ============================================================ 7 FLOWS -->
+<h2 id="flows"><span class="num">7</span>Key data flows (how the important things actually happen)</h2>
+
+<h3>7.1 Config pull (how an edge learns its settings)</h3>
+<p class="k">agent <code>configPollLoop</code> → <code>GET /api/v1/agent/config</code> (If-None-Match: ETag)
+→ control compares config_version → <b>304 Not Modified</b> (nothing changed) or <b>200</b> + new
+config → agent overlays zones, renders nginx, <code>nginx -t</code>, reload. The last good config is
+cached on disk so the edge survives the brain being offline.</p>
+
+<h3>7.2 Heartbeat + stats + logs (how the brain sees the fleet)</h3>
+<p class="k">every 30s: <code>POST /agent/heartbeat</code> (online + nginx/agent/OS/kernel/Go versions)
+→ servers table. Continuously: <code>stats</code> ship CPU/RAM/bandwidth + <code>logship</code> ship
+JSON access logs → TimescaleDB hypertables → the Analytics + Logs pages.</p>
+
+<h3>7.3 Purge (instant, network-wide)</h3>
+<p class="k">dashboard/API <code>POST /purge</code> → control records a purge job → <b>NATS publisher</b>
+fans a message to every edge's subject → each edge's <code>purge</code> consumer deletes the matching
+cache files. Survives the control plane restarting (JetStream is durable).</p>
+
+<h3>7.4 DNS routing + failover (how visitors reach the nearest healthy edge)</h3>
+<p class="k">health checker probes <code>/healthz</code> (5s) → if an edge fails, the <b>reconciler</b>
+diffs desired vs. Bunny and removes it from rotation; the <b>syncer</b> writes Smart-Records to Bunny.
+A second layer (Bunny's own native ping monitor, gated) is a backstop if the control plane is down.
+An all-down guard prevents pulling the last PoP.</p>
+
+<h3>7.5 TLS (how certs appear, automatically)</h3>
+<p class="k">agent writes a self-signed placeholder so Nginx can boot → the control plane's <b>acme</b>
+manager issues the real wildcard cert (lego, Bunny DNS-01) and fans it to edges; <b>customdomains</b>
+does the same per tenant. Renewals run on a 12h check.</p>
+
+<h3>7.6 Agent self-update (ship new agent code safely)</h3>
+<p class="k">CI (or you via <code>briskctl release push</code>) builds + ed25519-<b>signs</b> the agent →
+uploads to the release store. A human clicks <b>Deploy</b> → the <b>rollout engine</b> opens one PoP's
+wave → that edge's <code>releaseLoop</code> downloads + <b>verifies the signature</b> → swaps its own
+binary → restarts → self-checks → soaks → engine advances to the next PoP. A bad signature is refused;
+an unhealthy update auto-rolls-back. See <a href="Brisk_Agent_Rollout_Process.html">Brisk_Agent_Rollout_Process.html</a>.</p>
+
+<!-- ============================================================ 8 FEATURE CATALOG -->
+<h2 id="features"><span class="num">8</span>Complete feature catalog (everything Brisk can do)</h2>
+<p>Every capability, grouped by area. The <b>state</b> column tells you whether it's always on, on by
+default, or shipped <b>gated OFF</b> (present in code but inactive until you enable it per-zone / per-edge
+/ via env — so the live fleet stays byte-identical until you choose). "Where" points at the code +
+the migration that added the data model.</p>
+<div class="legend card">
+  <span>🔒 <b>always-on</b> — core, no switch</span>
+  <span>✅ <b>on by default</b> — running, can tune</span>
+  <span>⚙️ <b>gated OFF</b> — enable when you want it</span>
+  <span class="k">mig = the goose migration that added it</span>
+</div>
+
+<h3>A · Caching &amp; content delivery (the hot path)</h3>
+<table>
+  <tr><th>Feature</th><th>What it does</th><th>State</th><th>Where</th></tr>
+  <tr><td>HTTP caching</td><td>MISS → fetch origin, store, then HIT from disk/RAM on later requests.</td><td>🔒</td><td>agent <code>nginx/</code></td></tr>
+  <tr><td>HLS video</td><td><code>.m3u8</code> playlists never cached (always fresh, <code>BYPASS</code>); <code>.ts/.m4s/.mp4</code> sliced into 1 MB chunks, cached, validated 200/206.</td><td>🔒</td><td>nginx slice module</td></tr>
+  <tr><td>Request coalescing</td><td><code>proxy_cache_lock</code> — 1000 viewers of a cold segment = one origin fetch.</td><td>🔒</td><td>nginx</td></tr>
+  <tr><td>Disk + RAM cache</td><td>Two-tier cache at <code>/var/cache/brisk</code>.</td><td>🔒</td><td>nginx</td></tr>
+  <tr><td>Brotli + Gzip</td><td>Brotli (ngx_brotli) with gzip fallback; per-zone <code>brotli_level</code>.</td><td>✅</td><td>bootstrap + nginx</td></tr>
+  <tr><td>Branded headers</td><td><code>Server: Brisk</code>, <code>X-Brisk-Cache</code> (HIT/MISS/BYPASS), <code>X-Brisk-Edge</code>, <code>X-Brisk-Request-Id</code>.</td><td>🔒</td><td>headers-more module</td></tr>
+  <tr><td>TLS 1.3 / 1.2</td><td>ECDSA P-256, OCSP stapling, HSTS, session resumption.</td><td>🔒</td><td>agent <code>tls/</code></td></tr>
+  <tr><td>TCP BBR</td><td>Kernel congestion control (<code>fq</code>+<code>bbr</code>) for higher throughput.</td><td>✅</td><td>bootstrap</td></tr>
+  <tr><td>CORS</td><td>Per-zone <code>cors_origin</code>.</td><td>per-zone</td><td>zones (mig 00001)</td></tr>
+  <tr><td>Per-zone Cache Settings</td><td>Bunny-style panel: Smart Cache, edge-TTL mode/value, browser-TTL mode/value, query-sort, cache-error-responses, query whitelist, strip-cookies, large-object slice, stale-while-offline, stale-while-updating.</td><td>⚙️ defaults reproduce current behavior</td><td>mig 00018 · <code>nginx/cache.go</code></td></tr>
+  <tr><td>Vary-by cache keys</td><td>Add dimensions to the cache key: WebP/AVIF (Accept), device class, GeoIP country, a named cookie, full querystring, named request headers.</td><td>⚙️</td><td>mig 00018 (+ Lua for query-sort/whitelist)</td></tr>
+</table>
+
+<h3>B · Routing, DNS &amp; failover</h3>
+<table>
+  <tr><th>Feature</th><th>What it does</th><th>State</th><th>Where</th></tr>
+  <tr><td>Bunny geo-DNS</td><td>Smart-Records return the nearest edge per visitor; mode <code>geographic</code> | <code>latency</code>.</td><td>🔒</td><td>control <code>dns/</code> (mig 00005)</td></tr>
+  <tr><td>Per-zone Smart A-set reconciler</td><td>Each zone's hostname points only at the edges actually serving it.</td><td>🔒</td><td>control <code>dns/</code></td></tr>
+  <tr><td>Self-driven health checker</td><td>Probes <code>/healthz</code> every 5 s with fail/rise thresholds → pulls a dead edge from DNS; ~25 s failover.</td><td>✅</td><td>control <code>health/</code> (mig 00008)</td></tr>
+  <tr><td>All-down guard</td><td>Never removes the last in-rotation PoP; no mass-disable on an all-stale blip.</td><td>🔒</td><td><code>dns/reconcile.go</code></td></tr>
+  <tr><td>Bunny native ping monitor</td><td>Layer-2 backstop: Bunny's own infra drops a dead edge even if the control plane is down.</td><td>⚙️ <code>BRISK_DNS_MONITOR</code></td><td>control <code>dns/</code></td></tr>
+  <tr><td>Drain (maintenance)</td><td>Gracefully take an edge out of rotation without deleting it.</td><td>per-server</td><td>mig 00009 · <code>api/drain.go</code></td></tr>
+  <tr><td>Routing weight / override</td><td>Manual per-server weight + a hard routing override.</td><td>per-server</td><td>mig 00007</td></tr>
+  <tr><td>Weight-by-capacity</td><td>Bigger edges get proportionally more traffic.</td><td>⚙️</td><td>mig 00022</td></tr>
+  <tr><td>Load steering (#3)</td><td>Samples each edge's live pressure (cpu / bandwidth) and multiplies its DNS weight, floored so load never fully drains an edge.</td><td>⚙️ <code>BRISK_LOAD_STEER_ENABLED</code></td><td>control <code>dns/loadsteer.go</code></td></tr>
+  <tr><td>DNS lock</td><td>Deletion protection on managed records + a time-delay unlock.</td><td>✅</td><td>mig 00006 · <code>api/dns_lock.go</code></td></tr>
+  <tr><td>serve_public flag</td><td>Whether an edge is advertised in public DNS at all.</td><td>per-server</td><td>mig 00021</td></tr>
+</table>
+
+<h3>C · Multi-tenant zones &amp; onboarding</h3>
+<table>
+  <tr><th>Feature</th><th>What it does</th><th>State</th><th>Where</th></tr>
+  <tr><td>Zones</td><td>One site per zone: origin, hostname, TLS, cache, security, all settings.</td><td>🔒</td><td>mig 00001</td></tr>
+  <tr><td>Host routing</td><td>Per-zone <code>cdn_hostname</code> (unique; create returns 409 on clash) → vhost on every edge.</td><td>🔒</td><td>mig 00001</td></tr>
+  <tr><td>Per-zone upstream Host</td><td><code>host_header</code> — what Host header Brisk sends to the origin.</td><td>per-zone</td><td>mig 00012</td></tr>
+  <tr><td>Default server</td><td>Unknown SNI is rejected (<code>ssl_reject_handshake</code>) — no accidental cross-zone leakage.</td><td>🔒</td><td>agent <code>nginx/</code></td></tr>
+  <tr><td>Custom domains + auto-TLS</td><td>A tenant points their own domain at Brisk; Brisk verifies + issues a per-domain SNI cert (ACME).</td><td>per-zone</td><td>mig 00013 · <code>customdomains/</code></td></tr>
+  <tr><td>Auto-onboard</td><td>Creating a zone auto-assigns it to all online edges, adds the wildcard CNAME, and covers it with the wildcard cert.</td><td>✅</td><td><code>api/zones.go</code> + <code>dns/</code> + <code>acme/</code></td></tr>
+  <tr><td>Managed wildcard TLS</td><td><code>*.cdn.&lt;domain&gt;</code> issued + renewed via lego Bunny DNS-01 and fanned to edges.</td><td>⚙️ <code>BRISK_TLS_MANAGED</code></td><td>control <code>acme/</code> (mig 00010/00020)</td></tr>
+  <tr><td>Zone delete teardown</td><td>Deleting a zone purges its cache + drops its vhost on every PoP; a type-the-hostname guard (HTTP 412) protects live zones.</td><td>🔒</td><td><code>api/zones.go</code> (mig 00019)</td></tr>
+</table>
+
+<h3>D · Origin protection</h3>
+<table>
+  <tr><th>Feature</th><th>What it does</th><th>State</th><th>Where</th></tr>
+  <tr><td>Origin shield</td><td>A chosen edge fronts the origin so the other edges pull from it — collapses the long tail, fewer origin hits. Header <code>X-Brisk-Shield</code>.</td><td>⚙️ per-zone</td><td>mig 00014 · <code>api/shield.go</code></td></tr>
+  <tr><td>Origin options</td><td>Verify-SSL on/off, follow-redirects, forward-host-header (the Bunny "Origin" panel).</td><td>⚙️ per-zone</td><td>mig 00025</td></tr>
+  <tr><td>Origin lockdown</td><td>A secret pull header (<code>origin_pull_secret</code>) so a reachable origin can reject non-Brisk traffic.</td><td>⚙️ per-zone</td><td>agent <code>nginx/</code></td></tr>
+  <tr><td>Cache error responses</td><td>Briefly cache origin 5xx (~5 s) to shield the origin from retry storms.</td><td>⚙️ per-zone</td><td>mig 00018</td></tr>
+  <tr><td>Origin IP never exposed</td><td>Design rule — origin reached only via shield / secret header.</td><td>🔒</td><td>—</td></tr>
+</table>
+
+<h3>E · Security / WAF</h3>
+<table>
+  <tr><th>Feature</th><th>What it does</th><th>State</th><th>Where</th></tr>
+  <tr><td>WAF (Coraza + CRS v4)</td><td>Per-zone OWASP web firewall via <code>auth_request</code>; mode detect/block, paranoia 1–4, WordPress preset, fail-open vs fail-closed.</td><td>⚙️ per-zone</td><td>mig 00015 · agent <code>waf/</code></td></tr>
+  <tr><td>WAF custom rules</td><td>Per-zone additional rules on top of CRS.</td><td>⚙️</td><td>mig 00015 (<code>waf_custom_rules</code>)</td></tr>
+  <tr><td>Rate limiting</td><td>Native nginx per-zone rate-limit zones/locations.</td><td>⚙️</td><td>mig 00015 (<code>waf_rate_limits</code>)</td></tr>
+  <tr><td>Errors-only rate limiting</td><td>Lua counts only 401/403 (login/OTP brute-force) — doesn't penalise normal traffic.</td><td>⚙️</td><td>agent Lua</td></tr>
+  <tr><td>GeoIP country rules</td><td>Country in logs/analytics + WAF country allow/deny (GeoLite2 on edge).</td><td>⚙️ geoip2 gated</td><td>agent <code>nginx</code>/<code>waf</code> · mig 00005</td></tr>
+  <tr><td>Hotlink protection</td><td>Per-zone Referer allowlist (+ allow-empty-referer) on content locations (never <code>/healthz</code>).</td><td>⚙️ per-zone</td><td>mig 00024</td></tr>
+  <tr><td>Edge self-protection (#4)</td><td>Per-IP <code>limit_conn</code> (503 on saturation) + optional <code>limit_req</code> (429); agent-local so it works with the control plane down.</td><td>⚙️ <code>edge_protect</code></td><td>agent <code>nginx</code></td></tr>
+  <tr><td>Blocked-IP denylist</td><td>Per-zone IP/CIDR deny list.</td><td>⚙️ per-zone</td><td>mig 00027</td></tr>
+  <tr><td>Block root / block POST</td><td>Per-zone toggles to 403 the root path or all POSTs.</td><td>⚙️ per-zone</td><td>mig 00028</td></tr>
+  <tr><td>Custom 502/504 page</td><td>Per-zone branded error HTML for origin-down.</td><td>⚙️ per-zone</td><td>mig 00026</td></tr>
+  <tr><td>Security events + page</td><td>WAF events buffered on the edge → shipped → Security dashboard page.</td><td>✅</td><td><code>waf/</code> + <code>api/waf.go</code></td></tr>
+</table>
+
+<h3>F · Programmable edge (Lua)</h3>
+<table>
+  <tr><th>Feature</th><th>What it does</th><th>State</th><th>Where</th></tr>
+  <tr><td>Lua framework</td><td>Gated http-block Lua (<code>load_module</code> + <code>init_by_lua</code> + <code>lua_shared_dict</code>); <code>brisk.lua</code> dispatch + <code>zones_data.lua</code>. Empty by default = zero per-zone hooks.</td><td>✅ framework / ⚙️ per-zone hooks</td><td>agent <code>nginx</code> + bootstrap</td></tr>
+  <tr><td>Cache rules</td><td>Per-path rules: override TTL, bypass cache, force download, redirect.</td><td>⚙️ per-zone</td><td><code>cache_rules</code> (mig 00001)</td></tr>
+  <tr><td>Header transforms</td><td>Add/remove/override response headers per zone (with a protected deny-list of headers you can't touch).</td><td>⚙️ per-zone</td><td>mig 00016</td></tr>
+</table>
+
+<h3>G · Observability (logs, analytics, metrics)</h3>
+<table>
+  <tr><th>Feature</th><th>What it does</th><th>State</th><th>Where</th></tr>
+  <tr><td>Real logs pipeline</td><td>Structured JSON access log → agent tail/ship (bounded, drop-oldest) → <code>request_logs</code> TimescaleDB hypertable (7-day retention + columnstore).</td><td>✅</td><td>mig 00017 · agent <code>logship/</code></td></tr>
+  <tr><td>Logs page</td><td>Filterable, near-real-time, tenant-scoped log explorer.</td><td>✅</td><td>dashboard <code>pages/logs</code></td></tr>
+  <tr><td>Analytics depth</td><td>Origin offload % (by request &amp; bytes), status-code breakdown, latency p50/p95/p99, top paths, top countries.</td><td>✅</td><td>from <code>request_logs</code> · <code>api/stats.go</code></td></tr>
+  <tr><td>Edge metrics</td><td>stub_status active conns + CPU/RAM/bandwidth sampled, buffered, shipped.</td><td>✅</td><td>agent <code>stats/</code> (mig 00003)</td></tr>
+  <tr><td>Per-PoP Tech &amp; runtime card</td><td>nginx / agent / OS / kernel / Go versions per edge, with brand logos.</td><td>✅</td><td>mig 00029 · dashboard server-detail</td></tr>
+  <tr><td>Usage-this-month</td><td>Per-zone bandwidth/requests widget.</td><td>✅</td><td>dashboard (zone sidebar)</td></tr>
+  <tr><td>Network-aggregate stats</td><td>One call for fleet-wide totals.</td><td>✅</td><td><code>api/stats.go</code></td></tr>
+</table>
+
+<h3>H · Cache purge</h3>
+<table>
+  <tr><th>Feature</th><th>What it does</th><th>State</th><th>Where</th></tr>
+  <tr><td>Instant network-wide purge</td><td>Control records a purge job → NATS JetStream fans it to every edge → each edge deletes the matching cache files. Durable (survives CP restart).</td><td>🔒</td><td>mig 00004/00019 · <code>purge/</code> both sides</td></tr>
+  <tr><td>Purge page</td><td>Dashboard panel with strong confirmations + a jobs table.</td><td>✅</td><td>dashboard <code>pages/purge</code></td></tr>
+</table>
+
+<h3>I · Auth, accounts &amp; access control</h3>
+<table>
+  <tr><th>Feature</th><th>What it does</th><th>State</th><th>Where</th></tr>
+  <tr><td>Human auth</td><td>Sessions (argon2id passwords), login / logout / refresh / me, CSRF, rate-limited login.</td><td>🔒</td><td>mig 00011 · <code>adminauth/</code></td></tr>
+  <tr><td>Admin API tokens</td><td>Bearer tokens for scripts/CI — create, revoke, and (new) hard-delete revoked ones.</td><td>✅</td><td><code>api/auth.go</code> · <code>store/auth.go</code></td></tr>
+  <tr><td>Agent tokens</td><td>Per-edge tokens (sha256 prefix+hash), rotatable, separate from admin tokens.</td><td>🔒</td><td><code>token/</code> · <code>api/servers.go</code></td></tr>
+  <tr><td>RBAC</td><td>A single <code>Authorize</code> chokepoint enforces account scoping on every admin action.</td><td>🔒</td><td><code>identity/</code></td></tr>
+</table>
+
+<h3>J · Lifecycle &amp; operations</h3>
+<table>
+  <tr><th>Feature</th><th>What it does</th><th>State</th><th>Where</th></tr>
+  <tr><td>Idempotent bootstrap</td><td>Safe-to-re-run first-run setup: nginx + modules, Lua, geoip2, systemd unit, BBR, dirs.</td><td>🔒</td><td>agent <code>bootstrap/</code></td></tr>
+  <tr><td>SSH provisioning</td><td>Onboard a brand-new edge over SSH from the dashboard.</td><td>✅</td><td><code>provision/</code> (mig 00002)</td></tr>
+  <tr><td>Two-phase TLS</td><td>Self-signed placeholder lets nginx boot, then the real LE cert replaces it.</td><td>🔒</td><td>agent <code>tls/</code></td></tr>
+  <tr><td>Agent self-service rollout</td><td>Signed (ed25519) over-the-air agent updates: one PoP at a time, health-soaked, pause / resume / cancel / rollback, auto-rollback on failure.</td><td>⚙️ <code>BRISK_ROLLOUT_ENABLED</code></td><td>mig 00030/00031 · <code>rollout/</code> + <code>signing/</code> + agent <code>selfupdate/</code></td></tr>
+  <tr><td>Release store + prune</td><td>Signed binaries kept in Postgres; hourly prune keeps the newest N + any running version.</td><td>✅ (with rollout)</td><td><code>store/releases.go</code></td></tr>
+  <tr><td>Audit log</td><td>Append-only who/what/when for deploy / pause / rollback / release-upload.</td><td>✅</td><td>mig 00031 · <code>api/audit</code></td></tr>
+  <tr><td>briskctl CLI</td><td>Operator tool: <code>keygen</code> (ed25519 keypair) + <code>release push</code>.</td><td>✅</td><td><code>cmd/briskctl</code></td></tr>
+  <tr><td>CI release pipeline</td><td>Tag → GitHub Actions builds + signs + uploads the agent release.</td><td>⚙️ needs repo + secrets</td><td><code>.github/workflows/agent-release.yml</code></td></tr>
+  <tr><td>Byte-identical rollout gate</td><td>Every agent deploy proves <code>sha256(nginx.conf)</code> is unchanged before/after, per edge.</td><td>🔒 (process)</td><td><code>tunnels/deploy-*.sh</code></td></tr>
+</table>
+
+<h3>K · Dashboard surfaces (what a human sees)</h3>
+<table>
+  <tr><th>Page</th><th>What it shows / does</th></tr>
+  <tr><td>Overview</td><td>Headline KPIs, recent activity, the network map, routing/health/DNS summary.</td></tr>
+  <tr><td>Servers</td><td>Edge tiles + status/metrics, region panel, drain &amp; bulk-drain (with guard), the Agent-version Deploy card, live rollout progress panel, and the deploy-history feed.</td></tr>
+  <tr><td>Server detail</td><td>Live CPU/RAM/disk/bandwidth, a trend chart, the Tech &amp; runtime card, and per-PoP config.</td></tr>
+  <tr><td>Zones / Zone detail</td><td>Per-zone tabs: Cache settings · Security (WAF) · Origin &amp; TLS · Header transforms · Hotlink · Cache rules · Assignments (with map) · Analytics · Usage.</td></tr>
+  <tr><td>Analytics</td><td>Filters + KPI cards + charts + by-PoP breakdown.</td></tr>
+  <tr><td>Logs · Security · Purge · DNS</td><td>Real log explorer · WAF events · purge panel + jobs · DNS records + lock UI.</td></tr>
+  <tr><td>Settings · Login</td><td>Account, password change, admin API tokens · the login screen.</td></tr>
+  <tr><td>Global</td><td>⌘K command palette (jump to any zone/server/action) · PoP world map (AssignmentsMap + NetworkMap) · light/dark theme.</td></tr>
+</table>
+
+<div class="note gold">Every <b>⚙️ gated</b> feature obeys the same promise: the rendered <code>nginx.conf</code>
+is byte-identical to today's until you deliberately turn the feature on for a zone or edge. That's how
+new features ship to the live fleet with zero risk.</div>
+
+<!-- ============================================================ 9 FILE MAP -->
+<h2 id="map"><span class="num">9</span>Full file map — where every code lives</h2>
+
+<h3>Repository top level</h3>
+<table>
+  <tr><th>Path</th><th>What's inside</th></tr>
+  <tr><td><code>brisk-agent/</code></td><td>The Go program on every edge (data plane). One static binary.</td></tr>
+  <tr><td><code>brisk-control/</code></td><td>The Go control-plane API + Postgres/NATS via docker-compose + the operator CLI.</td></tr>
+  <tr><td><code>brisk-dashboard/</code></td><td>The React/TS admin dashboard (Vite).</td></tr>
+  <tr><td><code>brisk-control/tunnels/</code></td><td>Laptop-only: reverse-SSH tunnels + the gated deploy scripts (<code>deploy-*.sh</code>). Replaced by direct HTTPS on a real server.</td></tr>
+  <tr><td><code>docs/features/</code></td><td>Human-facing infographics &amp; runbooks (this file, caching, load-steering, rollout, domain migration).</td></tr>
+  <tr><td><code>docs/future/</code></td><td>Planned-but-not-built ideas (real-server deploy, auto-deploy, selfupdate-lab, scaling).</td></tr>
+  <tr><td><code>docs/superpowers/</code></td><td>The design specs + implementation plans for each feature.</td></tr>
+  <tr><td><code>.github/workflows/</code></td><td><code>agent-release.yml</code> — CI build→sign→upload (inert until you set GitHub secrets).</td></tr>
+  <tr><td><code>CLAUDE.md</code> · <code>Brisk_Phase1_Build_Spec.md</code></td><td>Project rules + the original build spec.</td></tr>
+</table>
+
+<h3>brisk-control/internal — the 17 packages</h3>
+<p class="k">api · store · migrate · config · identity · auth · adminauth · token · dns · health · acme ·
+customdomains · provision · purge · rollout · signing · (+ <code>cmd/brisk-control</code>, <code>cmd/briskctl</code>).
+See the table in §5 for what each does.</p>
+
+<h3>brisk-control/internal/api — handler files (one per domain)</h3>
+<p class="k">router · agent · auth · zones · rules · transforms · servers · serverzones · drain · dns ·
+dns_routing · dns_lock · dns_reconcile · waf · shield · domains · tls · geoip · hotlink · cache_settings ·
+accessflags · errorpages · blockedips · purge · logs · stats · health · health_checks · releases · rollouts · respond.</p>
+
+<h3>brisk-dashboard/src</h3>
+<table>
+  <tr><th>Folder</th><th>What's inside</th></tr>
+  <tr><td><code>pages/</code></td><td>One file per screen: overview, servers, server-detail, zones, zone-detail, analytics, logs, security, purge, dns, settings, login, not-found.</td></tr>
+  <tr><td><code>hooks/</code></td><td>One data hook per domain (TanStack Query): use-servers, use-zones, use-stats, use-health, use-dns, use-domains, use-logs, use-purge, use-overview, use-waf, use-releases, use-rollouts, use-audit.</td></tr>
+  <tr><td><code>components/</code></td><td>UI grouped by area: <code>layout</code> (shell, sidebar, command-menu), <code>ui</code> (buttons, dialogs…), <code>servers</code>, <code>zones</code>, <code>analytics</code>, <code>charts</code>, <code>maps</code> (PoP world map), <code>dns</code>, <code>purge</code>, <code>auth</code>, <code>theme</code>, <code>overview</code>.</td></tr>
+  <tr><td><code>app/</code></td><td>Providers + <code>auth.tsx</code> (AuthProvider — probes <code>/auth/me</code>, the thing that shows "Loading…" while it checks your session).</td></tr>
+  <tr><td><code>lib/</code></td><td><code>api.ts</code> (the single fetch wrapper, base URL from <code>VITE_API_URL</code>), types, format, geo, stats, validators, utils, cdn.</td></tr>
+</table>
+
+<!-- ============================================================ 9 STACK -->
+<h2 id="stack"><span class="num">10</span>Stack &amp; the rules that shape it</h2>
+<div class="grid2">
+<div class="card">
+  <h3 style="margin-top:4px">Tech stack</h3>
+  <ul>
+    <li><b>OS:</b> Ubuntu 24.04 LTS (edges)</li>
+    <li><b>Cache:</b> Nginx stable 1.30.x (nginx.org)</li>
+    <li><b>Language:</b> Go 1.26 — one static binary per side</li>
+    <li><b>TLS:</b> Let's Encrypt ECDSA P-256, TLS 1.3+1.2, OCSP, HSTS</li>
+    <li><b>Compression:</b> Brotli (ngx_brotli) + gzip</li>
+    <li><b>Video:</b> Nginx slice module (1 MB), request coalescing</li>
+    <li><b>Edge programmability:</b> lua-nginx-module (gated rules)</li>
+    <li><b>Security:</b> Coraza WAF + OWASP CRS v4</li>
+    <li><b>Kernel:</b> TCP BBR (<code>fq</code>+<code>bbr</code>)</li>
+    <li><b>Control DB:</b> Postgres 17 + TimescaleDB</li>
+    <li><b>Messaging:</b> NATS JetStream (purge)</li>
+    <li><b>Routing:</b> Bunny geo-DNS (Smart-Records)</li>
+    <li><b>Dashboard:</b> React + TS + Vite + Tailwind + TanStack Query</li>
+  </ul>
+</div>
+<div class="card">
+  <h3 style="margin-top:4px">Golden rules (non-negotiable)</h3>
+  <ul>
+    <li><b>Data plane independent of control plane.</b> Dashboard down ≠ CDN down.</li>
+    <li><b>Never reload Nginx with a bad config.</b> Always <code>nginx -t</code> first; keep the previous good config to roll back.</li>
+    <li><b>Edges = bare-metal, no Docker.</b> Docker is only for local testing + the control plane.</li>
+    <li><b>Idempotent bootstrap</b> — safe to re-run.</li>
+    <li><b>Lightweight everywhere</b> — one small binary per edge.</li>
+    <li><b>New features ship gated + OFF</b> — the live fleet stays byte-identical until a feature is deliberately enabled per-zone/per-edge.</li>
+    <li><b>Byte-identical rollouts</b> — every agent deploy proves <code>sha256(nginx.conf)</code> is unchanged before/after.</li>
+    <li><b>Never drop a live hostname with zero in-rotation PoPs.</b></li>
+    <li><b>Origin IP never exposed</b> — secret pull header / shield in front.</li>
+  </ul>
+</div>
+</div>
+
+<!-- ============================================================ 10 GLOSSARY -->
+<h2 id="glossary"><span class="num">11</span>Glossary (plain English)</h2>
+<table>
+  <tr><th>Term</th><th>Means</th></tr>
+  <tr><td>Edge / PoP</td><td>A server near visitors that caches + serves your content. ("Point of Presence".)</td></tr>
+  <tr><td>Data plane</td><td>The edges — the part that serves real traffic.</td></tr>
+  <tr><td>Control plane / brain</td><td>The API + DB + dashboard that manage the edges (but serve no visitor traffic).</td></tr>
+  <tr><td>Agent (<code>brisk-agent</code>)</td><td>The Go program on each edge that configures Nginx + talks to the brain.</td></tr>
+  <tr><td>Zone</td><td>One site/hostname Brisk serves (its origin, cache rules, TLS, WAF…).</td></tr>
+  <tr><td>Origin</td><td>Your source server — where Brisk fetches content on a cache MISS.</td></tr>
+  <tr><td>Shield</td><td>A chosen edge that sits in front of the origin so fewer edges hit it directly.</td></tr>
+  <tr><td>Heartbeat</td><td>A periodic "I'm alive + here's my status" message from an edge to the brain.</td></tr>
+  <tr><td>Purge</td><td>Force-delete cached copies so the next request re-fetches fresh content.</td></tr>
+  <tr><td>Smart-Record</td><td>A Bunny geo-DNS record that returns the nearest healthy edge per visitor.</td></tr>
+  <tr><td>ETag / 304</td><td>"Nothing changed" — the edge asks for config and the brain replies 304 if it's already current (saves bandwidth).</td></tr>
+  <tr><td>Gated / off by default</td><td>Code is present but disabled until you flip a switch — so it can't surprise the live fleet.</td></tr>
+  <tr><td>Byte-identical</td><td>The rendered <code>nginx.conf</code> is exactly the same before and after a change — proof nothing about serving changed.</td></tr>
+  <tr><td>Self-update</td><td>The agent updating its own binary over the air, verified by your signature, with auto-rollback.</td></tr>
+</table>
+
+<!-- ============================================================ 12 REFERENCE -->
+<h2 id="ref"><span class="num">12</span>Reference appendices (the complete index)</h2>
+<p>The exhaustive lookup tables — pulled straight from the source: every API endpoint, every
+environment variable, every database migration, and every source file with its job.</p>
+
+<h3>Appendix A · Complete HTTP API (every endpoint)</h3>
+<p>Base path <code>/api/v1</code>. Three auth tiers: <b>Public</b> (no auth) · <b>Admin</b>
+(dashboard session cookie <i>or</i> admin bearer token, RBAC-scoped) · <b>Agent</b> (per-edge bearer
+token). Handlers live in <code>internal/api/*.go</code>.</p>
+
+<table>
+  <tr><th>Method + path</th><th>Tier</th><th>What it does</th></tr>
+  <tr><td><code>GET /health</code></td><td>Public</td><td>liveness of the control plane itself</td></tr>
+  <tr><td><code>GET /.well-known/acme-challenge/{token}</code></td><td>Public</td><td>serves HTTP-01 challenge for custom-domain certs</td></tr>
+  <tr><td><code>POST /auth/login</code></td><td>Public</td><td>password login → session cookie (rate-limited)</td></tr>
+  <tr><td><code>POST /auth/logout</code></td><td>Public</td><td>end the session (idempotent)</td></tr>
+  <tr><td><code>GET /auth/me</code></td><td>Public*</td><td>who am I (the dashboard's session probe)</td></tr>
+  <tr><td><code>POST /auth/refresh</code></td><td>Public*</td><td>refresh the session</td></tr>
+  <tr><td colspan="3" style="background:var(--panel2)"><b>Account &amp; tokens</b> — Admin</td></tr>
+  <tr><td><code>POST /admin/password</code></td><td>Admin</td><td>change your password</td></tr>
+  <tr><td><code>GET·POST /admin/tokens</code></td><td>Admin</td><td>list / create admin API tokens</td></tr>
+  <tr><td><code>DELETE /admin/tokens/{id}</code></td><td>Admin</td><td>revoke a token (soft)</td></tr>
+  <tr><td><code>DELETE /admin/tokens/{id}/purge</code></td><td>Admin</td><td>permanently delete an already-revoked token</td></tr>
+  <tr><td colspan="3" style="background:var(--panel2)"><b>Zones</b> — Admin</td></tr>
+  <tr><td><code>GET·POST /zones</code> · <code>GET·PUT·DELETE /zones/{id}</code></td><td>Admin</td><td>zone CRUD (delete tears down across all PoPs)</td></tr>
+  <tr><td><code>GET·POST /zones/{id}/rules</code> · <code>PUT·DELETE …/rules/{rid}</code> · <code>POST …/rules/reorder</code></td><td>Admin</td><td>per-zone cache rules (Lua)</td></tr>
+  <tr><td><code>GET /zones/{id}/servers</code></td><td>Admin</td><td>which edges serve this zone</td></tr>
+  <tr><td><code>POST /zones/{id}/purge</code></td><td>Admin</td><td>purge this zone everywhere</td></tr>
+  <tr><td><code>GET·POST /zones/{id}/domains</code> · <code>POST /domains/{id}/verify</code> · <code>DELETE /domains/{id}</code></td><td>Admin</td><td>custom domains + verification</td></tr>
+  <tr><td><code>POST /zones/{id}/shield</code></td><td>Admin</td><td>set the origin-shield edge</td></tr>
+  <tr><td><code>GET·PUT /zones/{id}/waf</code> · <code>…/waf/rules</code> · <code>…/waf/ratelimits</code></td><td>Admin</td><td>WAF config + custom rules + rate limits</td></tr>
+  <tr><td><code>GET /zones/{id}/security-events</code></td><td>Admin</td><td>this zone's WAF events</td></tr>
+  <tr><td><code>GET /zones/{id}/logs</code> · <code>…/logs/analytics</code></td><td>Admin</td><td>this zone's request logs + analytics</td></tr>
+  <tr><td><code>GET·POST·DELETE /zones/{id}/header-transforms</code></td><td>Admin</td><td>per-zone header transforms</td></tr>
+  <tr><td><code>PUT /zones/{id}/cache-settings</code></td><td>Admin</td><td>the Bunny-style cache panel</td></tr>
+  <tr><td><code>PUT /zones/{id}/hotlink</code> · <code>…/error-page</code> · <code>…/blocked-ips</code> · <code>…/access-flags</code></td><td>Admin</td><td>hotlink · custom error page · IP denylist · block-root/POST</td></tr>
+  <tr><td colspan="3" style="background:var(--panel2)"><b>Servers (edges)</b> — Admin</td></tr>
+  <tr><td><code>GET·POST /servers</code> · <code>GET·DELETE /servers/{id}</code></td><td>Admin</td><td>edge CRUD (create = SSH provision)</td></tr>
+  <tr><td><code>POST /servers/{id}/reprovision · /status · /routing · /role · /health</code></td><td>Admin</td><td>re-provision, status, routing weight, shield role, health config</td></tr>
+  <tr><td><code>POST /servers/{id}/drain · /undrain</code> · <code>POST /regions/{region}/drain · /undrain</code></td><td>Admin</td><td>drain one edge or a whole region</td></tr>
+  <tr><td><code>GET /servers/{id}/rotation · /live · /provision-log</code></td><td>Admin</td><td>rotation state · live metrics · provisioning stream</td></tr>
+  <tr><td><code>POST /servers/{id}/token/rotate</code></td><td>Admin</td><td>rotate the edge's agent token</td></tr>
+  <tr><td><code>GET·POST /servers/{id}/zones</code> · <code>DELETE …/zones/{zoneId}</code></td><td>Admin</td><td>assign / unassign zones to an edge</td></tr>
+  <tr><td colspan="3" style="background:var(--panel2)"><b>Purge · stats · overview</b> — Admin</td></tr>
+  <tr><td><code>POST /purge/all</code> · <code>GET /purge/jobs</code></td><td>Admin</td><td>network-wide purge + jobs table</td></tr>
+  <tr><td><code>GET /overview</code> · <code>GET /stats</code> · <code>GET /stats/network</code></td><td>Admin</td><td>dashboard overview + time-series + fleet totals</td></tr>
+  <tr><td colspan="3" style="background:var(--panel2)"><b>DNS</b> — Admin</td></tr>
+  <tr><td><code>GET /dns/status · /records · /routing · /audit</code> · <code>POST·DELETE /dns/records</code></td><td>Admin</td><td>view + edit geo-DNS records, routing, audit</td></tr>
+  <tr><td><code>GET /dns/lock</code> · <code>POST /dns/lock/{request-unlock,cancel,relock,delay}</code></td><td>Admin</td><td>deletion-protection lock controls</td></tr>
+  <tr><td><code>POST /dns/reconcile</code> · <code>GET /dns/reconcile/preview</code></td><td>Admin</td><td>force / preview a Bunny reconcile</td></tr>
+  <tr><td colspan="3" style="background:var(--panel2)"><b>GeoIP · health · TLS · security · logs · releases · rollouts</b> — Admin</td></tr>
+  <tr><td><code>GET /geoip</code> · <code>GET /health/status · /health/config</code></td><td>Admin</td><td>GeoIP lookup · fleet health summary + config</td></tr>
+  <tr><td><code>GET /tls/status</code> · <code>POST /tls/reissue</code></td><td>Admin</td><td>cert status + force reissue</td></tr>
+  <tr><td><code>GET /domains</code> · <code>GET /security-events · /security-events/summary</code> · <code>GET /logs · /logs/analytics</code></td><td>Admin</td><td>fleet-wide domains, WAF events, logs</td></tr>
+  <tr><td><code>POST·GET /releases</code> · <code>DELETE /releases/{version}</code></td><td>Admin</td><td>upload / list / delete signed agent releases</td></tr>
+  <tr><td><code>POST /rollouts</code> · <code>GET /rollouts/active · /rollouts/{id}</code> · <code>POST /rollouts/{id}/{pause,resume,cancel,rollback}</code></td><td>Admin</td><td>start + control an agent rollout</td></tr>
+  <tr><td><code>GET /audit</code></td><td>Admin</td><td>deploy/pause/rollback/upload audit trail</td></tr>
+  <tr><td colspan="3" style="background:var(--panel2)"><b>Agent endpoints</b> — Agent (per-edge bearer token)</td></tr>
+  <tr><td><code>POST /agent/heartbeat</code></td><td>Agent</td><td>edge reports online + its versions</td></tr>
+  <tr><td><code>GET /agent/config</code></td><td>Agent</td><td>pull config (ETag/304 conditional)</td></tr>
+  <tr><td><code>POST /agent/stats · /agent/security-events · /agent/logs</code></td><td>Agent</td><td>ship metrics / WAF events / access logs</td></tr>
+  <tr><td><code>POST /agent/purge/ack</code></td><td>Agent</td><td>acknowledge a completed purge</td></tr>
+  <tr><td><code>GET /agent/release</code> · <code>GET /releases/{version}/binary</code></td><td>Agent</td><td>which version to run + download the signed binary</td></tr>
+</table>
+<p class="k">* <code>/auth/me</code> &amp; <code>/auth/refresh</code> live in the public block but return identity only when a valid session/token is presented.</p>
+
+<h3>Appendix B · Environment variables (control plane)</h3>
+<p>Read by <code>internal/config</code>, wired through <code>docker-compose.yml</code>. Secrets live in the gitignored <code>.env</code>.</p>
+<table>
+  <tr><th>Variable</th><th>Default</th><th>Purpose</th></tr>
+  <tr><td><code>DATABASE_URL</code></td><td>(compose)</td><td>Postgres/Timescale connection string</td></tr>
+  <tr><td><code>LISTEN_ADDR</code></td><td><code>:8080</code></td><td>API listen address</td></tr>
+  <tr><td><code>LOG_LEVEL</code> · <code>ENV</code></td><td><code>info</code> · <code>dev</code></td><td>logging + environment name</td></tr>
+  <tr><td><code>AGENT_CONTROL_PLANE_URL</code></td><td>—</td><td>URL written into each agent's config (edges call this)</td></tr>
+  <tr><td><code>NATS_URL</code> · <code>AGENT_NATS_URL</code></td><td><code>nats://nats:4222</code> · —</td><td>control's NATS conn + the URL given to edges for purge</td></tr>
+  <tr><td><code>BUNNY_API_KEY</code> · <code>BUNNY_DNS_ZONE_ID</code> · <code>BUNNY_DNS_ZONE</code></td><td>—</td><td>Bunny geo-DNS credentials + target zone</td></tr>
+  <tr><td><code>BRISK_CDN_RECORD</code></td><td><code>cdn</code></td><td>the record name under the zone</td></tr>
+  <tr><td><code>BRISK_DNS_TTL</code></td><td><code>15</code></td><td>DNS TTL seconds (15s floor)</td></tr>
+  <tr><td><code>BRISK_DNS_ROUTING_MODE</code></td><td><code>geographic</code></td><td>geographic | latency Smart-Records</td></tr>
+  <tr><td><code>BRISK_DNS_MONITOR</code> · <code>_TYPE</code></td><td><code>false</code> · <code>ping</code></td><td>Bunny native failover monitor (gated)</td></tr>
+  <tr><td><code>BRISK_HEALTH_ENABLED · _INTERVAL · _TIMEOUT · _FAIL_THRESHOLD · _RISE_THRESHOLD · _PATH · _SCHEME · _PORT</code></td><td><code>true · 5 · 3 · 2 · 3 · /healthz · https · 0</code></td><td>self-driven health checker tuning</td></tr>
+  <tr><td><code>BRISK_LOAD_STEER_ENABLED</code> (+ <code>_INTERVAL/_LOW/_HIGH/_MIN_FACTOR</code>)</td><td><code>false</code></td><td>load-feedback DNS steering (#3, gated)</td></tr>
+  <tr><td><code>BRISK_TLS_MANAGED · _EMAIL · _STAGING · _DOMAINS · _CERT_NAME · _ACME_DIR</code></td><td><code>false · — · true · — · — · /var/lib/brisk-control/acme</code></td><td>managed wildcard TLS (lego Bunny DNS-01)</td></tr>
+  <tr><td><code>BRISK_CUSTOM_TLS_STAGING</code></td><td><code>true</code></td><td>custom-domain ACME staging flag</td></tr>
+  <tr><td><code>BRISK_DEFAULT_SHIELD_SERVER_ID</code></td><td>—</td><td>default origin-shield edge</td></tr>
+  <tr><td><code>BRISK_COOKIE_SECURE</code> · <code>BRISK_DASHBOARD_ORIGIN</code></td><td><code>false</code> · <code>http://localhost:5173</code></td><td>session cookie Secure flag + CORS allow-list</td></tr>
+  <tr><td><code>BRISK_ADMIN_EMAIL</code> · <code>BRISK_ADMIN_PASSWORD</code></td><td>—</td><td>first-login admin bootstrap</td></tr>
+  <tr><td><code>BRISK_AGENT_PUBKEYS</code></td><td>—</td><td>trusted ed25519 public key(s) for release verification</td></tr>
+  <tr><td><code>BRISK_ROLLOUT_ENABLED</code></td><td><code>true</code></td><td>run the rollout engine (idle until a rollout exists)</td></tr>
+  <tr><td><code>DB_PASSWORD</code></td><td>—</td><td>Postgres password (compose)</td></tr>
+</table>
+
+<h3>Appendix C · Database migrations (the 31-step schema history)</h3>
+<table>
+  <tr><th>#</th><th>Migration</th><th>What it added</th></tr>
+  <tr><td>00001</td><td>init</td><td>zones, servers, cache_rules — the core data model</td></tr>
+  <tr><td>00002</td><td>auth_provisioning</td><td>agent tokens + SSH provisioning logs</td></tr>
+  <tr><td>00003</td><td>stats_policies</td><td>stats hypertable + TimescaleDB retention/aggregation policies</td></tr>
+  <tr><td>00004</td><td>purge_jobs</td><td>recorded purge jobs + fan-out status</td></tr>
+  <tr><td>00005</td><td>dns_settings</td><td>DNS config + geo routing</td></tr>
+  <tr><td>00006</td><td>dns_audit</td><td>DNS change audit + deletion-protection lock</td></tr>
+  <tr><td>00007</td><td>server_routing</td><td>per-server routing weight + override</td></tr>
+  <tr><td>00008</td><td>server_health</td><td>per-server health status + checker config</td></tr>
+  <tr><td>00009</td><td>server_drain</td><td>drain flag + reason (maintenance)</td></tr>
+  <tr><td>00010</td><td>tls_certs</td><td>control-plane-managed certs</td></tr>
+  <tr><td>00011</td><td>admin_auth</td><td>accounts, sessions, admin API tokens</td></tr>
+  <tr><td>00012</td><td>zone_host_header</td><td>per-zone upstream Host header</td></tr>
+  <tr><td>00013</td><td>custom_domains</td><td>tenant custom domains + lifecycle state</td></tr>
+  <tr><td>00014</td><td>origin_shield</td><td>per-zone shield toggle + shield server</td></tr>
+  <tr><td>00015</td><td>waf</td><td>per-zone WAF config + custom rules + rate limits + security events</td></tr>
+  <tr><td>00016</td><td>header_transforms</td><td>per-zone response header transforms</td></tr>
+  <tr><td>00017</td><td>request_logs</td><td>request_logs hypertable (7-day retention)</td></tr>
+  <tr><td>00018</td><td>cache_settings</td><td>the full Bunny-style per-zone cache panel</td></tr>
+  <tr><td>00019</td><td>purge_jobs_fk</td><td>purge_jobs foreign key + zone-removal teardown</td></tr>
+  <tr><td>00020</td><td>tls_mode_managed_default</td><td>default + CHECK on zone TLS mode</td></tr>
+  <tr><td>00021</td><td>server_serve_public</td><td>whether an edge is advertised in public DNS</td></tr>
+  <tr><td>00022</td><td>server_weight_by_capacity</td><td>capacity-proportional routing weight</td></tr>
+  <tr><td>00023</td><td>server_resources</td><td>per-server resource/capacity fields</td></tr>
+  <tr><td>00024</td><td>hotlink_protection</td><td>per-zone Referer allowlist</td></tr>
+  <tr><td>00025</td><td>origin_options</td><td>verify-SSL / follow-redirects / forward-host</td></tr>
+  <tr><td>00026</td><td>error_pages</td><td>per-zone custom 502/504 HTML</td></tr>
+  <tr><td>00027</td><td>blocked_ips</td><td>per-zone IP/CIDR denylist</td></tr>
+  <tr><td>00028</td><td>access_flags</td><td>block-root-path / block-POST toggles</td></tr>
+  <tr><td>00029</td><td>server_tech</td><td>per-PoP nginx/agent/OS/kernel/Go versions</td></tr>
+  <tr><td>00030</td><td>agent_releases</td><td>signed agent release store</td></tr>
+  <tr><td>00031</td><td>rollouts</td><td>rollouts + rollout_targets + audit_log</td></tr>
+</table>
+
+<h3>Appendix D · Complete source-file index</h3>
+<p><b>brisk-agent/</b> (data plane)</p>
+<table>
+  <tr><th>File</th><th>Purpose</th></tr>
+  <tr><td><code>main.go</code></td><td>the edge control agent — boot + background loops</td></tr>
+  <tr><td><code>bootstrap/bootstrap.go</code></td><td>one-time idempotent edge install (nginx modules, Lua, geoip2, systemd, BBR)</td></tr>
+  <tr><td><code>config/config.go</code> · <code>config/source.go</code></td><td>load+validate agent.yaml · the config Source (overlays pulled zones)</td></tr>
+  <tr><td><code>client/client.go</code></td><td>authenticated link to brisk-control (heartbeat, PullConfig, release fetch)</td></tr>
+  <tr><td><code>nginx/nginx.go</code> · <code>nginx/cache.go</code></td><td>render nginx.conf + vhosts · the per-zone cache-settings renderer</td></tr>
+  <tr><td><code>tls/tls.go</code> · <code>letsencrypt.go</code> · <code>managed.go</code></td><td>cert install · LE/ACME path · control-plane-issued cert path</td></tr>
+  <tr><td><code>waf/waf.go</code> · <code>coraza.go</code> · <code>server.go</code></td><td>per-zone WAF router · Coraza engine · event log + HTTP service</td></tr>
+  <tr><td><code>stats/stats.go</code> · <code>reporter.go</code></td><td>collect edge metrics · bounded buffer + ship</td></tr>
+  <tr><td><code>logship/logship.go</code></td><td>tail JSON access log → ship to control</td></tr>
+  <tr><td><code>purge/purge.go</code> · <code>consumer.go</code></td><td>delete cache files · NATS consumer + ack</td></tr>
+  <tr><td><code>selfupdate/keys.go</code> · <code>verify.go</code> · <code>update.go</code></td><td>trusted pubkeys · the only verify gate · swap/rollback paths</td></tr>
+</table>
+<p><b>brisk-control/internal/</b> (control plane)</p>
+<table>
+  <tr><th>Package / file</th><th>Purpose</th></tr>
+  <tr><td><code>api/*.go</code> (33 files)</td><td>chi router + one handler file per domain (see Appendix A for the endpoints)</td></tr>
+  <tr><td><code>store/*.go</code> (18 files)</td><td>typed pgx queries — one per domain (zones, servers, server_zones, rules, transforms, waf, tls, custom_domains, dns, logs, stats, purge, tokens, auth, releases, rollouts)</td></tr>
+  <tr><td><code>migrate/migrate.go</code></td><td>runs the embedded goose migrations on startup</td></tr>
+  <tr><td><code>config/config.go</code></td><td>12-factor env config (Appendix B)</td></tr>
+  <tr><td><code>identity/identity.go</code></td><td>tenant-aware RBAC core + Authorize chokepoint</td></tr>
+  <tr><td><code>auth/auth.go</code></td><td>agent-request authenticator (bearer token)</td></tr>
+  <tr><td><code>adminauth/password.go</code> · <code>ratelimit.go</code> · <code>secret.go</code></td><td>argon2id passwords · login limiter · admin-token scheme</td></tr>
+  <tr><td><code>token/token.go</code></td><td>agent token generate + verify (sha256 prefix/hash)</td></tr>
+  <tr><td><code>dns/bunny.go</code> · <code>reconcile.go</code> · <code>syncer.go</code> · <code>zonesync.go</code> · <code>regions.go</code> · <code>loadsteer.go</code></td><td>Bunny client · pure-diff reconciler · debounced syncer · per-zone A-sets · region map · load steering</td></tr>
+  <tr><td><code>health/checker.go</code></td><td>self-driven /healthz checker that drives DNS rotation</td></tr>
+  <tr><td><code>acme/issuer.go</code> · <code>manager.go</code> · <code>http01.go</code></td><td>wildcard cert issue · renew loop · custom-domain HTTP-01</td></tr>
+  <tr><td><code>customdomains/verify.go</code> · <code>manager.go</code></td><td>custom-domain verify→issue→renew lifecycle</td></tr>
+  <tr><td><code>provision/provision.go</code></td><td>SSH onboarding of a new edge</td></tr>
+  <tr><td><code>purge/publisher.go</code></td><td>NATS JetStream purge publisher</td></tr>
+  <tr><td><code>rollout/engine.go</code></td><td>the wave/soak/rollback rollout state machine</td></tr>
+  <tr><td><code>signing/signing.go</code></td><td>ed25519 sign/verify over the release digest</td></tr>
+  <tr><td><code>cmd/brisk-control</code> · <code>cmd/briskctl</code></td><td>server entrypoint (wires + starts loops) · operator CLI (keygen, release push)</td></tr>
+</table>
+<p><b>brisk-dashboard/src/</b> — see §6 + §9 (pages, hooks, components, app, lib). The data flow is
+always <code>page → hook → lib/api.ts → control plane</code>.</p>
+
+<h3>Appendix E · Database entity-relationship diagram</h3>
+<p>Every table and how it links. <b>accounts</b> own <b>zones</b>; <b>zones</b> ↔ <b>servers</b> through
+the <b>server_zones</b> join; almost every feature table hangs off a zone with
+<code>ON DELETE CASCADE</code> (so deleting a zone cleans up everything). The rollout tables form
+their own chain.</p>
+
+<div class="fig"><svg viewBox="0 0 1120 660" xmlns="http://www.w3.org/2000/svg" font-size="11.5">
+  <defs><marker id="er" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#8a93a6"/></marker></defs>
+  <style>
+    .tbl rect{fill:var(--panel);stroke:var(--ctrl)}
+    .tname{font-weight:700;fill:var(--ink)}
+    .col{fill:var(--muted)}
+    .rel{stroke:#8a93a6;fill:none}
+    .rlabel{fill:var(--muted);font-size:10px}
+    .hub rect{stroke:var(--data)}
+    .acc rect{stroke:var(--dash)}
+    .rol rect{stroke:var(--db)}
+  </style>
+
+  <!-- accounts -->
+  <g class="acc tbl">
+    <rect x="20" y="40" width="150" height="58" rx="8"/>
+    <text x="30" y="60" class="tname">accounts</text>
+    <text x="30" y="78" class="col">id · email · role</text>
+    <text x="30" y="92" class="col">password_hash</text>
+  </g>
+  <g class="acc tbl">
+    <rect x="20" y="120" width="150" height="40" rx="8"/>
+    <text x="30" y="140" class="tname">sessions</text>
+    <text x="30" y="154" class="col">account_id → accounts</text>
+  </g>
+  <g class="acc tbl">
+    <rect x="20" y="178" width="150" height="40" rx="8"/>
+    <text x="30" y="198" class="tname">admin_api_tokens</text>
+    <text x="30" y="212" class="col">account_id → accounts</text>
+  </g>
+
+  <!-- zones (hub) -->
+  <g class="hub tbl">
+    <rect x="240" y="40" width="180" height="92" rx="8"/>
+    <text x="252" y="60" class="tname">zones</text>
+    <text x="252" y="77" class="col">id · account_id → accounts</text>
+    <text x="252" y="91" class="col">cdn_hostname · origin_url</text>
+    <text x="252" y="105" class="col">tls/cache/waf/origin… (50+ cols)</text>
+    <text x="252" y="123" class="col">shield_server_id → servers</text>
+  </g>
+
+  <!-- servers (hub) -->
+  <g class="hub tbl">
+    <rect x="760" y="40" width="180" height="78" rx="8"/>
+    <text x="772" y="60" class="tname">servers</text>
+    <text x="772" y="77" class="col">id · edge_id · region · ip</text>
+    <text x="772" y="91" class="col">role · status · health_* · drain</text>
+    <text x="772" y="105" class="col">nginx/agent/os/kernel/go ver</text>
+  </g>
+
+  <!-- server_zones join -->
+  <g class="tbl">
+    <rect x="510" y="56" width="170" height="48" rx="8"/>
+    <text x="520" y="76" class="tname">server_zones (join)</text>
+    <text x="520" y="92" class="col">server_id ↔ zone_id (M:N)</text>
+  </g>
+
+  <!-- per-zone feature tables -->
+  <g class="tbl"><rect x="40" y="270" width="150" height="34" rx="7"/><text x="50" y="291" class="tname">cache_rules</text></g>
+  <g class="tbl"><rect x="210" y="270" width="150" height="34" rx="7"/><text x="220" y="291" class="tname">custom_domains</text></g>
+  <g class="tbl"><rect x="380" y="270" width="150" height="34" rx="7"/><text x="390" y="291" class="tname">waf_custom_rules</text></g>
+  <g class="tbl"><rect x="40" y="320" width="150" height="34" rx="7"/><text x="50" y="341" class="tname">waf_rate_limits</text></g>
+  <g class="tbl"><rect x="210" y="320" width="150" height="34" rx="7"/><text x="220" y="341" class="tname">header_transforms</text></g>
+  <g class="tbl"><rect x="380" y="320" width="150" height="34" rx="7"/><text x="390" y="341" class="tname">request_logs *</text></g>
+  <g class="tbl"><rect x="210" y="370" width="150" height="34" rx="7"/><text x="220" y="391" class="tname">purge_jobs *</text></g>
+  <text x="40" y="416" class="col">* request_logs / purge_jobs link zone nullable (SET NULL / CASCADE)</text>
+
+  <!-- per-server tables -->
+  <g class="tbl"><rect x="760" y="150" width="180" height="34" rx="7"/><text x="772" y="171" class="tname">agent_tokens → servers</text></g>
+  <g class="tbl"><rect x="760" y="194" width="180" height="34" rx="7"/><text x="772" y="215" class="tname">provision_logs → servers</text></g>
+
+  <!-- rollout chain -->
+  <g class="rol tbl"><rect x="760" y="300" width="180" height="40" rx="8"/><text x="772" y="320" class="tname">agent_releases</text><text x="772" y="334" class="col">version (PK) · binary · sig</text></g>
+  <g class="rol tbl"><rect x="760" y="360" width="180" height="40" rx="8"/><text x="772" y="380" class="tname">rollouts</text><text x="772" y="394" class="col">release_version → agent_releases</text></g>
+  <g class="rol tbl"><rect x="760" y="420" width="180" height="40" rx="8"/><text x="772" y="440" class="tname">rollout_targets</text><text x="772" y="454" class="col">rollout_id → rollouts</text></g>
+  <g class="rol tbl"><rect x="760" y="480" width="180" height="34" rx="7"/><text x="772" y="501" class="tname">audit_log</text></g>
+
+  <!-- standalone -->
+  <text x="40" y="470" class="tname" fill="var(--ink)">Standalone (no zone/server FK):</text>
+  <text x="40" y="490" class="col">stats (hypertable) · security_events · tls_certs · dns_settings · dns_audit · control_plane</text>
+
+  <!-- relationships -->
+  <line class="rel" x1="170" y1="70" x2="240" y2="80" marker-end="url(#er)"/><text x="178" y="64" class="rlabel">1:N</text>
+  <line class="rel" x1="95" y1="98" x2="95" y2="120" marker-end="url(#er)"/>
+  <line class="rel" x1="95" y1="160" x2="95" y2="178" marker-end="url(#er)"/>
+  <line class="rel" x1="420" y1="80" x2="510" y2="80" marker-end="url(#er)"/>
+  <line class="rel" x1="760" y1="80" x2="680" y2="80" marker-end="url(#er)"/>
+  <text x="556" y="50" class="rlabel">M:N via join</text>
+  <line class="rel" x1="420" y1="120" x2="760" y2="100" marker-end="url(#er)"/><text x="560" y="120" class="rlabel">shield_server_id</text>
+  <!-- zone -> feature tables -->
+  <line class="rel" x1="300" y1="132" x2="120" y2="270" marker-end="url(#er)"/>
+  <line class="rel" x1="320" y1="132" x2="285" y2="270" marker-end="url(#er)"/>
+  <line class="rel" x1="340" y1="132" x2="455" y2="270" marker-end="url(#er)"/>
+  <text x="350" y="200" class="rlabel">1:N (ON DELETE CASCADE) → all per-zone feature tables</text>
+  <!-- servers -> per-server -->
+  <line class="rel" x1="850" y1="118" x2="850" y2="150" marker-end="url(#er)"/>
+  <line class="rel" x1="850" y1="184" x2="850" y2="194" marker-end="url(#er)"/>
+  <!-- rollout chain -->
+  <line class="rel" x1="850" y1="340" x2="850" y2="360" marker-end="url(#er)"/>
+  <line class="rel" x1="850" y1="400" x2="850" y2="420" marker-end="url(#er)"/>
+</svg>
+<div class="cap">Figure 6 — the data model. Zones are the hub; deleting a zone cascades to every per-zone table.</div>
+</div>
+
+<h3>Appendix F · Core JSON shapes (request / response bodies)</h3>
+<p>The canonical field shapes, from the dashboard's <code>lib/types.ts</code> (which mirrors the API
+exactly). Optional fields use <code>?</code>; timestamps are ISO-8601 strings.</p>
+
+<p class="k" style="margin-bottom:4px"><b>Server</b> — <code>GET /servers</code>, <code>/servers/{id}</code></p>
+<pre style="background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;overflow-x:auto;font-family:var(--mono);font-size:12px;color:var(--ink);margin:0 0 16px">{
+  id, name, region, ip, hostname?, edge_id, capacity_mbps, weight_by_capacity?,
+  status: "online"|"offline"|"provisioning"|…, role: "edge"|"shield", serve_public?,
+  ssh_user?, ssh_port?, last_seen, provisioned_at, created_at,
+  routing_weight, routing_override: ""|"geographic"|"latency",
+  health_status: "unknown"|"healthy"|"unhealthy", health_checked_at?, health_enabled,
+  health_interval_seconds, health_fail_threshold, health_rise_threshold,
+  drained, drained_at?, drain_reason,
+  nginx_version?, agent_version?, os_pretty?, kernel?, go_version?     // from heartbeat
+}</pre>
+
+<p class="k" style="margin-bottom:4px"><b>Zone</b> — <code>GET /zones</code>, <code>/zones/{id}</code></p>
+<pre style="background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;overflow-x:auto;font-family:var(--mono);font-size:12px;color:var(--ink);margin:0 0 16px">{
+  id, account_id, name, cdn_hostname, custom_domain?, origin_url, host_header,
+  tls_mode: "selfsigned"|"mkcert"|"letsencrypt", video, profile: "vod"|"live",
+  playlist_ttl, segment_ttl, cors_origin, brotli_level, status, config_version,
+  created_at, updated_at, rules?: CacheRule[],
+  origin_shield_enabled?, shield_server_id?,
+  waf_enabled?, waf_mode?: "detect"|"block", waf_managed_ruleset?, waf_paranoia?, waf_wp_preset?, waf_fail_open?,
+  cache_settings?: CacheSettings,                                     // the full Bunny-style panel
+  hotlink_enabled?, hotlink_allowed_referrers?, hotlink_allow_empty_referer?,
+  origin_ssl_verify?, origin_follow_redirects?, forward_host_header?,
+  error_5xx_html?, blocked_ips?, block_root_path?, block_post?
+}</pre>
+
+<p class="k" style="margin-bottom:4px"><b>Rollout</b> + <b>RolloutTarget</b> — <code>GET /rollouts/active</code> returns <code>{rollout, targets[]}</code></p>
+<pre style="background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;overflow-x:auto;font-family:var(--mono);font-size:12px;color:var(--ink);margin:0 0 16px">Rollout { id, release_version, target_pops[], soak_seconds,
+  status: "scheduled"|"running"|"paused"|"done"|"failed"|"cancelled",
+  scheduled_at?, error_reason?, created_by?, created_at, started_at?, finished_at? }
+RolloutTarget { rollout_id, edge_id, from_version, to_version,
+  state: "queued"|"in_progress"|"soaking"|"done"|"failed"|"skipped",
+  error_reason?, soak_until?, updated_at }
+StartRolloutInput { version, pops[], soak_seconds, scheduled_at? }    // POST /rollouts</pre>
+
+<p class="k" style="margin-bottom:4px"><b>Other key shapes</b> (field names; see <code>lib/types.ts</code> for full)</p>
+<pre style="background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;overflow-x:auto;font-family:var(--mono);font-size:12px;color:var(--ink);margin:0 0 8px">AgentRelease   { version, sha256, signed_by, size_bytes, notes, created_at }
+AuditEntry     { id, actor, action, subject, details, at }
+CacheRule      { id, zone_id, priority, match_type, match_value, action, action_value }
+CacheSettings  { cache_smart, cache_edge_mode/ttl, cache_browser_mode/ttl, cache_query_sort,
+                 cache_error_responses, cache_vary_* , cache_query_whitelist, cache_strip_cookies,
+                 cache_large_object, cache_stale_offline, cache_stale_updating }
+WAFConfig      { waf_enabled, waf_mode, waf_managed_ruleset, waf_paranoia, waf_wp_preset,
+                 waf_fail_open, rules: WAFCustomRule[], rate_limits: WAFRateLimit[] }
+WAFCustomRule  { id, zone_id, priority, field, op, value, action }
+CustomDomain   { id, zone_id, domain, status, … }
+HeaderTransform{ id, zone_id, phase, op, header, value, match_type, match_value }
+SecurityEvent  { ts, zone_id, client_ip, country, rule_id, action, path, … }
+ServerLive     { server_id, cpu_pct, ram_pct, disk_pct, req_per_sec, bandwidth_bps, last_sample }
+Stats / SeriesPoint  { ts, requests, bytes, hit_ratio, … }           // analytics time-series
+CreateServerInput → CreateServerResponse { …, token (shown once) }   // POST /servers</pre>
+
+<h3>Appendix G · The rendered <code>nginx.conf</code> + every request body (the last detail)</h3>
+
+<p><b>G.1 — What the agent actually writes to an edge.</b> <code>brisk-agent</code> renders two
+templates: <code>nginx.conf.tmpl</code> (the global <code>http</code> block) and
+<code>server.tmpl</code> (one server-block pair per zone). Gated features render <b>only</b> when
+enabled for that zone/edge — which is why an untouched fleet stays byte-identical. Structure:</p>
+
+<pre style="background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:12px;color:var(--ink);line-height:1.5;margin:0 0 16px">/etc/nginx/nginx.conf        (generated — DO NOT EDIT BY HAND)
+├─ load_module …             ndk · lua · headers-more · brotli×2 · geoip2   (only those installed)
+├─ worker_processes auto · worker_rlimit_nofile 200000 · user www-data     (owns the cache dir)
+├─ events { worker_connections 32768 }
+└─ http {
+   ├─ proxy_cache_path /var/cache/brisk    NVMe disk + RAM key zone   ← purge = agent DELETES files
+   ├─ init_by_lua_file init.lua            (only when the Lua module is present)
+   ├─ lua_shared_dict brisk_rl 10m         per-IP 401/403 counter (errors-only rate limit)
+   ├─ geoip2 → $brisk_country              (only when geoip2 + GeoLite2 DB present; else "-")
+   ├─ log_format brisk  +  JSON → brisk.requests.log   ← logship tails this → control plane
+   ├─ brotli + gzip · TLS 1.3/1.2 ECDSA · OCSP · HSTS · slice 1m · proxy_cache_lock (coalescing)
+   ├─ default_server { ssl_reject_handshake }          ← unknown SNI rejected (no cross-zone leak)
+   └─ « per-zone server blocks »           one pair per zone, from server.tmpl ↓
+
+zone &lt;cdn_hostname&gt; :
+├─ server :80
+│  ├─ location ^~ /.well-known/acme-challenge/   → proxy to control plane (custom-domain CA answer)
+│  ├─ location = /healthz                        → 200 "ok"   (cheap HTTP liveness probe)
+│  └─ location /                                 → 301 https
+└─ server :443 ssl http2
+   ├─ resolver + $brisk_origin                   resolve origin at request-time, force IPv4
+   ├─ ssl_certificate (covering cert, longest-suffix match) · OCSP stapling
+   ├─ more_set_headers  Server: Brisk · X-Brisk-Edge · X-Brisk-Request-Id   (applies on EVERY status)
+   ├─ [gated] if ($request_method = POST) return 405;          ← block_post
+   ├─ [gated] if ($uri ~ "/$") return 403;                     ← block_root_path
+   ├─ [gated] valid_referers … + "hotlinkguard" 403            ← hotlink (content locations only)
+   ├─ [gated] limit_conn / limit_req → 503 / 429               ← edge_protect (per-IP)
+   ├─ [gated] rewrite_by_lua + header_filter_by_lua            ← cache rules + header transforms
+   ├─ [gated] access_by_lua (block IPs over the 401/403 limit) ← errors-only rate limit
+   ├─ [gated] auth_request /waf  (fail-open | fail-closed)     ← Coraza WAF + CRS
+   ├─ [gated] deny &lt;ip/cidr&gt;;  on content locations            ← blocked-ips denylist
+   ├─ location = /healthz            → 200   (TLS probe; NEVER WAF/hotlink-guarded)
+   ├─ location ~ \.m3u8$             → proxy, NEVER cache  (X-Brisk-Cache: BYPASS)
+   ├─ location ~ \.(ts|m4s|mp4)$     → slice 1m · proxy_cache · key incl $slice_range · validate 200|206
+   ├─ location / (static + html)     → proxy_cache · proxy_cache_bypass $http_x_brisk_lua_nocache
+   ├─ upstream = shield PoP (if shielded) + @brisk_origin_fallback   ELSE → origin directly
+   ├─ [gated] @brisk_follow_redirect (chase one origin 3xx)    ← origin_follow_redirects
+   ├─ [gated] error_page 502/504 → custom branded HTML         ← error_5xx_html
+   └─ [gated] proxy_set_header &lt;secret&gt;  to the origin         ← origin lockdown (origin_pull_secret)</pre>
+<p class="k">Renderer: <code>brisk-agent/nginx/nginx.go</code> (+ <code>cache.go</code> for the cache-settings block).
+Every reload is guarded by <code>nginx -t</code>; on failure the agent keeps the previous good config.</p>
+
+<p><b>G.2 — Request bodies for the mutating endpoints.</b> JSON in; common status codes:
+<code>200/201</code> ok · <code>304</code> (config unchanged) · <code>400</code> bad JSON ·
+<code>401</code> unauth · <code>403</code> RBAC/scope · <code>404</code> · <code>409</code> conflict
+(e.g. duplicate <code>cdn_hostname</code>, a second active rollout) · <code>412</code> live-zone delete guard.</p>
+<table>
+  <tr><th>Endpoint</th><th>Request body</th></tr>
+  <tr><td><code>POST /auth/login</code></td><td><code>{ email, password }</code> → sets session cookie</td></tr>
+  <tr><td><code>POST /admin/password</code></td><td><code>{ current_password, new_password }</code> (≥10 chars)</td></tr>
+  <tr><td><code>POST /admin/tokens</code></td><td><code>{ name }</code> → <code>{ token }</code> (shown ONCE)</td></tr>
+  <tr><td><code>POST /zones</code></td><td><code>{ name, cdn_hostname?, origin_url, host_header?, tls_mode, video, profile, playlist_ttl?, segment_ttl?, cors_origin?, brotli_level? }</code></td></tr>
+  <tr><td><code>PUT /zones/{id}</code></td><td>same shape (partial update of the editable zone fields)</td></tr>
+  <tr><td><code>POST /zones/{id}/rules</code> · <code>PUT …/rules/{rid}</code></td><td><code>{ priority, match_type:"path_prefix"|"extension"|"regex", match_value, action:"override_cache_ttl"|"bypass_cache"|"force_download"|"redirect", action_value }</code></td></tr>
+  <tr><td><code>POST /zones/{id}/rules/reorder</code></td><td><code>{ ids: number[] }</code> (new order)</td></tr>
+  <tr><td><code>PUT /zones/{id}/cache-settings</code></td><td>the full <code>CacheSettings</code> object (Appendix F)</td></tr>
+  <tr><td><code>PUT /zones/{id}/hotlink</code></td><td><code>{ enabled, allowed_referrers, allow_empty_referer }</code></td></tr>
+  <tr><td><code>PUT /zones/{id}/error-page</code></td><td><code>{ html }</code> (empty clears it)</td></tr>
+  <tr><td><code>PUT /zones/{id}/blocked-ips</code></td><td><code>{ blocked_ips }</code> (comma/newline IPs or CIDRs)</td></tr>
+  <tr><td><code>PUT /zones/{id}/access-flags</code></td><td><code>{ block_root_path, block_post }</code></td></tr>
+  <tr><td><code>POST /zones/{id}/shield</code></td><td><code>{ enabled, shield_server_id? }</code></td></tr>
+  <tr><td><code>PUT /zones/{id}/waf</code></td><td><code>{ waf_enabled, waf_mode:"detect"|"block", waf_managed_ruleset, waf_paranoia, waf_wp_preset, waf_fail_open }</code></td></tr>
+  <tr><td><code>POST /zones/{id}/waf/rules</code></td><td><code>{ priority, field:"ip"|"country"|"path"|"method"|"header"|"user_agent", op:"eq"|"prefix"|"regex"|"cidr", value, action:"block"|"challenge"|"log"|"allow" }</code></td></tr>
+  <tr><td><code>POST /zones/{id}/waf/ratelimits</code></td><td><code>{ match_path, requests_per, window_seconds, action, … }</code></td></tr>
+  <tr><td><code>POST /zones/{id}/header-transforms</code></td><td><code>{ phase:"request"|"response", op:"set"|"remove", header, value, match_type:"all"|"path_prefix"|"path_regex"|"method", match_value }</code></td></tr>
+  <tr><td><code>POST /zones/{id}/domains</code></td><td><code>{ domain }</code> · then <code>POST /domains/{id}/verify</code></td></tr>
+  <tr><td><code>POST /zones/{id}/purge</code></td><td><code>{ paths?: string[] }</code> (empty = whole zone)</td></tr>
+  <tr><td><code>POST /servers</code></td><td><code>{ name, region, ip, edge_id?, capacity_mbps?, weight_by_capacity?, ssh_user, ssh_port, ssh_password? | ssh_private_key? }</code> → <code>{ …, token }</code> (once)</td></tr>
+  <tr><td><code>POST /servers/{id}/routing</code></td><td><code>{ routing_weight, routing_override:""|"geographic"|"latency" }</code></td></tr>
+  <tr><td><code>POST /servers/{id}/role</code></td><td><code>{ role:"edge"|"shield", serve_public? }</code></td></tr>
+  <tr><td><code>POST /servers/{id}/health</code></td><td><code>{ health_enabled, health_interval_seconds, health_fail_threshold, health_rise_threshold }</code></td></tr>
+  <tr><td><code>POST /servers/{id}/status</code></td><td><code>{ status }</code></td></tr>
+  <tr><td><code>POST /servers/{id}/drain</code></td><td><code>{ reason? }</code> · <code>POST …/undrain</code> = no body</td></tr>
+  <tr><td><code>POST /dns/records</code></td><td><code>{ type, name, value, ttl? }</code></td></tr>
+  <tr><td><code>POST /dns/lock/delay</code></td><td><code>{ delay_seconds }</code></td></tr>
+  <tr><td><code>POST /releases</code></td><td><code>{ version, sha256, signature, signed_by, notes, binary_b64 }</code> — server re-verifies the signature before storing</td></tr>
+  <tr><td><code>POST /rollouts</code></td><td><code>{ version, pops:string[], soak_seconds, scheduled_at? }</code></td></tr>
+  <tr><td><code>POST /rollouts/{id}/rollback</code></td><td><code>{ version? }</code> (defaults to the from-version)</td></tr>
+  <tr><td colspan="2" style="background:var(--panel2)"><b>Agent endpoints</b> (per-edge bearer token)</td></tr>
+  <tr><td><code>POST /agent/heartbeat</code></td><td><code>{ edge_id, status, nginx_version, agent_version, os, kernel, go_version }</code></td></tr>
+  <tr><td><code>GET /agent/config</code></td><td>header <code>If-None-Match: &lt;etag&gt;</code> → 200 + config or 304</td></tr>
+  <tr><td><code>POST /agent/stats</code> · <code>/agent/logs</code> · <code>/agent/security-events</code></td><td>a JSON array of samples / log entries / WAF events</td></tr>
+  <tr><td><code>POST /agent/purge/ack</code></td><td><code>{ job_id, edge_id, ok }</code></td></tr>
+  <tr><td><code>GET /agent/release</code></td><td>→ <code>{ target_version, url, sha256, signature, signed_by }</code> (or current version = no-op)</td></tr>
+</table>
+
+<div class="note gold" style="margin-top:30px">
+  <b>How to use this doc.</b> Start at Figure 1 for the shape of the whole thing. When you need
+  "where does X live?", jump to §9 (file map) — or §8 (feature catalog) for "what can it do?". When you need "how does Y happen?", jump to §7 (flows).
+  The deep-dive HTMLs (<a href="Brisk_Caching_Explained.html">caching</a>,
+  <a href="Brisk_Agent_Rollout_Process.html">rollout</a>,
+  <a href="Brisk_Load_Steering.html">load steering</a>,
+  <a href="Brisk_CDN_Domain_Migration_Runbook.html">domain migration</a>) zoom into one area each.
+</div>
+
+<p style="color:var(--muted);font-size:13px;margin-top:36px">Brisk Architecture Bible · generated 2026-06-17 ·
+keep this updated when the package layout changes (it rarely does — features add files inside existing packages).</p>
+
+</div>
+</body>
+</html>

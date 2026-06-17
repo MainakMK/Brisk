@@ -1,0 +1,7 @@
+.env
+/brisk-control
+*.exe
+# built artifact embedded into the control image (regenerated from ../brisk-agent)
+internal/provision/assets/brisk-agent
+.gstack/
+bunnywildcard.sh

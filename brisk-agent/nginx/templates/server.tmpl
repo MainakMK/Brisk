@@ -1,0 +1,479 @@
+    # ===== zone: {{ .Domain }} =====
+
+    # ---- HTTP: ACME challenge + HTTPS redirect (Step 4 / Step 7) ----
+    server {
+        listen 80;
+        server_name {{ .Domain }};
+        more_set_headers 'Server: Brisk';
+{{- template "edgeprotect" . }}
+
+        # ACME HTTP-01 challenge (must win over the 80->443 redirect; ^~ does).
+{{- if .ACMEChallengeProxy }}
+        # Phase 4 Step 2 (custom domains): proxy the CA's challenge to the control
+        # plane over the agent tunnel. Answered CENTRALLY for every custom domain,
+        # so whichever geo-routed edge the CA validates from, the keyAuth is served.
+        # Plain HTTP (NOT redirected to HTTPS) — that's the whole point.
+        location ^~ /.well-known/acme-challenge/ {
+            proxy_pass {{ .ACMEChallengeProxy }};
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $remote_addr;
+        }
+{{- else }}
+        # Standalone/local: legacy per-edge Let's Encrypt webroot (lego writes here).
+        location ^~ /.well-known/acme-challenge/ {
+            root /var/www/brisk-acme;
+            default_type "text/plain";
+            try_files $uri =404;
+        }
+{{- end }}
+
+        # Brisk health probe (Phase 3 Step 4): cheap, side-effect-free liveness
+        # endpoint the control plane's health checker hits to decide DNS rotation.
+        # Served on :80 too so an HTTP probe works before/without TLS.
+        location = /healthz {
+            access_log off;
+            default_type "text/plain";
+            return 200 "ok\n";
+        }
+
+        location / {
+            return 301 https://$host$request_uri;
+        }
+    }
+
+    server {
+{{- if .HTTP2On }}
+        listen 443 ssl;
+        http2 on;
+{{- else }}
+        listen 443 ssl http2;
+{{- end }}
+        server_name {{ .Domain }};
+
+        # Origin resolution: resolve the origin at request time (the origin's IP can
+        # change — e.g. an origin behind Cloudflare) and force IPv4 (many edges have
+        # no IPv6 route). A variable in proxy_pass REQUIRES a resolver; this matches
+        # the proven hand-written behavior and avoids upstream-pinning to a dead/IPv6 IP.
+        # ($brisk_origin is the real origin — used directly when this zone is NOT
+        # shielded, and as the error_page fallback when it IS shielded.)
+        resolver {{ .Resolver }} valid=300s ipv6=off;
+        set $brisk_origin {{ .OriginHostPort }};
+
+        ssl_certificate     {{ .TLSCertPath }};
+        ssl_certificate_key {{ .TLSKeyPath }};
+
+        server_tokens off;
+
+        # ---- Brisk branding + debug headers (headers-more; nginx.org build) ----
+        # more_set_headers replaces the protected Server header and applies on EVERY
+        # status incl 4xx/5xx, inheriting into all locations (unlike add_header) — so
+        # the locations below need NOT re-declare them. (On the distro build this
+        # segfaulted; Step 2 rebuilt on nginx.org to restore it.)
+        more_set_headers 'Server: Brisk';
+        more_set_headers 'X-Brisk-Edge: {{ .EdgeID }}';
+        more_set_headers 'X-Brisk-Cache: $upstream_cache_status';
+        more_set_headers 'X-Brisk-Request-Id: $request_id';
+        more_set_headers 'Strict-Transport-Security: max-age=31536000';
+{{- template "edgeprotect" . }}
+{{- if .BlockPost }}
+        # Block POST requests (Bunny-style): this zone serves static/video, so reject POST
+        # with 405. `if` + return is the documented-safe use. /healthz is GET, so unaffected.
+        if ($request_method = POST) { return 405; }
+{{- end }}
+{{- if .BlockRootPath }}
+        # Block root path access (Bunny-style): 403 the bare root + any directory root
+        # (path ending in "/"), forcing deep links to real files. /healthz (no trailing
+        # slash) and deep file paths are unaffected. `if` + return is documented-safe.
+        if ($uri ~ "/$") { return 403; }
+{{- end }}
+{{- if .HotlinkEnabled }}
+        # ---- Hotlink protection (Referer allowlist) ----
+        # valid_referers sets $invalid_referer; the 403 guard ("hotlinkguard") is applied
+        # per CONTENT location only — NEVER on /healthz or the ACME challenge, which must
+        # answer with no Referer. server_names => a referer from this CDN host itself passes.
+        valid_referers {{ .HotlinkValidReferers }};
+{{- end }}
+{{- if .LuaHooks }}
+        # ---- Lua edge logic (Phase 4 Step 5): per-zone cache rules + header transforms ----
+        # rewrite phase: redirect / bypass / mark-ttl + request header transforms (before
+        # WAF + cache). header_filter phase: override-ttl Cache-Control / force_download +
+        # response header transforms. $brisk_zone keys this zone's data; a bypass_cache rule
+        # sets the X-Brisk-Lua-Nocache REQUEST header (a writable var wouldn't survive the
+        # WAF auth_request phase), fed to proxy_cache_bypass/no_cache below (inherited by the
+        # static/playlist/segment locations; the html location appends it).
+        set $brisk_zone {{ .BriskZone }};
+        rewrite_by_lua_file /etc/brisk/lua/rewrite.lua;
+        header_filter_by_lua_file /etc/brisk/lua/header_filter.lua;
+        proxy_cache_bypass $http_x_brisk_lua_nocache;
+        proxy_no_cache $http_x_brisk_lua_nocache;
+{{- if .LuaRateLimit }}
+        # Errors-only rate limiting (Part 5): access phase blocks IPs already over a
+        # 401/403 limit; log phase counts the errors. Only for zones with such limits.
+        access_by_lua_file /etc/brisk/lua/access.lua;
+        log_by_lua_file /etc/brisk/lua/log.lua;
+{{- end }}
+{{- end }}
+{{- if .Shielded }}
+        # ---- Origin Shield (Phase 4 Step 3): two-tier cache ----
+        # This zone's misses pull through the shield PoP {{ .ShieldHostPort }} (a
+        # second Brisk tier in front of the origin) instead of every edge hitting the
+        # origin — so many edges missing the same object collapse to ~one origin
+        # fetch. X-Brisk-Shield surfaces the SHIELD tier's cache result (the shield's
+        # own X-Brisk-Cache, captured before we hide it), distinct from THIS edge's
+        # X-Brisk-Cache. Cache keys match across tiers because the edge forwards
+        # Host=$host (the served name) and both tiers key on $host.
+        more_set_headers 'X-Brisk-Shield: $upstream_http_x_brisk_cache';
+{{- end }}
+
+        # Brisk health probe (Phase 3 Step 4) over TLS — the checker's default
+        # probe target. Cheap + side-effect-free so it never amplifies an incident.
+        location = /healthz {
+            access_log off;
+            default_type "text/plain";
+            return 200 "ok\n";
+        }
+{{- if .Error5xxEnabled }}
+
+        # ---- Custom origin-error page (Bunny-style 502/504) ----
+        # When the ORIGIN is unreachable / times out, nginx GENERATES a 502/504; serve
+        # this zone's branded HTML instead of nginx's default, preserving the 5xx status
+        # (error_page with no `=` keeps the original code). The page is an INTERNAL static
+        # file the agent wrote (writeErrorPages). 503 is intentionally NOT intercepted, so
+        # edge self-protection / rate-limit 503s are untouched. A content location that
+        # defines its own error_page (shield fallback / follow-redirect) overrides this —
+        # by nginx inheritance rules — so those paths are unaffected.
+        error_page 502 504 /__brisk_5xx;
+        location = /__brisk_5xx {
+            internal;
+            default_type text/html;
+            alias {{ .Error5xxPath }};
+        }
+{{- end }}
+{{- if .Shielded }}
+
+        # Graceful shield-failure fallback (Phase 4 Step 3): if the shield 502/503/504s
+        # (down/unreachable), serve straight from the ORIGIN instead — degrade, never
+        # blackhole. This path is intentionally UNCACHED (the shield owns the cache
+        # tier; it resumes caching the moment it recovers). The origin Host is correct
+        # here (the shield path uses Host=$host; this fallback uses the real upstream
+        # Host), so a multi-tenant origin still serves the right vhost while degraded.
+        location @brisk_origin_fallback {
+            internal;
+            proxy_http_version 1.1;
+            proxy_set_header Host {{ if .ForwardHostHeader }}$host{{ else }}{{ .UpstreamHost }}{{ end }};
+            proxy_set_header Connection "";
+            proxy_set_header X-Forwarded-Proto https;
+{{- if .OriginPullSecret }}
+            proxy_set_header {{ .OriginPullHeader }} "{{ .OriginPullSecret }}";
+{{- end }}
+{{- if eq .OriginScheme "https" }}
+            proxy_ssl_server_name on;
+            proxy_ssl_name {{ if .ForwardHostHeader }}$host{{ else }}{{ .UpstreamHost }}{{ end }};
+{{- if .OriginSSLVerify }}
+            proxy_ssl_verify on;
+            proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
+            proxy_ssl_verify_depth 2;
+{{- end }}
+{{- end }}
+            proxy_pass {{ .OriginScheme }}://$brisk_origin;
+        }
+{{- end }}
+{{- if .OriginFollowRedirects }}
+
+        # Follow redirects (Bunny-style "Follow redirects"): when the origin answers a
+        # 3xx, re-issue the request to its Location target instead of returning/caching
+        # the redirect to the client. The server-level resolver resolves arbitrary
+        # redirect hosts; Host + SNI follow the target. ONE hop only (a redirect-to-a-
+        # redirect is returned as-is). Off => this block isn't rendered (byte-identical).
+        # Applies to the direct-origin path (non-shielded zones).
+        location @brisk_follow_redirect {
+            internal;
+            set $brisk_redirect $upstream_http_location;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            proxy_set_header Host $proxy_host;
+            proxy_ssl_server_name on;
+            proxy_pass $brisk_redirect;
+        }
+{{- end }}
+{{- if .WAFEnabled }}
+
+        # ---- WAF (Phase 4 Step 4): Coraza CRS + custom rules via auth_request ----
+        # Inspected content locations issue a subrequest to the agent's loopback WAF
+        # service, which runs THIS zone's managed ruleset + custom rules at the
+        # configured mode. 403 => blocked; 2xx => allow. Segments (.ts/.m4s/.mp4) are
+        # deliberately NOT inspected (large media; the body-inspect cap).
+        location = /_waf {
+            internal;
+            proxy_pass http://{{ .WAFUpstream }}/inspect;
+            proxy_pass_request_body off;
+            proxy_set_header Content-Length "";
+            proxy_set_header X-Brisk-WAF-Zone {{ .Domain }};
+            proxy_set_header X-Brisk-WAF-URI $request_uri;
+            proxy_set_header X-Brisk-WAF-Method $request_method;
+            proxy_set_header X-Brisk-WAF-IP $remote_addr;
+            # Client country (Phase 4 Step 6 Part 5) for WAF country rules. Always
+            # defined: the GeoIP module sets it, else the "-" map fallback (the agent
+            # treats "-" as "no country"). Lets a rule block/allow/challenge by country.
+            proxy_set_header X-Brisk-WAF-Country $brisk_country;
+            proxy_connect_timeout 2s;
+            proxy_read_timeout 5s;
+{{- if .WAFFailOpen }}
+            # Fail OPEN: if the WAF service is unreachable, allow the request
+            # (availability over security) — a broken WAF must not blackhole a
+            # tenant. Logged by nginx. (Per-zone; fail-closed omits this.)
+            proxy_intercept_errors on;
+            error_page 500 502 503 504 = @waf_failopen;
+{{- end }}
+        }
+        location @waf_failopen { internal; return 200; }
+{{- end }}
+{{- range .RateLimits }}
+
+        # ---- rate limit: {{ .PathMatch }} ({{ .Requests }} req / {{ .PeriodSeconds }}s per {{ .Key }}; per-edge, approximate) ----
+        location {{ .LocationMatcher }} {
+            limit_req zone={{ .ZoneName }} burst={{ .Burst }} nodelay;
+            limit_req_status 429;
+{{- if $.WAFEnabled }}
+            auth_request /_waf;
+{{- end }}
+            # Sensitive path (login/admin/etc.): never cache, always origin-fresh.
+            proxy_cache_bypass 1;
+            proxy_no_cache 1;
+            proxy_hide_header X-Brisk-Edge;
+            proxy_hide_header X-Brisk-Cache;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            proxy_set_header X-Forwarded-Proto https;
+{{ template "briskupstream" $ }}
+        }
+{{- end }}
+{{ if .Video }}
+        # ---- HLS/DASH CORS (players require these; via more_set_headers => sent on errors too) ----
+        more_set_headers 'Access-Control-Allow-Origin: {{ .CORSOrigin }}';
+        more_set_headers 'Access-Control-Allow-Headers: Range';
+        more_set_headers 'Access-Control-Expose-Headers: Content-Length, Content-Range';
+
+        # ---- HLS/DASH playlists (.m3u8/.mpd): short-TTL cache per profile ----
+        # Not a hard BYPASS: short TTL lets proxy_cache_lock coalesce playlist
+        # requests while keeping live viewers fresh. VOD zones set a long TTL.
+        location ~* \.(m3u8|mpd)$ {
+{{- template "hotlinkguard" . }}
+{{- template "ipblockguard" . }}
+            types { application/vnd.apple.mpegurl m3u8; application/dash+xml mpd; }
+            proxy_cache brisk_cache;
+            proxy_cache_key $host$uri$is_args$args;
+            proxy_cache_valid 200 {{ .PlaylistTTL }};
+            proxy_cache_min_uses {{ .MinUses }};
+            proxy_cache_lock on;
+            proxy_http_version 1.1;
+{{ template "wafhook" . }}{{ template "briskupstream" . }}
+        }
+
+        # ---- HLS segments + media (.ts/.m4s/.mp4): slice + cache ----
+        # slice 1m makes each $slice_range its own cache key, so a wave of viewers
+        # on the same popular segment collapses to one origin pull PER SLICE
+        # (Bunny-style coalescing). $slice_range MUST be in the key. With a shield,
+        # the shield caches the SAME slices => the origin sees one pull per slice for
+        # the whole network, not per edge.
+        location ~* \.(ts|m4s|mp4)$ {
+{{- template "hotlinkguard" . }}
+{{- template "ipblockguard" . }}
+            types { video/mp2t ts; video/mp4 mp4 m4s; }
+            slice 1m;
+            proxy_cache brisk_cache;
+            proxy_cache_key $host$uri$is_args$args$slice_range;
+            proxy_set_header Range $slice_range;
+            proxy_http_version 1.1;                 # byte-range to origin needs HTTP/1.1
+            proxy_cache_valid 200 206 {{ .SegmentTTL }};
+            proxy_cache_min_uses {{ .MinUses }};
+
+            # large-segment coalescing: a 5 MB slice can take >5s, so widen the
+            # lock window beyond the http-level default. proxy_cache_lock at BOTH
+            # tiers is what collapses concurrent misses into one upstream fetch.
+            proxy_cache_lock on;
+            proxy_cache_lock_age 30s;
+            proxy_cache_lock_timeout 30s;
+            proxy_cache_use_stale updating error timeout;
+            proxy_cache_background_update on;
+{{ template "briskupstream" . }}
+        }
+{{ end }}
+        # ---- static assets: long-cache, cookie-stripped (Bunny-style) ----
+        # WordPress sets Set-Cookie even on images; strip + ignore it so the asset
+        # is publicly cacheable and shared across users. 30d, served stale on origin
+        # trouble. Cache key uses $host (the CDN hostname, identical on every edge AND
+        # the shield) so all tiers + the purger agree on the key.
+        # Cache directives below are driven by the zone's Cache Settings (Part 3); the
+        # defaults reproduce the original 30d / cookie-strip / stale behavior exactly.
+        location ~* \.(jpg|jpeg|png|gif|webp|avif|svg|ico|css|js|mjs|woff|woff2|ttf|otf|eot|pdf|zip|mp4|webm)$ {
+{{- template "hotlinkguard" . }}
+{{- template "ipblockguard" . }}
+            proxy_cache brisk_cache;
+            proxy_cache_key {{ .Cache.StaticKey }};
+{{- if .Cache.Slice }}
+            slice 1m;                              # large-object delivery (byte-range)
+            proxy_set_header Range $slice_range;
+{{- end }}
+{{- if .Cache.StaticValid }}
+            proxy_cache_valid {{ .Cache.StaticValid }};
+{{- end }}
+            proxy_cache_valid 404 1m;
+{{- if .Cache.CacheErrors }}
+            proxy_cache_valid 500 502 503 504 5s;  # briefly cache origin errors (DDoS shield)
+{{- end }}
+{{- if .Cache.NoCacheStatic }}
+            proxy_no_cache 1;
+            proxy_cache_bypass 1;
+{{- end }}
+{{- if .Cache.Stale }}
+            proxy_cache_use_stale {{ .Cache.Stale }};
+{{- end }}
+            proxy_cache_background_update on;
+            proxy_cache_lock on;
+            proxy_hide_header Set-Cookie;
+            proxy_ignore_headers {{ .Cache.StaticIgnore }};
+            proxy_hide_header X-Brisk-Edge;   # origin/shield may itself be a Brisk tier
+            proxy_hide_header X-Brisk-Cache;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            proxy_set_header X-Forwarded-Proto https;
+{{- if .Cache.StaticBrowserCC }}
+            more_set_headers 'Cache-Control: {{ .Cache.StaticBrowserCC }}';
+{{- end }}
+{{ template "wafhook" . }}{{ template "briskupstream" . }}
+        }
+
+        # ---- HTML / everything else: short-cache, logged-in bypass ----
+        # Dynamic pages cache briefly, but a logged-in / password / commenter
+        # session ($brisk_no_cache) bypasses cache entirely (fresh from origin).
+        location / {
+{{- template "hotlinkguard" . }}
+{{- template "ipblockguard" . }}
+            proxy_cache brisk_cache;
+            proxy_cache_key {{ .Cache.HTMLKey }};
+{{- if .Cache.HTMLValid }}
+            proxy_cache_valid {{ .Cache.HTMLValid }};
+{{- end }}
+            proxy_cache_valid 404 1m;
+{{- if .Cache.CacheErrors }}
+            proxy_cache_valid 500 502 503 504 5s;  # briefly cache origin errors (DDoS shield)
+{{- end }}
+            proxy_cache_bypass $brisk_no_cache $arg_nocache{{ if .LuaHooks }} $http_x_brisk_lua_nocache{{ end }}{{ if .Cache.NoCacheHTML }} 1{{ end }};
+            proxy_no_cache $brisk_no_cache{{ if .LuaHooks }} $http_x_brisk_lua_nocache{{ end }}{{ if .Cache.NoCacheHTML }} 1{{ end }};
+{{- if .Cache.Stale }}
+            proxy_cache_use_stale {{ .Cache.Stale }};
+{{- end }}
+            proxy_cache_background_update on;
+            proxy_cache_lock on;
+{{- if .Cache.HTMLIgnore }}
+            proxy_hide_header Set-Cookie;          # strip-cookies / smart cache: make a cookie-setting origin cacheable
+            proxy_ignore_headers {{ .Cache.HTMLIgnore }};
+{{- end }}
+            proxy_hide_header X-Brisk-Edge;
+            proxy_hide_header X-Brisk-Cache;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            proxy_set_header X-Forwarded-Proto https;
+{{- if .Cache.HTMLBrowserCC }}
+            more_set_headers 'Cache-Control: {{ .Cache.HTMLBrowserCC }}';
+{{- end }}
+{{ template "wafhook" . }}{{ template "briskupstream" . }}
+        }
+    }
+
+{{- /* briskupstream: the per-location upstream tail — proxy to the SHIELD (same
+       key via Host=$host; origin as the error_page fallback) when this zone is
+       shielded, else straight to the origin (today's behavior). proxy_ssl_verify is
+       off on the shield hop: Brisk-to-Brisk over the public :443 with SNI=$host;
+       mTLS/secret-pull hardening is a later security phase. */ -}}
+{{- /* wafhook: emit the auth_request directive on an inspected content location
+       when this zone has WAF on (Phase 4 Step 4). Empty when WAF is off, so a
+       non-WAF zone renders byte-identical to before. */ -}}
+{{- define "wafhook" -}}
+{{- if .WAFEnabled }}
+            auth_request /_waf;
+{{- end }}
+{{- end -}}
+{{- /* hotlinkguard: the per-content-location Referer gate. Returns 403 when the
+       request's Referer isn't in this zone's valid_referers allowlist ($invalid_referer
+       set at server level). Placed ONLY on content locations (m3u8/segments/static/html)
+       — never /healthz or the ACME challenge, which get no Referer and must always
+       answer. Emits NOTHING when hotlink is off, so a non-hotlink zone is byte-identical.
+       `if ($invalid_referer) { return 403; }` is the documented-safe use of if (return). */ -}}
+{{- define "hotlinkguard" -}}
+{{- if .HotlinkEnabled }}
+            if ($invalid_referer) { return 403; }   # hotlink protection (Referer allowlist)
+{{- end }}
+{{- end -}}
+{{- /* ipblockguard: the per-content-location Blocked-IP denylist (migration 00027).
+       Emits one `deny <cidr>;` per blocked entry (already validated by the control
+       plane as an IP/CIDR). Placed ONLY on content locations (m3u8/segments/static/html)
+       — never /healthz or the ACME challenge, so the control-plane health checker can
+       never be locked out. Deny-only => every other client passes (allow-by-default).
+       Emits NOTHING when the list is empty, so a non-blocking zone is byte-identical. */ -}}
+{{- define "ipblockguard" -}}
+{{- range .BlockedIPs }}
+            deny {{ . }};   # blocked IP/CIDR (denylist)
+{{- end }}
+{{- end -}}
+{{- /* edgeprotect: the #4 instant local brake — per-IP concurrent-connection cap (503
+       over limit) plus an optional per-IP request-rate ceiling (429 over limit). Applied
+       in every server block (the tenant :80/:443 blocks AND the default_server) so a
+       flood is shed wherever it lands. Emits NOTHING when EdgeProtect is off, so a
+       default fleet renders byte-identical. Works on both the zoneRender (tenant) and
+       renderData (default_server) contexts since both carry the same Edge* fields. */ -}}
+{{- define "edgeprotect" -}}
+{{- if .EdgeProtect }}
+        limit_conn brisk_perip {{ .EdgeMaxConnPerIP }};
+{{- if .EdgeReqPerSecPerIP }}
+        limit_req zone=brisk_edge burst={{ .EdgeReqBurst }} nodelay;
+{{- end }}
+{{- end }}
+{{- end -}}
+{{- define "briskupstream" -}}
+{{- if .Shielded }}
+            # -> origin shield {{ .ShieldHostPort }} via the keepalive pool
+            # {{ .ShieldUpstreamName }} (same cache key; Host=$host). HTTP/1.1 + a
+            # cleared Connection header are REQUIRED for upstream keepalive reuse, so
+            # a MISS reuses a warm connection to the shield (Build Spec Layer 3).
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            proxy_set_header Host $host;
+            proxy_ssl_server_name on;
+            proxy_ssl_name $host;
+            proxy_ssl_verify off;
+            # Fail fast to the origin fallback if the shield is down/unreachable —
+            # don't hang on the default 60s connect timeout (degrade quickly).
+            proxy_connect_timeout 2s;
+            proxy_next_upstream error timeout http_502 http_503 http_504;
+            proxy_intercept_errors on;
+            error_page 502 503 504 = @brisk_origin_fallback;
+            proxy_pass https://{{ .ShieldUpstreamName }};
+{{- else }}
+{{- if .ForwardHostHeader }}
+            proxy_set_header Host $host;                 # Forward host header: send the client's Host upstream
+{{- else }}
+            proxy_set_header Host {{ .UpstreamHost }};
+{{- end }}
+{{- if .OriginPullSecret }}
+            # Origin lockdown (Part 6): secret header the origin checks so it can
+            # reject non-Brisk traffic. Sent to the ORIGIN only, never the client.
+            proxy_set_header {{ .OriginPullHeader }} "{{ .OriginPullSecret }}";
+{{- end }}
+{{- if eq .OriginScheme "https" }}
+            proxy_ssl_server_name on;
+            proxy_ssl_name {{ if .ForwardHostHeader }}$host{{ else }}{{ .UpstreamHost }}{{ end }};
+{{- if .OriginSSLVerify }}
+            proxy_ssl_verify on;                        # Verify origin SSL certificate (against the system CA bundle)
+            proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
+            proxy_ssl_verify_depth 2;
+{{- end }}
+{{- end }}
+{{- if .OriginFollowRedirects }}
+            proxy_intercept_errors on;                  # Follow redirects: chase an origin 3xx one hop server-side
+            error_page 301 302 303 307 308 = @brisk_follow_redirect;
+{{- end }}
+            proxy_pass {{ .OriginScheme }}://$brisk_origin;
+{{- end }}
+{{- end -}}

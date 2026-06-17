@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Brisk — How a brisk-agent change rolls out to every PoP</title>
+<style>
+  :root{
+    --bg:#f4f5f9; --card:#ffffff; --ink:#20233a; --sub:#6b7280; --line:#d8dbe6;
+    --indigo:#6366f1; --green:#16a34a; --red:#dc2626; --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.6}
+  .wrap{max-width:980px;margin:0 auto;padding:40px 24px 80px}
+  header h1{font-size:30px;margin:0 0 6px}
+  header p.lede{font-size:16px;color:var(--sub);margin:0 0 4px}
+  .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+       color:var(--indigo);background:#eef0fe;border:1px solid #d9dcfb;border-radius:999px;padding:3px 10px;margin-bottom:14px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin:22px 0}
+  .panel svg{display:block;width:100%;height:auto}
+  h2{font-size:20px;margin:34px 0 10px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+  h3{font-size:15px;margin:20px 0 6px}
+  p{margin:10px 0}
+  code,.mono{font-family:var(--mono);font-size:.92em;background:#eef0f5;border:1px solid #e1e4ee;border-radius:5px;padding:1px 6px}
+  ol.steps{counter-reset:s;list-style:none;padding:0;margin:14px 0}
+  ol.steps>li{position:relative;padding:12px 14px 12px 52px;border:1px solid var(--line);border-radius:12px;background:var(--card);margin:10px 0}
+  ol.steps>li::before{counter-increment:s;content:counter(s);position:absolute;left:14px;top:12px;
+       width:26px;height:26px;border-radius:7px;background:var(--indigo);color:#fff;font-weight:700;font-size:13px;
+       display:grid;place-items:center}
+  ol.steps>li b{display:block;margin-bottom:2px}
+  ol.steps>li small{color:var(--sub)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+  .inv{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .inv b{display:block}
+  .inv small{color:var(--sub)}
+  .gate{border-left:4px solid var(--indigo);background:#f7f8ff;border-radius:10px;padding:14px 16px;margin:16px 0}
+  .ok{color:var(--green);font-weight:700}
+  .bad{color:var(--red);font-weight:700}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+  th{color:var(--sub);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+  td.mono{font-family:var(--mono)}
+  .note{background:#fff8ec;border:1px solid #f3e2bf;border-radius:12px;padding:14px 16px;margin:16px 0}
+  footer{margin-top:40px;color:var(--sub);font-size:13px;border-top:1px solid var(--line);padding-top:16px}
+  @media(max-width:680px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <span class="tag">Brisk · Operations runbook</span>
+  <h1>How a brisk-agent change reaches every PoP</h1>
+  <p class="lede">One static binary, built once, rolled one edge at a time behind a byte-identical safety gate — nginx never stops serving.</p>
+  <p class="lede" style="font-size:13px">Last updated 2026-06-15.</p>
+</header>
+
+<!-- ===================== DIAGRAM ===================== -->
+<div class="panel">
+<svg viewBox="0 0 880 712" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+  <title>How a brisk-agent change rolls out to every PoP</title>
+  <desc>A single static binary is built once, then deployed one edge at a time (NY then DE then BLR). Each edge is swapped while nginx keeps serving, and a byte-identical sha256 gate must pass before moving to the next edge; failure triggers rollback and halt.</desc>
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#8a90a6"/>
+    </marker>
+    <marker id="ahg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#16a34a"/>
+    </marker>
+  </defs>
+  <style>
+    .card{fill:#ffffff;stroke:#d8dbe6;stroke-width:1.4;}
+    .t{fill:#20233a;font-weight:600;}
+    .s{fill:#6b7280;}
+    .num{fill:#6366f1;font-weight:700;}
+    .edge{stroke:#8a90a6;stroke-width:1.6;fill:none;}
+  </style>
+
+  <text x="40" y="34" font-size="19" class="t">Rolling a brisk-agent change to every PoP</text>
+  <text x="40" y="55" font-size="12.5" class="s">one binary · one edge at a time · byte-identical gate · nginx never stops</text>
+
+  <rect x="40" y="72" width="360" height="46" rx="10" class="card"/>
+  <text x="60" y="93" font-size="13.5"><tspan class="num">①</tspan><tspan class="t" dx="8">Code change</tspan></text>
+  <text x="60" y="110" font-size="11.5" class="s" font-family="ui-monospace, monospace">brisk-agent/*.go  (e.g. heartbeat fields)</text>
+  <line x1="220" y1="118" x2="220" y2="132" class="edge" marker-end="url(#ah)"/>
+
+  <rect x="40" y="132" width="360" height="54" rx="10" class="card"/>
+  <text x="60" y="153" font-size="13.5"><tspan class="num">②</tspan><tspan class="t" dx="8">Build ONE static Linux binary</tspan></text>
+  <text x="60" y="172" font-size="11.5" class="s" font-family="ui-monospace, monospace">golang:1.26 · CGO off → brisk-agent-linux-amd64</text>
+  <line x1="220" y1="186" x2="220" y2="200" class="edge" marker-end="url(#ah)"/>
+
+  <rect x="40" y="200" width="360" height="46" rx="10" class="card"/>
+  <text x="60" y="221" font-size="13.5"><tspan class="num">③</tspan><tspan class="t" dx="8">Pre-flight</tspan></text>
+  <text x="60" y="238" font-size="11.5" class="s">confirm fleet 3/3 online before touching anything</text>
+  <line x1="220" y1="246" x2="220" y2="262" class="edge" marker-end="url(#ah)"/>
+
+  <rect x="24" y="262" width="392" height="372" rx="14" fill="#f6f7fb" stroke="#c7ccdb" stroke-width="1.4" stroke-dasharray="5 4"/>
+  <text x="44" y="286" font-size="13.5"><tspan class="num">④</tspan><tspan class="t" dx="8">Gated rollout — repeat per PoP</tspan></text>
+  <text x="44" y="303" font-size="11.5" class="s">NY → DE → BLR, one edge at a time</text>
+  <path d="M34 600 L18 600 L18 320 L34 320" class="edge" marker-end="url(#ah)"/>
+  <text x="14" y="466" font-size="10.5" class="s" transform="rotate(-90 14 466)" text-anchor="middle">repeat · next PoP</text>
+
+  <rect x="52" y="312" width="332" height="38" rx="8" class="card"/>
+  <text x="68" y="335" font-size="12" class="t">snapshot BEFORE — nginx.conf sha256 + agent sha</text>
+  <line x1="218" y1="350" x2="218" y2="360" class="edge" marker-end="url(#ah)"/>
+  <rect x="52" y="360" width="332" height="38" rx="8" class="card"/>
+  <text x="68" y="383" font-size="12" class="t">scp new binary + back up <tspan font-family="ui-monospace, monospace" font-size="11">.prev / .bak</tspan></text>
+  <line x1="218" y1="398" x2="218" y2="408" class="edge" marker-end="url(#ah)"/>
+  <rect x="52" y="408" width="332" height="46" rx="8" class="card"/>
+  <text x="68" y="428" font-size="12" class="t">stop → swap → start  (~6s)</text>
+  <text x="68" y="445" font-size="11" class="s">nginx keeps serving last-good config the whole time</text>
+  <line x1="218" y1="454" x2="218" y2="464" class="edge" marker-end="url(#ah)"/>
+  <rect x="52" y="464" width="332" height="38" rx="8" class="card"/>
+  <text x="68" y="487" font-size="12" class="t">snapshot AFTER + nginx -t + healthz 200</text>
+  <line x1="218" y1="502" x2="218" y2="512" class="edge" marker-end="url(#ah)"/>
+  <rect x="52" y="512" width="332" height="48" rx="8" fill="#fff" stroke="#6366f1" stroke-width="1.8"/>
+  <text x="68" y="533" font-size="12.5" class="t">⟂ GATE — sha BEFORE == AFTER ?</text>
+  <text x="68" y="550" font-size="11" class="s">no rendering changed → must be identical</text>
+  <text x="60" y="582" font-size="11.5" fill="#16a34a" font-weight="600">✓ identical → next PoP</text>
+  <text x="232" y="582" font-size="11.5" fill="#dc2626" font-weight="600">✗ drift → rollback + halt</text>
+  <text x="60" y="600" font-size="10.5" class="s">(.prev binary + .bak conf restore in one command)</text>
+  <line x1="220" y1="634" x2="220" y2="648" stroke="#16a34a" stroke-width="1.8" marker-end="url(#ahg)"/>
+
+  <rect x="40" y="648" width="360" height="46" rx="10" fill="#eaf6ee" stroke="#16a34a" stroke-width="1.4"/>
+  <text x="60" y="669" font-size="13.5"><tspan fill="#16a34a" font-weight="700">⑤</tspan><tspan class="t" dx="8">Fleet verify — 3/3 online, all serving</tspan></text>
+  <text x="60" y="686" font-size="11" class="s">all PoPs on the new binary; feature live</text>
+
+  <rect x="440" y="72" width="412" height="248" rx="14" fill="#ffffff" stroke="#d8dbe6" stroke-width="1.4"/>
+  <text x="462" y="100" font-size="15" class="t">Why it stays safe</text>
+  <circle cx="468" cy="124" r="3.2" fill="#6366f1"/>
+  <text x="482" y="120" font-size="12.5" class="t">One edge at a time</text>
+  <text x="482" y="137" font-size="11.5" class="s">the other 2 PoPs keep serving — never zero in rotation</text>
+  <circle cx="468" cy="164" r="3.2" fill="#6366f1"/>
+  <text x="482" y="160" font-size="12.5" class="t">nginx never stops</text>
+  <text x="482" y="177" font-size="11.5" class="s">serves the last-good config through the ~6s agent swap</text>
+  <circle cx="468" cy="204" r="3.2" fill="#6366f1"/>
+  <text x="482" y="200" font-size="12.5" class="t">Byte-identical gate</text>
+  <text x="482" y="217" font-size="11.5" class="s">sha BEFORE==AFTER, else halt before the next PoP</text>
+  <circle cx="468" cy="244" r="3.2" fill="#6366f1"/>
+  <text x="482" y="240" font-size="12.5" class="t">One-command rollback</text>
+  <text x="482" y="257" font-size="11.5" class="s">.prev binary + .bak nginx.conf kept on every edge</text>
+  <line x1="462" y1="280" x2="830" y2="280" stroke="#e6e8f0" stroke-width="1"/>
+  <text x="462" y="300" font-size="11.5" class="s">Same pipeline every change: hotlink · origin · security · tech card</text>
+
+  <rect x="440" y="336" width="412" height="180" rx="14" fill="#f6f7fb" stroke="#c7ccdb" stroke-width="1.4"/>
+  <text x="462" y="364" font-size="14" class="t">Example: Tech &amp; runtime card (2026-06-15)</text>
+  <text x="462" y="387" font-size="11.5" class="s">Heartbeat-only → zero nginx rendering → gate held on all 3.</text>
+  <text x="462" y="410" font-size="11.5" font-family="ui-monospace, monospace" fill="#20233a">NY  8aa1ac3e  BEFORE==AFTER ✓</text>
+  <text x="462" y="430" font-size="11.5" font-family="ui-monospace, monospace" fill="#20233a">DE  93589c0e  BEFORE==AFTER ✓</text>
+  <text x="462" y="450" font-size="11.5" font-family="ui-monospace, monospace" fill="#20233a">BLR 1ed85e2d  BEFORE==AFTER ✓</text>
+  <text x="462" y="476" font-size="11.5" class="s">caught a marshal bug mid-roll → rebuilt 958a3d1b→6e58d0ac</text>
+  <text x="462" y="497" font-size="11.5" class="s">→ re-rolled, all 5 tech fields now live fleet-wide.</text>
+</svg>
+</div>
+
+<!-- ===================== PROSE ===================== -->
+<h2>The pipeline, step by step</h2>
+<ol class="steps">
+  <li><b>Code change</b><small>Edit the Go source under <code>brisk-agent/</code>. Nothing is touched on a live box yet.</small></li>
+  <li><b>Build ONE static binary</b><small>Compile once in a <code>golang:1.26</code> container with <code>CGO_ENABLED=0</code> → a single <code>brisk-agent-linux-amd64</code>. The <em>same</em> binary goes to every PoP — there is no per-edge build.</small></li>
+  <li><b>Pre-flight</b><small>Confirm the whole fleet is healthy (3/3 online, none drained) before starting. Never begin a roll into a degraded fleet.</small></li>
+  <li><b>Gated rollout, one edge at a time</b><small>Walk the edges in a fixed order (NY → DE → BLR). Each edge passes through the gated sequence below; the next edge is only touched after the current one passes.</small></li>
+  <li><b>Fleet verify</b><small>All PoPs on the new binary, all serving. For data-plane features, also confirm the <em>effect</em> is live (e.g. the new field actually appears in the control-plane DB), not just that the deploy "succeeded".</small></li>
+</ol>
+
+<h2>What happens on a single edge</h2>
+<p>Each edge is handled by a small deploy script (<code>brisk-control/tunnels/deploy-&lt;feature&gt;.sh &lt;PoP&gt;</code>) over SSH-key auth. The sequence is deliberately boring and idempotent:</p>
+<div class="grid">
+  <div class="inv"><b>1 · Snapshot BEFORE</b><small>Record <code>sha256(/etc/nginx/nginx.conf)</code> and the current agent sha. This is the baseline the gate compares against.</small></div>
+  <div class="inv"><b>2 · Stage + back up</b><small><code>scp</code> the new binary; copy the old binary to <code>brisk-agent.prev-&lt;feature&gt;</code> and the live config to <code>nginx.conf.bak-&lt;feature&gt;</code>.</small></div>
+  <div class="inv"><b>3 · Swap (nginx stays up)</b><small><code>systemctl stop → mv → start</code>. Only the <em>agent</em> restarts (~6s); <strong>nginx never stops</strong> and keeps serving the last-good config. On start the agent re-renders, runs <code>nginx -t</code>, and only reloads on success.</small></div>
+  <div class="inv"><b>4 · Snapshot AFTER + checks</b><small>Re-read the config sha; assert <code>nginx -t</code> passes, services are active, and <code>/healthz</code> returns 200.</small></div>
+</div>
+
+<div class="gate">
+  <b>5 · The byte-identical gate</b>
+  <p style="margin:8px 0 0">Most agent changes are <em>gated off by default</em> or don't change what nginx renders at all, so the rendered config must be unchanged. The script asserts <span class="mono">BEFORE&nbsp;==&nbsp;AFTER</span>:</p>
+  <p style="margin:6px 0 0"><span class="ok">✓ identical</span> → the change is provably inert on this edge → continue to the next PoP.<br/>
+     <span class="bad">✗ drift</span> → something rendered differently → <strong>halt immediately</strong> and roll back from <code>.prev</code> / <code>.bak</code>, before the next edge is ever touched.</p>
+</div>
+
+<h2>Why this can't take the CDN down</h2>
+<div class="grid">
+  <div class="inv"><b>Only one PoP in flight</b><small>The other two stay in rotation. A live hostname is never left with zero serving edges.</small></div>
+  <div class="inv"><b>nginx never stops</b><small>The data plane is independent of the agent — nginx serves throughout the ~6s swap and only reloads after <code>nginx -t</code> passes.</small></div>
+  <div class="inv"><b>Provable inertness</b><small>The sha gate turns "should be safe" into "is byte-for-byte unchanged", and stops the roll the instant that's false.</small></div>
+  <div class="inv"><b>Instant rollback</b><small>Every edge keeps the previous binary and config, so recovery is one command — no rebuild, no redeploy.</small></div>
+</div>
+
+<h2>Worked example — the Tech &amp; runtime card</h2>
+<p>This card added five fields (nginx / agent versions, OS, kernel, Go) to the agent's heartbeat. Because it touches <strong>zero</strong> nginx rendering, the gate had to hold on every edge — and it did:</p>
+<table>
+  <thead><tr><th>PoP</th><th>nginx.conf sha (before==after)</th><th>nginx -t</th><th>healthz</th></tr></thead>
+  <tbody>
+    <tr><td>NY</td><td class="mono">8aa1ac3e…</td><td><span class="ok">✓</span></td><td>200</td></tr>
+    <tr><td>DE</td><td class="mono">93589c0e…</td><td><span class="ok">✓</span></td><td>200</td></tr>
+    <tr><td>BLR</td><td class="mono">1ed85e2d…</td><td><span class="ok">✓</span></td><td>200</td></tr>
+  </tbody>
+</table>
+<div class="note">
+  <b>Why the gate alone isn't enough.</b> The first build (<span class="mono">958a3d1b</span>) passed the gate on all three edges — yet the feature was still broken, because the new fields were added to the heartbeat struct but never populated in the <code>json.Marshal</code> literal, so the agent sent them empty. The deploy "succeeded" while the data never moved. The tell was <code>go_version</code> (which is <code>runtime.Version()</code> and can never be empty) showing blank in the DB. Fix → rebuild (<span class="mono">958a3d1b → 6e58d0ac</span>) → re-roll (again byte-identical) → all five fields live fleet-wide. <strong>Lesson: always verify the effect, not just the exit code.</strong>
+</div>
+
+<h2>Self-service production rollout — the design we're building next</h2>
+<div class="note" style="background:#eef0fe;border-color:#cdd2fb">
+  <b>Status: design, not yet built.</b> Everything <em>above</em> is today's reality — a push from a laptop over SSH, fine for bootstrap but not for day-2 production. The design below replaces it with a <strong>pull-based, self-service</strong> rollout: CI signs a binary → it waits in the control plane → you press <strong>Deploy</strong> in the dashboard (or CLI/CI) → edges <strong>pull</strong> and update themselves, region by region, health-gated. <strong>Nobody pushes to an edge; no edge SSH keys.</strong> The only new backend piece is a <em>release store</em>.
+</div>
+
+<div class="panel">
+<svg viewBox="0 0 960 1004" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" role="img">
+  <title>Brisk agent rollout — full production design</title>
+  <desc>One sheet covering: the four-step pipeline (build and sign, store, version-aware trigger, roll out); the version-aware Deploy button with a running-versus-available KPI (greyed when up to date, lit when a new version exists); region-targeted selection of which PoPs update; and the health-gated one-PoP-at-a-time rollout with auto-rollback. Edges only pull, no SSH keys, nginx never stops, binaries are ed25519-signed, and old and new agents coexist so a partial rollout is safe.</desc>
+  <style>
+    .ink{fill:#1f2238} .sub{fill:#6b7280} .b{font-weight:700} .b2{font-weight:600}
+    .card{fill:#fff;stroke:#dcdfe9;stroke-width:1.4}
+    .band{fill:#f7f8fb;stroke:#e7e9f1;stroke-width:1}
+    .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+    .badge{fill:#fff;font-weight:700}
+    text{fill:#1f2238}
+  </style>
+  <defs>
+    <marker id="g2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9aa0b4"/></marker>
+    <marker id="gg2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#16a34a"/></marker>
+  </defs>
+
+  <text x="32" y="40" font-size="23" class="b">Brisk — Agent Rollout · Production Design</text>
+  <text x="32" y="63" font-size="13" class="sub">Signed binary · edges self-pull · version-aware button · region-targeted · health-gated · auto-rollback</text>
+  <circle cx="636" cy="34" r="5" fill="#6366f1"/><text x="646" y="38" font-size="11.5" class="sub">control / trigger</text>
+  <circle cx="636" cy="54" r="5" fill="#16a34a"/><text x="646" y="58" font-size="11.5" class="sub">edge updated / healthy</text>
+  <circle cx="800" cy="34" r="5" fill="#a3a8b8"/><text x="810" y="38" font-size="11.5" class="sub">idle / up-to-date</text>
+  <circle cx="800" cy="54" r="5" fill="#dc2626"/><text x="810" y="58" font-size="11.5" class="sub">stop / rollback</text>
+  <line x1="32" y1="78" x2="928" y2="78" stroke="#e7e9f1"/>
+
+  <rect x="32" y="96" width="4" height="16" rx="2" fill="#6366f1"/>
+  <text x="46" y="110" font-size="14.5" class="b">1 · The pipeline — build once, then press “go”</text>
+
+  <rect x="40" y="124" width="196" height="104" rx="11" class="card"/>
+  <circle cx="64" cy="150" r="12" fill="#8a90a6"/><text x="64" y="155" font-size="13" text-anchor="middle" class="badge">1</text>
+  <text x="84" y="155" font-size="13.5" class="b">Build &amp; sign</text>
+  <text x="58" y="184" font-size="11.5" class="sub">CI builds the agent</text>
+  <text x="58" y="201" font-size="11.5" class="sub">+ signs it</text>
+  <text x="58" y="219" font-size="11" class="b2" fill="#6366f1">ed25519</text>
+  <line x1="236" y1="176" x2="264" y2="176" stroke="#9aa0b4" stroke-width="1.8" marker-end="url(#g2)"/>
+
+  <rect x="268" y="124" width="196" height="104" rx="11" class="card"/>
+  <circle cx="292" cy="150" r="12" fill="#8a90a6"/><text x="292" y="155" font-size="13" text-anchor="middle" class="badge">2</text>
+  <text x="312" y="155" font-size="13.5" class="b">Store</text>
+  <text x="286" y="184" font-size="11.5" class="sub">Signed binary waits</text>
+  <text x="286" y="201" font-size="11.5" class="sub">in the control plane</text>
+  <text x="286" y="219" font-size="11" class="b2" fill="#dc2626">armed · no updates yet</text>
+  <line x1="464" y1="176" x2="492" y2="176" stroke="#9aa0b4" stroke-width="1.8" marker-end="url(#g2)"/>
+
+  <rect x="496" y="124" width="196" height="104" rx="11" fill="#eef0fe" stroke="#6366f1" stroke-width="1.7"/>
+  <circle cx="520" cy="150" r="12" fill="#6366f1"/><text x="520" y="155" font-size="13" text-anchor="middle" class="badge">3</text>
+  <text x="540" y="155" font-size="13.5" class="b">Trigger</text>
+  <text x="514" y="184" font-size="11.5" class="sub">Deploy button (or CLI/CI)</text>
+  <text x="514" y="201" font-size="11.5" class="sub">version-aware</text>
+  <text x="514" y="219" font-size="11" class="b2" fill="#6366f1">↓ see section 2</text>
+  <line x1="692" y1="176" x2="720" y2="176" stroke="#9aa0b4" stroke-width="1.8" marker-end="url(#g2)"/>
+
+  <rect x="724" y="124" width="204" height="104" rx="11" fill="#eef7f1" stroke="#16a34a" stroke-width="1.7"/>
+  <circle cx="748" cy="150" r="12" fill="#16a34a"/><text x="748" y="155" font-size="13" text-anchor="middle" class="badge">4</text>
+  <text x="768" y="155" font-size="13.5" class="b">Roll out</text>
+  <text x="742" y="184" font-size="11.5" class="sub">Edges self-pull — choose</text>
+  <text x="742" y="201" font-size="11.5" class="sub">which PoPs, 1 at a time</text>
+  <text x="742" y="219" font-size="11" class="b2" fill="#16a34a">↓ see sections 3 &amp; 4</text>
+
+  <rect x="32" y="252" width="896" height="190" rx="14" class="band"/>
+  <rect x="48" y="270" width="4" height="16" rx="2" fill="#6366f1"/>
+  <text x="62" y="284" font-size="14" class="b">2 · The Deploy button is version-aware  (lives on the Servers page)</text>
+
+  <rect x="56" y="300" width="402" height="124" rx="11" class="card"/>
+  <text x="78" y="328" font-size="11.5" class="sub">brisk-agent · agent version</text>
+  <text x="78" y="360" font-size="21" class="b mono">v0.3.0</text>
+  <text x="168" y="360" font-size="12.5" class="b2" fill="#16a34a">✓ all PoPs up to date</text>
+  <rect x="78" y="376" width="118" height="34" rx="8" fill="#e9ebf0" stroke="#d2d6e0"/>
+  <text x="137" y="398" font-size="13" class="b" fill="#a3a8b8" text-anchor="middle">Deploy</text>
+  <text x="216" y="398" font-size="11.5" class="sub">greyed — nothing to do</text>
+
+  <rect x="470" y="300" width="402" height="124" rx="11" fill="#fff" stroke="#6366f1" stroke-width="1.7"/>
+  <rect x="784" y="312" width="72" height="22" rx="11" fill="#eef0fe" stroke="#6366f1"/>
+  <text x="820" y="327" font-size="11" class="b" fill="#6366f1" text-anchor="middle">NEW</text>
+  <text x="492" y="328" font-size="11.5" class="sub">brisk-agent · agent version</text>
+  <text x="492" y="360" font-size="19" class="b mono"><tspan fill="#9aa0b4">v0.3.0</tspan><tspan dx="6" fill="#1f2238">→</tspan><tspan dx="6" fill="#6366f1">v0.4.0</tspan></text>
+  <text x="700" y="360" font-size="12.5" class="b2" fill="#6366f1">available</text>
+  <rect x="492" y="376" width="166" height="34" rx="8" fill="#6366f1"/>
+  <text x="575" y="398" font-size="13" class="b" fill="#fff" text-anchor="middle">Deploy v0.4.0</text>
+  <text x="676" y="398" font-size="11.5" class="sub">lit — comes alive</text>
+
+  <rect x="32" y="456" width="896" height="262" rx="14" class="band"/>
+  <rect x="48" y="474" width="4" height="16" rx="2" fill="#6366f1"/>
+  <text x="62" y="488" font-size="14" class="b">3 · Choose which PoPs update — region-targeted (not always all at once)</text>
+
+  <rect x="56" y="504" width="470" height="196" rx="11" class="card"/>
+  <text x="78" y="532" font-size="13" class="b">Deploy v0.4.0 to:</text>
+  <rect x="78" y="548" width="18" height="18" rx="4" fill="#16a34a"/><path d="M82 557 l3 3 l6 -7" stroke="#fff" stroke-width="2" fill="none"/>
+  <text x="108" y="562" font-size="13" class="b2">Asia · BLR</text>
+  <rect x="78" y="582" width="18" height="18" rx="4" fill="#16a34a"/><path d="M82 591 l3 3 l6 -7" stroke="#fff" stroke-width="2" fill="none"/>
+  <text x="108" y="596" font-size="13" class="b2">N. America · NY</text>
+  <rect x="78" y="616" width="18" height="18" rx="4" fill="#fff" stroke="#c2c6d2" stroke-width="1.6"/>
+  <text x="108" y="630" font-size="13" class="sub">Europe · DE</text>
+  <rect x="210" y="616" width="156" height="20" rx="10" fill="#fff6e6" stroke="#f0cf8a"/>
+  <text x="288" y="630" font-size="10.5" class="b2" fill="#9a6a12" text-anchor="middle">skip — peak traffic now</text>
+  <rect x="78" y="650" width="18" height="18" rx="4" fill="#f1f2f5" stroke="#dde0e8"/><text x="83" y="664" font-size="13" fill="#c2c6d2">–</text>
+  <text x="108" y="664" font-size="13" fill="#aeb3c2">Africa · coming soon</text>
+  <rect x="320" y="546" width="186" height="38" rx="9" fill="#6366f1"/>
+  <text x="413" y="570" font-size="12.5" class="b" fill="#fff" text-anchor="middle">Deploy to selected (2)</text>
+
+  <rect x="552" y="504" width="320" height="196" rx="11" fill="#fff" stroke="#dcdfe9" stroke-width="1.4"/>
+  <text x="574" y="532" font-size="13" class="b">What happens</text>
+  <text x="574" y="560" font-size="12.5" class="b2" fill="#16a34a">✓ BLR + NY → v0.4.0  (now)</text>
+  <text x="574" y="584" font-size="12" class="sub">DE stays v0.3.0 — roll tonight,</text>
+  <text x="574" y="601" font-size="12" class="sub">off-peak, in one click.</text>
+  <line x1="574" y1="618" x2="850" y2="618" stroke="#e7e9f1"/>
+  <text x="574" y="642" font-size="12" class="b2">Dashboard shows the split:</text>
+  <text x="574" y="662" font-size="12" class="sub"><tspan class="mono b" fill="#16a34a">2</tspan> on v0.4 · <tspan class="mono b" fill="#9a6a12">1</tspan> on v0.3 → finish later</text>
+  <text x="574" y="686" font-size="11.5" class="sub">Each one: 1-at-a-time + health-gated.</text>
+
+  <rect x="32" y="732" width="896" height="180" rx="14" class="band"/>
+  <rect x="48" y="750" width="4" height="16" rx="2" fill="#16a34a"/>
+  <text x="62" y="764" font-size="14" class="b">4 · The rollout itself — one PoP at a time, health-gated</text>
+
+  <rect x="56" y="784" width="178" height="54" rx="10" fill="#eef7f1" stroke="#16a34a" stroke-width="1.4"/>
+  <text x="145" y="808" font-size="13.5" class="b" text-anchor="middle">① BLR</text>
+  <text x="145" y="826" font-size="10" class="sub" text-anchor="middle">pull · verify · swap · check</text>
+  <text x="252" y="806" font-size="11" class="b" fill="#16a34a" text-anchor="middle">✓</text>
+  <line x1="234" y1="811" x2="282" y2="811" stroke="#16a34a" stroke-width="1.8" marker-end="url(#gg2)"/>
+
+  <rect x="284" y="784" width="178" height="54" rx="10" fill="#eef7f1" stroke="#16a34a" stroke-width="1.4"/>
+  <text x="373" y="808" font-size="13.5" class="b" text-anchor="middle">② NY</text>
+  <text x="373" y="826" font-size="10" class="sub" text-anchor="middle">pull · verify · swap · check</text>
+  <text x="480" y="806" font-size="11" class="b" fill="#16a34a" text-anchor="middle">✓</text>
+  <line x1="462" y1="811" x2="510" y2="811" stroke="#16a34a" stroke-width="1.8" marker-end="url(#gg2)"/>
+
+  <rect x="512" y="784" width="200" height="54" rx="10" fill="#f4f5f8" stroke="#c2c6d2" stroke-width="1.4" stroke-dasharray="5 4"/>
+  <text x="612" y="808" font-size="13" class="b2" fill="#8a90a6" text-anchor="middle">Europe · DE</text>
+  <text x="612" y="826" font-size="10" class="sub" text-anchor="middle">skipped now — later, off-peak</text>
+
+  <rect x="740" y="784" width="172" height="54" rx="10" fill="#eaf6ee" stroke="#16a34a" stroke-width="1.6"/>
+  <text x="826" y="808" font-size="13" class="b" text-anchor="middle">Done (this wave)</text>
+  <text x="826" y="826" font-size="10" class="sub" text-anchor="middle">selected PoPs on v0.4.0</text>
+  <line x1="712" y1="811" x2="738" y2="811" stroke="#16a34a" stroke-width="1.8" marker-end="url(#gg2)"/>
+
+  <text x="56" y="868" font-size="12.5"><tspan class="b" fill="#dc2626">If a PoP turns unhealthy →</tspan><tspan class="b2" dx="4">the rollout STOPS and that edge rolls back to the previous binary (.prev).</tspan></text>
+  <text x="56" y="894" font-size="11.5" class="sub">Edges only <tspan class="b" fill="#1f2238">pull</tspan> · no edge SSH keys · nginx keeps serving · binary <tspan class="b" fill="#1f2238">signed (ed25519)</tspan> · old + new agents coexist, so a split fleet is safe.</text>
+
+  <text x="32" y="942" font-size="11" class="sub" font-style="italic">This sheet is the agent rollout. The control-plane app itself ships separately as a Docker image (your GitHub Packages → control VPS flow).</text>
+  <text x="32" y="962" font-size="11" class="sub" font-style="italic">New backend piece required: a release store (so the control plane knows the latest signed version). The button, KPI and PoP-picker sit on data the fleet already reports.</text>
+</svg>
+</div>
+
+<footer>
+  Brisk CDN · agent rollout runbook. Tooling: <code>brisk-control/tunnels/deploy-*.sh</code> (per-feature, byte-identical gate, <code>.prev</code>/<code>.bak</code> backups) and <code>check-tech.sh</code> (running-exe vs on-disk sha). Golden rule: never drop whatever hostname(s) are currently live; never leave a live hostname with zero in-rotation PoPs.
+</footer>
+</div>
+</body>
+</html>

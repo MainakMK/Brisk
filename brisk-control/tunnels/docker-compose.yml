@@ -1,0 +1,60 @@
+# Brisk laptop<->edges connectivity (Phase 3.7 Step 1, Option A).
+#
+# One autossh container per edge, attached to the control plane's Docker network
+# (brisk-control_default) so the reverse forwards land on brisk-control:8080 and
+# nats:4222. Each edge ends up with:
+#   127.0.0.1:18080 -> laptop control API
+#   127.0.0.1:14222 -> laptop NATS
+# The agent on every edge uses the SAME localhost ports, so the only thing that
+# changes when the control plane later moves to a public VPS is the agent's
+# BRISK_CONTROL_URL / BRISK_NATS_URL (a one-line swap) — the tunnels go away.
+#
+# Run:  cp .env.example .env  (fill edge passwords)  &&  docker compose up -d
+# Edge ports 18080/14222 are identical on every edge (each edge is isolated), so
+# the agent.yaml is uniform across the fleet.
+name: brisk-tunnels
+
+services:
+  tunnel-ny:
+    build: .
+    restart: unless-stopped
+    environment:
+      EDGE_IP: "${NY_IP}"
+      EDGE_USER: "${NY_USER:-root}"
+      EDGE_PORT: "${NY_PORT:-22}"
+      TUNNEL_CONTROL_PORT: "18080"
+      TUNNEL_NATS_PORT: "14222"
+    volumes:
+      - ./id_ed25519:/root/.ssh/id_ed25519:ro   # key auth (entrypoint uses key when EDGE_PASS empty)
+    networks: [brisknet]
+
+  tunnel-de:
+    build: .
+    restart: unless-stopped
+    environment:
+      EDGE_IP: "${DE_IP}"
+      EDGE_USER: "${DE_USER:-root}"
+      EDGE_PORT: "${DE_PORT:-22}"
+      TUNNEL_CONTROL_PORT: "18080"
+      TUNNEL_NATS_PORT: "14222"
+    volumes:
+      - ./id_ed25519:/root/.ssh/id_ed25519:ro   # key auth (entrypoint uses key when EDGE_PASS empty)
+    networks: [brisknet]
+
+  tunnel-blr:
+    build: .
+    restart: unless-stopped
+    environment:
+      EDGE_IP: "${BLR_IP}"
+      EDGE_USER: "${BLR_USER:-root}"
+      EDGE_PORT: "${BLR_PORT:-22}"
+      TUNNEL_CONTROL_PORT: "18080"
+      TUNNEL_NATS_PORT: "14222"
+    volumes:
+      - ./id_ed25519:/root/.ssh/id_ed25519:ro   # key auth (entrypoint uses key when EDGE_PASS empty)
+    networks: [brisknet]
+
+networks:
+  brisknet:
+    external: true
+    name: brisk-control_default

@@ -1,0 +1,28 @@
+# WAF + rate-limit local lab (Phase 4 Step 4) — ISOLATED project (own network),
+# completely separate from the live brisk-control stack. Topology: 1 origin + 2
+# edges. edge-main carries 3 zones (block / off / detect) to prove per-zone WAF
+# isolation; edge-failopen has an unbindable WAF service to prove the fail policy.
+# The brisk-waf-edge image is built by run.sh first.
+name: brisk-waf-lab
+
+services:
+  origin:
+    image: nginx:alpine
+    volumes:
+      - ./origin.conf:/etc/nginx/conf.d/default.conf:ro
+
+  edge-main:
+    image: brisk-waf-edge:latest
+    volumes:
+      - ./agent-main.yaml:/etc/brisk/agent.yaml:ro
+    depends_on: [origin]
+    ports:
+      - "19443:443"
+
+  edge-failopen:
+    image: brisk-waf-edge:latest
+    volumes:
+      - ./agent-failopen.yaml:/etc/brisk/agent.yaml:ro
+    depends_on: [origin]
+    ports:
+      - "19444:443"

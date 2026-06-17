@@ -1,0 +1,4685 @@
+[
+ {
+  "code": "AD-ANDORRALA",
+  "cc": "AD",
+  "label": "Andorra la Vella, AD",
+  "lat": 42.50779,
+  "long": 1.52109
+ },
+ {
+  "code": "AE-ABUDHABI",
+  "cc": "AE",
+  "label": "Abu Dhabi, AE",
+  "lat": 24.45118,
+  "long": 54.39696
+ },
+ {
+  "code": "AE-DUBAI",
+  "cc": "AE",
+  "label": "Dubai, AE",
+  "lat": 25.07725,
+  "long": 55.30927
+ },
+ {
+  "code": "AE-SHARJAH",
+  "cc": "AE",
+  "label": "Sharjah, AE",
+  "lat": 25.3342,
+  "long": 55.41221
+ },
+ {
+  "code": "AF-KABUL",
+  "cc": "AF",
+  "label": "Kabul, AF",
+  "lat": 34.52813,
+  "long": 69.17233
+ },
+ {
+  "code": "AG-SAINTJOHN",
+  "cc": "AG",
+  "label": "Saint John’s, AG",
+  "lat": 17.12096,
+  "long": -61.84329
+ },
+ {
+  "code": "AI-THEVALLEY",
+  "cc": "AI",
+  "label": "The Valley, AI",
+  "lat": 18.21704,
+  "long": -63.05783
+ },
+ {
+  "code": "AL-TIRANA",
+  "cc": "AL",
+  "label": "Tirana, AL",
+  "lat": 41.32744,
+  "long": 19.81866
+ },
+ {
+  "code": "AM-YEREVAN",
+  "cc": "AM",
+  "label": "Yerevan, AM",
+  "lat": 40.17765,
+  "long": 44.5126
+ },
+ {
+  "code": "AO-LUANDA",
+  "cc": "AO",
+  "label": "Luanda, AO",
+  "lat": -8.83682,
+  "long": 13.23432
+ },
+ {
+  "code": "AR-BUENOSAIR",
+  "cc": "AR",
+  "label": "Buenos Aires, AR",
+  "lat": -34.61315,
+  "long": -58.37723
+ },
+ {
+  "code": "AR-CRDOBA",
+  "cc": "AR",
+  "label": "Córdoba, AR",
+  "lat": -31.40648,
+  "long": -64.18853
+ },
+ {
+  "code": "AS-PAGOPAGO",
+  "cc": "AS",
+  "label": "Pago Pago, AS",
+  "lat": -14.27806,
+  "long": -170.7025
+ },
+ {
+  "code": "AT-VIENNA",
+  "cc": "AT",
+  "label": "Vienna, AT",
+  "lat": 48.20849,
+  "long": 16.37208
+ },
+ {
+  "code": "AU-ADELAIDE",
+  "cc": "AU",
+  "label": "Adelaide, AU",
+  "lat": -34.92866,
+  "long": 138.59863
+ },
+ {
+  "code": "AU-BRISBANE",
+  "cc": "AU",
+  "label": "Brisbane, AU",
+  "lat": -27.46794,
+  "long": 153.02809
+ },
+ {
+  "code": "AU-MELBOURNE",
+  "cc": "AU",
+  "label": "Melbourne, AU",
+  "lat": -37.814,
+  "long": 144.96332
+ },
+ {
+  "code": "AU-PERTH",
+  "cc": "AU",
+  "label": "Perth, AU",
+  "lat": -31.95224,
+  "long": 115.8614
+ },
+ {
+  "code": "AU-SYDNEY",
+  "cc": "AU",
+  "label": "Sydney, AU",
+  "lat": -33.86785,
+  "long": 151.20732
+ },
+ {
+  "code": "AW-ORANJESTA",
+  "cc": "AW",
+  "label": "Oranjestad, AW",
+  "lat": 12.52398,
+  "long": -70.02703
+ },
+ {
+  "code": "AX-MARIEHAMN",
+  "cc": "AX",
+  "label": "Mariehamn, AX",
+  "lat": 60.09726,
+  "long": 19.93481
+ },
+ {
+  "code": "AZ-BAKU",
+  "cc": "AZ",
+  "label": "Baku, AZ",
+  "lat": 40.37767,
+  "long": 49.89201
+ },
+ {
+  "code": "BA-SARAJEVO",
+  "cc": "BA",
+  "label": "Sarajevo, BA",
+  "lat": 43.84864,
+  "long": 18.35644
+ },
+ {
+  "code": "BB-BRIDGETOW",
+  "cc": "BB",
+  "label": "Bridgetown, BB",
+  "lat": 13.10732,
+  "long": -59.62021
+ },
+ {
+  "code": "BD-CHATTOGRA",
+  "cc": "BD",
+  "label": "Chattogram, BD",
+  "lat": 22.3384,
+  "long": 91.83168
+ },
+ {
+  "code": "BD-COMILLA",
+  "cc": "BD",
+  "label": "Comilla, BD",
+  "lat": 23.46186,
+  "long": 91.18503
+ },
+ {
+  "code": "BD-DHAKA",
+  "cc": "BD",
+  "label": "Dhaka, BD",
+  "lat": 23.7104,
+  "long": 90.40744
+ },
+ {
+  "code": "BD-GAZIPUR",
+  "cc": "BD",
+  "label": "Gazipur, BD",
+  "lat": 23.99844,
+  "long": 90.42234
+ },
+ {
+  "code": "BD-KHULNA",
+  "cc": "BD",
+  "label": "Khulna, BD",
+  "lat": 22.80979,
+  "long": 89.56439
+ },
+ {
+  "code": "BD-RANGPUR",
+  "cc": "BD",
+  "label": "Rangpur, BD",
+  "lat": 25.74664,
+  "long": 89.25166
+ },
+ {
+  "code": "BE-BRUSSELS",
+  "cc": "BE",
+  "label": "Brussels, BE",
+  "lat": 50.85045,
+  "long": 4.34878
+ },
+ {
+  "code": "BF-OUAGADOUG",
+  "cc": "BF",
+  "label": "Ouagadougou, BF",
+  "lat": 12.36566,
+  "long": -1.53388
+ },
+ {
+  "code": "BG-SOFIA",
+  "cc": "BG",
+  "label": "Sofia, BG",
+  "lat": 42.69751,
+  "long": 23.32415
+ },
+ {
+  "code": "BH-ARRIF",
+  "cc": "BH",
+  "label": "Ar Rifā‘, BH",
+  "lat": 26.13,
+  "long": 50.555
+ },
+ {
+  "code": "BI-BUJUMBURA",
+  "cc": "BI",
+  "label": "Bujumbura, BI",
+  "lat": -3.38193,
+  "long": 29.36142
+ },
+ {
+  "code": "BJ-COTONOU",
+  "cc": "BJ",
+  "label": "Cotonou, BJ",
+  "lat": 6.36536,
+  "long": 2.41833
+ },
+ {
+  "code": "BL-GUSTAVIA",
+  "cc": "BL",
+  "label": "Gustavia, BL",
+  "lat": 17.89618,
+  "long": -62.84978
+ },
+ {
+  "code": "BM-WARWICKPA",
+  "cc": "BM",
+  "label": "Warwick Parish, BM",
+  "lat": 32.26574,
+  "long": -64.80922
+ },
+ {
+  "code": "BN-BANDARSER",
+  "cc": "BN",
+  "label": "Bandar Seri Begawan, BN",
+  "lat": 4.89035,
+  "long": 114.94006
+ },
+ {
+  "code": "BO-LAPAZ",
+  "cc": "BO",
+  "label": "La Paz, BO",
+  "lat": -16.5,
+  "long": -68.15
+ },
+ {
+  "code": "BO-SANTACRUZ",
+  "cc": "BO",
+  "label": "Santa Cruz de la Sierra, BO",
+  "lat": -17.78629,
+  "long": -63.18117
+ },
+ {
+  "code": "BQ-KRALENDIJ",
+  "cc": "BQ",
+  "label": "Kralendijk, BQ",
+  "lat": 12.15,
+  "long": -68.26667
+ },
+ {
+  "code": "BR-BELOHORIZ",
+  "cc": "BR",
+  "label": "Belo Horizonte, BR",
+  "lat": -19.92083,
+  "long": -43.93778
+ },
+ {
+  "code": "BR-BELM",
+  "cc": "BR",
+  "label": "Belém, BR",
+  "lat": -1.45583,
+  "long": -48.50444
+ },
+ {
+  "code": "BR-BRASLIA",
+  "cc": "BR",
+  "label": "Brasília, BR",
+  "lat": -15.77972,
+  "long": -47.92972
+ },
+ {
+  "code": "BR-CAMPINAS",
+  "cc": "BR",
+  "label": "Campinas, BR",
+  "lat": -22.90556,
+  "long": -47.06083
+ },
+ {
+  "code": "BR-CURITIBA",
+  "cc": "BR",
+  "label": "Curitiba, BR",
+  "lat": -25.42778,
+  "long": -49.27306
+ },
+ {
+  "code": "BR-FORTALEZA",
+  "cc": "BR",
+  "label": "Fortaleza, BR",
+  "lat": -3.71722,
+  "long": -38.54306
+ },
+ {
+  "code": "BR-GOINIA",
+  "cc": "BR",
+  "label": "Goiânia, BR",
+  "lat": -16.67861,
+  "long": -49.25389
+ },
+ {
+  "code": "BR-GUARULHOS",
+  "cc": "BR",
+  "label": "Guarulhos, BR",
+  "lat": -23.46278,
+  "long": -46.53333
+ },
+ {
+  "code": "BR-MACEI",
+  "cc": "BR",
+  "label": "Maceió, BR",
+  "lat": -9.66583,
+  "long": -35.73528
+ },
+ {
+  "code": "BR-MANAUS",
+  "cc": "BR",
+  "label": "Manaus, BR",
+  "lat": -3.10194,
+  "long": -60.025
+ },
+ {
+  "code": "BR-PORTOALEG",
+  "cc": "BR",
+  "label": "Porto Alegre, BR",
+  "lat": -30.03283,
+  "long": -51.23019
+ },
+ {
+  "code": "BR-RECIFE",
+  "cc": "BR",
+  "label": "Recife, BR",
+  "lat": -8.05389,
+  "long": -34.88111
+ },
+ {
+  "code": "BR-RIODEJANE",
+  "cc": "BR",
+  "label": "Rio de Janeiro, BR",
+  "lat": -22.90642,
+  "long": -43.18223
+ },
+ {
+  "code": "BR-SALVADOR",
+  "cc": "BR",
+  "label": "Salvador, BR",
+  "lat": -12.97563,
+  "long": -38.49096
+ },
+ {
+  "code": "BR-SOPAULO",
+  "cc": "BR",
+  "label": "São Paulo, BR",
+  "lat": -23.5475,
+  "long": -46.63611
+ },
+ {
+  "code": "BS-NASSAU",
+  "cc": "BS",
+  "label": "Nassau, BS",
+  "lat": 25.05823,
+  "long": -77.34306
+ },
+ {
+  "code": "BT-THIMPHU",
+  "cc": "BT",
+  "label": "Thimphu, BT",
+  "lat": 27.46609,
+  "long": 89.64191
+ },
+ {
+  "code": "BW-GABORONE",
+  "cc": "BW",
+  "label": "Gaborone, BW",
+  "lat": -24.65451,
+  "long": 25.90859
+ },
+ {
+  "code": "BY-MINSK",
+  "cc": "BY",
+  "label": "Minsk, BY",
+  "lat": 53.90019,
+  "long": 27.56653
+ },
+ {
+  "code": "BZ-BELIZECIT",
+  "cc": "BZ",
+  "label": "Belize City, BZ",
+  "lat": 17.49952,
+  "long": -88.19756
+ },
+ {
+  "code": "CA-CALGARY",
+  "cc": "CA",
+  "label": "Calgary, CA",
+  "lat": 51.05011,
+  "long": -114.08529
+ },
+ {
+  "code": "CA-EDMONTON",
+  "cc": "CA",
+  "label": "Edmonton, CA",
+  "lat": 53.55014,
+  "long": -113.46871
+ },
+ {
+  "code": "CA-MONTRAL",
+  "cc": "CA",
+  "label": "Montréal, CA",
+  "lat": 45.50884,
+  "long": -73.58781
+ },
+ {
+  "code": "CA-OTTAWA",
+  "cc": "CA",
+  "label": "Ottawa, CA",
+  "lat": 45.41117,
+  "long": -75.69812
+ },
+ {
+  "code": "CA-TORONTO",
+  "cc": "CA",
+  "label": "Toronto, CA",
+  "lat": 43.70643,
+  "long": -79.39864
+ },
+ {
+  "code": "CC-BANTAMVIL",
+  "cc": "CC",
+  "label": "Bantam Village, CC",
+  "lat": -12.11645,
+  "long": 96.89497
+ },
+ {
+  "code": "CD-KANANGA",
+  "cc": "CD",
+  "label": "Kananga, CD",
+  "lat": -5.89624,
+  "long": 22.41659
+ },
+ {
+  "code": "CD-KINSHASA",
+  "cc": "CD",
+  "label": "Kinshasa, CD",
+  "lat": -4.32758,
+  "long": 15.31357
+ },
+ {
+  "code": "CD-KISANGANI",
+  "cc": "CD",
+  "label": "Kisangani, CD",
+  "lat": 0.51528,
+  "long": 25.19099
+ },
+ {
+  "code": "CD-LUBUMBASH",
+  "cc": "CD",
+  "label": "Lubumbashi, CD",
+  "lat": -11.66089,
+  "long": 27.47938
+ },
+ {
+  "code": "CD-MBUJIMAYI",
+  "cc": "CD",
+  "label": "Mbuji-Mayi, CD",
+  "lat": -6.13603,
+  "long": 23.58979
+ },
+ {
+  "code": "CF-BANGUI",
+  "cc": "CF",
+  "label": "Bangui, CF",
+  "lat": 4.36122,
+  "long": 18.55496
+ },
+ {
+  "code": "CG-BRAZZAVIL",
+  "cc": "CG",
+  "label": "Brazzaville, CG",
+  "lat": -4.26613,
+  "long": 15.28318
+ },
+ {
+  "code": "CG-POINTENOI",
+  "cc": "CG",
+  "label": "Pointe-Noire, CG",
+  "lat": -4.77609,
+  "long": 11.86352
+ },
+ {
+  "code": "CH-ZRICH",
+  "cc": "CH",
+  "label": "Zürich, CH",
+  "lat": 47.36667,
+  "long": 8.55
+ },
+ {
+  "code": "CI-ABIDJAN",
+  "cc": "CI",
+  "label": "Abidjan, CI",
+  "lat": 5.35444,
+  "long": -4.00167
+ },
+ {
+  "code": "CI-ABOBO",
+  "cc": "CI",
+  "label": "Abobo, CI",
+  "lat": 5.41613,
+  "long": -4.0159
+ },
+ {
+  "code": "CK-AVARUA",
+  "cc": "CK",
+  "label": "Avarua, CK",
+  "lat": -21.2075,
+  "long": -159.77546
+ },
+ {
+  "code": "CL-SANTIAGO",
+  "cc": "CL",
+  "label": "Santiago, CL",
+  "lat": -33.45694,
+  "long": -70.64827
+ },
+ {
+  "code": "CM-DOUALA",
+  "cc": "CM",
+  "label": "Douala, CM",
+  "lat": 4.04827,
+  "long": 9.70428
+ },
+ {
+  "code": "CM-YAOUND",
+  "cc": "CM",
+  "label": "Yaoundé, CM",
+  "lat": 3.86667,
+  "long": 11.51667
+ },
+ {
+  "code": "CN-ANSHAN",
+  "cc": "CN",
+  "label": "Anshan, CN",
+  "lat": 41.12361,
+  "long": 122.99
+ },
+ {
+  "code": "CN-ANYANG",
+  "cc": "CN",
+  "label": "Anyang, CN",
+  "lat": 36.096,
+  "long": 114.38278
+ },
+ {
+  "code": "CN-BAOAN",
+  "cc": "CN",
+  "label": "Bao'an, CN",
+  "lat": 22.55213,
+  "long": 113.88288
+ },
+ {
+  "code": "CN-BAODING",
+  "cc": "CN",
+  "label": "Baoding, CN",
+  "lat": 38.87288,
+  "long": 115.46246
+ },
+ {
+  "code": "CN-BAOJI",
+  "cc": "CN",
+  "label": "Baoji, CN",
+  "lat": 34.36775,
+  "long": 107.23705
+ },
+ {
+  "code": "CN-BAOTOU",
+  "cc": "CN",
+  "label": "Baotou, CN",
+  "lat": 40.6516,
+  "long": 109.84389
+ },
+ {
+  "code": "CN-BAYANNUR",
+  "cc": "CN",
+  "label": "Bayan Nur, CN",
+  "lat": 40.74143,
+  "long": 107.38599
+ },
+ {
+  "code": "CN-BEIJING",
+  "cc": "CN",
+  "label": "Beijing, CN",
+  "lat": 39.9075,
+  "long": 116.39723
+ },
+ {
+  "code": "CN-BIJIE",
+  "cc": "CN",
+  "label": "Bijie, CN",
+  "lat": 27.30193,
+  "long": 105.28627
+ },
+ {
+  "code": "CN-BOZHOU",
+  "cc": "CN",
+  "label": "Bozhou, CN",
+  "lat": 33.87722,
+  "long": 115.77028
+ },
+ {
+  "code": "CN-CHANGCHUN",
+  "cc": "CN",
+  "label": "Changchun, CN",
+  "lat": 43.88,
+  "long": 125.32278
+ },
+ {
+  "code": "CN-CHANGDE",
+  "cc": "CN",
+  "label": "Changde, CN",
+  "lat": 29.03205,
+  "long": 111.69844
+ },
+ {
+  "code": "CN-CHANGSHA",
+  "cc": "CN",
+  "label": "Changsha, CN",
+  "lat": 28.19874,
+  "long": 112.97087
+ },
+ {
+  "code": "CN-CHANGSHU",
+  "cc": "CN",
+  "label": "Changshu, CN",
+  "lat": 31.64615,
+  "long": 120.74221
+ },
+ {
+  "code": "CN-CHANGZHI",
+  "cc": "CN",
+  "label": "Changzhi, CN",
+  "lat": 36.18389,
+  "long": 113.10528
+ },
+ {
+  "code": "CN-CHANGZHOU",
+  "cc": "CN",
+  "label": "Changzhou, CN",
+  "lat": 31.77359,
+  "long": 119.95401
+ },
+ {
+  "code": "CN-CHAOZHOU",
+  "cc": "CN",
+  "label": "Chaozhou, CN",
+  "lat": 23.65396,
+  "long": 116.62262
+ },
+ {
+  "code": "CN-CHENGDU",
+  "cc": "CN",
+  "label": "Chengdu, CN",
+  "lat": 30.66667,
+  "long": 104.06667
+ },
+ {
+  "code": "CN-CHONGQING",
+  "cc": "CN",
+  "label": "Chongqing, CN",
+  "lat": 29.56026,
+  "long": 106.55771
+ },
+ {
+  "code": "CN-CIXI",
+  "cc": "CN",
+  "label": "Cixi, CN",
+  "lat": 30.1764,
+  "long": 121.2457
+ },
+ {
+  "code": "CN-DALIAN",
+  "cc": "CN",
+  "label": "Dalian, CN",
+  "lat": 38.91222,
+  "long": 121.60222
+ },
+ {
+  "code": "CN-DAQING",
+  "cc": "CN",
+  "label": "Daqing, CN",
+  "lat": 46.58333,
+  "long": 125
+ },
+ {
+  "code": "CN-DATONG",
+  "cc": "CN",
+  "label": "Datong, CN",
+  "lat": 40.09361,
+  "long": 113.29139
+ },
+ {
+  "code": "CN-DAZHOU",
+  "cc": "CN",
+  "label": "Dazhou, CN",
+  "lat": 31.2106,
+  "long": 107.46308
+ },
+ {
+  "code": "CN-DONGGUAN",
+  "cc": "CN",
+  "label": "Dongguan, CN",
+  "lat": 23.01797,
+  "long": 113.74866
+ },
+ {
+  "code": "CN-FOSHAN",
+  "cc": "CN",
+  "label": "Foshan, CN",
+  "lat": 23.02677,
+  "long": 113.13148
+ },
+ {
+  "code": "CN-FUSHUN",
+  "cc": "CN",
+  "label": "Fushun, CN",
+  "lat": 41.88669,
+  "long": 123.94363
+ },
+ {
+  "code": "CN-FUYANG",
+  "cc": "CN",
+  "label": "Fuyang, CN",
+  "lat": 32.9,
+  "long": 115.81667
+ },
+ {
+  "code": "CN-FUZHOU",
+  "cc": "CN",
+  "label": "Fuzhou, CN",
+  "lat": 26.06139,
+  "long": 119.30611
+ },
+ {
+  "code": "CN-GANZHOU",
+  "cc": "CN",
+  "label": "Ganzhou, CN",
+  "lat": 25.84664,
+  "long": 114.9326
+ },
+ {
+  "code": "CN-GUANGZHOU",
+  "cc": "CN",
+  "label": "Guangzhou, CN",
+  "lat": 23.11667,
+  "long": 113.25
+ },
+ {
+  "code": "CN-GUANKOU",
+  "cc": "CN",
+  "label": "Guankou, CN",
+  "lat": 28.15861,
+  "long": 113.62709
+ },
+ {
+  "code": "CN-GUIGANG",
+  "cc": "CN",
+  "label": "Guigang, CN",
+  "lat": 23.11603,
+  "long": 109.59472
+ },
+ {
+  "code": "CN-GUILIN",
+  "cc": "CN",
+  "label": "Guilin, CN",
+  "lat": 25.28022,
+  "long": 110.29639
+ },
+ {
+  "code": "CN-GUIYANG",
+  "cc": "CN",
+  "label": "Guiyang, CN",
+  "lat": 26.58333,
+  "long": 106.71667
+ },
+ {
+  "code": "CN-HAIKOU",
+  "cc": "CN",
+  "label": "Haikou, CN",
+  "lat": 20.03421,
+  "long": 110.34651
+ },
+ {
+  "code": "CN-HANDAN",
+  "cc": "CN",
+  "label": "Handan, CN",
+  "lat": 36.60999,
+  "long": 114.48764
+ },
+ {
+  "code": "CN-HANGZHOU",
+  "cc": "CN",
+  "label": "Hangzhou, CN",
+  "lat": 30.29365,
+  "long": 120.16142
+ },
+ {
+  "code": "CN-HANZHONG",
+  "cc": "CN",
+  "label": "Hanzhong, CN",
+  "lat": 33.07507,
+  "long": 107.02214
+ },
+ {
+  "code": "CN-HARBIN",
+  "cc": "CN",
+  "label": "Harbin, CN",
+  "lat": 45.75,
+  "long": 126.65
+ },
+ {
+  "code": "CN-HEFEI",
+  "cc": "CN",
+  "label": "Hefei, CN",
+  "lat": 31.86389,
+  "long": 117.28083
+ },
+ {
+  "code": "CN-HENGYANG",
+  "cc": "CN",
+  "label": "Hengyang, CN",
+  "lat": 26.88946,
+  "long": 112.61888
+ },
+ {
+  "code": "CN-HESHAN",
+  "cc": "CN",
+  "label": "Heshan, CN",
+  "lat": 28.56938,
+  "long": 112.34733
+ },
+ {
+  "code": "CN-HEZE",
+  "cc": "CN",
+  "label": "Heze, CN",
+  "lat": 35.23929,
+  "long": 115.47358
+ },
+ {
+  "code": "CN-HEZHOU",
+  "cc": "CN",
+  "label": "Hezhou, CN",
+  "lat": 24.40357,
+  "long": 111.56675
+ },
+ {
+  "code": "CN-HOHHOT",
+  "cc": "CN",
+  "label": "Hohhot, CN",
+  "lat": 40.81056,
+  "long": 111.65222
+ },
+ {
+  "code": "CN-HUAIAN",
+  "cc": "CN",
+  "label": "Huai'an, CN",
+  "lat": 33.58861,
+  "long": 119.01917
+ },
+ {
+  "code": "CN-HUAIBEI",
+  "cc": "CN",
+  "label": "Huaibei, CN",
+  "lat": 33.97444,
+  "long": 116.79167
+ },
+ {
+  "code": "CN-HUAINAN",
+  "cc": "CN",
+  "label": "Huainan, CN",
+  "lat": 32.62639,
+  "long": 116.99694
+ },
+ {
+  "code": "CN-HUIZHOU",
+  "cc": "CN",
+  "label": "Huizhou, CN",
+  "lat": 23.11147,
+  "long": 114.41523
+ },
+ {
+  "code": "CN-HUZHOU",
+  "cc": "CN",
+  "label": "Huzhou, CN",
+  "lat": 30.8703,
+  "long": 120.0933
+ },
+ {
+  "code": "CN-JIANGMEN",
+  "cc": "CN",
+  "label": "Jiangmen, CN",
+  "lat": 22.58333,
+  "long": 113.08333
+ },
+ {
+  "code": "CN-JIANGYIN",
+  "cc": "CN",
+  "label": "Jiangyin, CN",
+  "lat": 31.91102,
+  "long": 120.26302
+ },
+ {
+  "code": "CN-JIAXING",
+  "cc": "CN",
+  "label": "Jiaxing, CN",
+  "lat": 30.7522,
+  "long": 120.75
+ },
+ {
+  "code": "CN-JIEYANG",
+  "cc": "CN",
+  "label": "Jieyang, CN",
+  "lat": 23.5418,
+  "long": 116.36581
+ },
+ {
+  "code": "CN-JILIN",
+  "cc": "CN",
+  "label": "Jilin, CN",
+  "lat": 43.84652,
+  "long": 126.5608
+ },
+ {
+  "code": "CN-JINAN",
+  "cc": "CN",
+  "label": "Jinan, CN",
+  "lat": 36.66833,
+  "long": 116.99722
+ },
+ {
+  "code": "CN-JINGZHOU",
+  "cc": "CN",
+  "label": "Jingzhou, CN",
+  "lat": 30.35028,
+  "long": 112.19028
+ },
+ {
+  "code": "CN-JINHUA",
+  "cc": "CN",
+  "label": "Jinhua, CN",
+  "lat": 29.10678,
+  "long": 119.64421
+ },
+ {
+  "code": "CN-JINING",
+  "cc": "CN",
+  "label": "Jining, CN",
+  "lat": 35.405,
+  "long": 116.58139
+ },
+ {
+  "code": "CN-JINJIANG",
+  "cc": "CN",
+  "label": "Jinjiang, CN",
+  "lat": 24.81978,
+  "long": 118.57415
+ },
+ {
+  "code": "CN-JINZHONG",
+  "cc": "CN",
+  "label": "Jinzhong, CN",
+  "lat": 37.68403,
+  "long": 112.75471
+ },
+ {
+  "code": "CN-JIUJIANG",
+  "cc": "CN",
+  "label": "Jiujiang, CN",
+  "lat": 29.70475,
+  "long": 116.00206
+ },
+ {
+  "code": "CN-KAIFENG",
+  "cc": "CN",
+  "label": "Kaifeng, CN",
+  "lat": 34.7986,
+  "long": 114.30742
+ },
+ {
+  "code": "CN-KUNMING",
+  "cc": "CN",
+  "label": "Kunming, CN",
+  "lat": 25.03889,
+  "long": 102.71833
+ },
+ {
+  "code": "CN-KUNSHAN",
+  "cc": "CN",
+  "label": "Kunshan, CN",
+  "lat": 31.37762,
+  "long": 120.95431
+ },
+ {
+  "code": "CN-LANZHOU",
+  "cc": "CN",
+  "label": "Lanzhou, CN",
+  "lat": 36.05701,
+  "long": 103.83987
+ },
+ {
+  "code": "CN-LIANYUNGA",
+  "cc": "CN",
+  "label": "Lianyungang, CN",
+  "lat": 34.59845,
+  "long": 119.21556
+ },
+ {
+  "code": "CN-LIAOCHENG",
+  "cc": "CN",
+  "label": "Liaocheng, CN",
+  "lat": 36.45064,
+  "long": 116.00247
+ },
+ {
+  "code": "CN-LINYI",
+  "cc": "CN",
+  "label": "Linyi, CN",
+  "lat": 35.06306,
+  "long": 118.34278
+ },
+ {
+  "code": "CN-LIUPANSHU",
+  "cc": "CN",
+  "label": "Liupanshui, CN",
+  "lat": 26.59444,
+  "long": 104.83333
+ },
+ {
+  "code": "CN-LIUZHOU",
+  "cc": "CN",
+  "label": "Liuzhou, CN",
+  "lat": 24.32405,
+  "long": 109.40698
+ },
+ {
+  "code": "CN-LONGYAN",
+  "cc": "CN",
+  "label": "Longyan, CN",
+  "lat": 25.07485,
+  "long": 117.01775
+ },
+ {
+  "code": "CN-LUOHE",
+  "cc": "CN",
+  "label": "Luohe, CN",
+  "lat": 33.56394,
+  "long": 114.04272
+ },
+ {
+  "code": "CN-LUOYANG",
+  "cc": "CN",
+  "label": "Luoyang, CN",
+  "lat": 34.67345,
+  "long": 112.43684
+ },
+ {
+  "code": "CN-LUAN",
+  "cc": "CN",
+  "label": "Lu’an, CN",
+  "lat": 31.73561,
+  "long": 116.51688
+ },
+ {
+  "code": "CN-LLIANG",
+  "cc": "CN",
+  "label": "Lüliang, CN",
+  "lat": 37.5192,
+  "long": 111.14436
+ },
+ {
+  "code": "CN-MAOMING",
+  "cc": "CN",
+  "label": "Maoming, CN",
+  "lat": 21.66625,
+  "long": 110.91364
+ },
+ {
+  "code": "CN-MEISHAN",
+  "cc": "CN",
+  "label": "Meishan, CN",
+  "lat": 30.04392,
+  "long": 103.83696
+ },
+ {
+  "code": "CN-MIANYANG",
+  "cc": "CN",
+  "label": "Mianyang, CN",
+  "lat": 31.46784,
+  "long": 104.68168
+ },
+ {
+  "code": "CN-NANCHANG",
+  "cc": "CN",
+  "label": "Nanchang, CN",
+  "lat": 28.68396,
+  "long": 115.85306
+ },
+ {
+  "code": "CN-NANCHONG",
+  "cc": "CN",
+  "label": "Nanchong, CN",
+  "lat": 30.79508,
+  "long": 106.08473
+ },
+ {
+  "code": "CN-NANJING",
+  "cc": "CN",
+  "label": "Nanjing, CN",
+  "lat": 32.06167,
+  "long": 118.77778
+ },
+ {
+  "code": "CN-NANNING",
+  "cc": "CN",
+  "label": "Nanning, CN",
+  "lat": 22.81667,
+  "long": 108.31667
+ },
+ {
+  "code": "CN-NANTONG",
+  "cc": "CN",
+  "label": "Nantong, CN",
+  "lat": 32.03028,
+  "long": 120.87472
+ },
+ {
+  "code": "CN-NANYANG",
+  "cc": "CN",
+  "label": "Nanyang, CN",
+  "lat": 32.99472,
+  "long": 112.53278
+ },
+ {
+  "code": "CN-NEIJIANG",
+  "cc": "CN",
+  "label": "Neijiang, CN",
+  "lat": 29.58354,
+  "long": 105.06216
+ },
+ {
+  "code": "CN-NINGBO",
+  "cc": "CN",
+  "label": "Ningbo, CN",
+  "lat": 29.87819,
+  "long": 121.54945
+ },
+ {
+  "code": "CN-ORDOS",
+  "cc": "CN",
+  "label": "Ordos, CN",
+  "lat": 39.6086,
+  "long": 109.78157
+ },
+ {
+  "code": "CN-PUTIAN",
+  "cc": "CN",
+  "label": "Putian, CN",
+  "lat": 25.43944,
+  "long": 119.01028
+ },
+ {
+  "code": "CN-PUYANG",
+  "cc": "CN",
+  "label": "Puyang, CN",
+  "lat": 29.45679,
+  "long": 119.88872
+ },
+ {
+  "code": "CN-QINGDAO",
+  "cc": "CN",
+  "label": "Qingdao, CN",
+  "lat": 36.06488,
+  "long": 120.38042
+ },
+ {
+  "code": "CN-QINGYANG",
+  "cc": "CN",
+  "label": "Qingyang, CN",
+  "lat": 35.70976,
+  "long": 107.64455
+ },
+ {
+  "code": "CN-QINGYUAN",
+  "cc": "CN",
+  "label": "Qingyuan, CN",
+  "lat": 23.7,
+  "long": 113.03333
+ },
+ {
+  "code": "CN-QINZHOU",
+  "cc": "CN",
+  "label": "Qinzhou, CN",
+  "lat": 21.98247,
+  "long": 108.65061
+ },
+ {
+  "code": "CN-QUANZHOU",
+  "cc": "CN",
+  "label": "Quanzhou, CN",
+  "lat": 24.91389,
+  "long": 118.58583
+ },
+ {
+  "code": "CN-QUJING",
+  "cc": "CN",
+  "label": "Qujing, CN",
+  "lat": 25.48333,
+  "long": 103.78333
+ },
+ {
+  "code": "CN-SANYA",
+  "cc": "CN",
+  "label": "Sanya, CN",
+  "lat": 18.25435,
+  "long": 109.50947
+ },
+ {
+  "code": "CN-SHANGHAI",
+  "cc": "CN",
+  "label": "Shanghai, CN",
+  "lat": 31.22222,
+  "long": 121.45806
+ },
+ {
+  "code": "CN-SHANGQIU",
+  "cc": "CN",
+  "label": "Shangqiu, CN",
+  "lat": 34.45,
+  "long": 115.65
+ },
+ {
+  "code": "CN-SHANGRAO",
+  "cc": "CN",
+  "label": "Shangrao, CN",
+  "lat": 28.45179,
+  "long": 117.94287
+ },
+ {
+  "code": "CN-SHANTOU",
+  "cc": "CN",
+  "label": "Shantou, CN",
+  "lat": 23.35489,
+  "long": 116.67876
+ },
+ {
+  "code": "CN-SHAOGUAN",
+  "cc": "CN",
+  "label": "Shaoguan, CN",
+  "lat": 24.8,
+  "long": 113.58333
+ },
+ {
+  "code": "CN-SHAOXING",
+  "cc": "CN",
+  "label": "Shaoxing, CN",
+  "lat": 30.00237,
+  "long": 120.57864
+ },
+ {
+  "code": "CN-SHENYANG",
+  "cc": "CN",
+  "label": "Shenyang, CN",
+  "lat": 41.79222,
+  "long": 123.43278
+ },
+ {
+  "code": "CN-SHENZHEN",
+  "cc": "CN",
+  "label": "Shenzhen, CN",
+  "lat": 22.54554,
+  "long": 114.0683
+ },
+ {
+  "code": "CN-SHIJIAZHU",
+  "cc": "CN",
+  "label": "Shijiazhuang, CN",
+  "lat": 38.04139,
+  "long": 114.47861
+ },
+ {
+  "code": "CN-SHIYAN",
+  "cc": "CN",
+  "label": "Shiyan, CN",
+  "lat": 32.6475,
+  "long": 110.77806
+ },
+ {
+  "code": "CN-SUQIAN",
+  "cc": "CN",
+  "label": "Suqian, CN",
+  "lat": 33.94917,
+  "long": 118.29583
+ },
+ {
+  "code": "CN-SUZHOU",
+  "cc": "CN",
+  "label": "Suzhou, CN",
+  "lat": 31.30408,
+  "long": 120.59538
+ },
+ {
+  "code": "CN-TAIYUAN",
+  "cc": "CN",
+  "label": "Taiyuan, CN",
+  "lat": 37.86944,
+  "long": 112.56028
+ },
+ {
+  "code": "CN-TAIZHOU",
+  "cc": "CN",
+  "label": "Taizhou, CN",
+  "lat": 32.49069,
+  "long": 119.90812
+ },
+ {
+  "code": "CN-TAIAN",
+  "cc": "CN",
+  "label": "Tai’an, CN",
+  "lat": 36.18528,
+  "long": 117.12
+ },
+ {
+  "code": "CN-TANGSHAN",
+  "cc": "CN",
+  "label": "Tangshan, CN",
+  "lat": 39.64381,
+  "long": 118.18319
+ },
+ {
+  "code": "CN-TIANJIN",
+  "cc": "CN",
+  "label": "Tianjin, CN",
+  "lat": 39.14222,
+  "long": 117.17667
+ },
+ {
+  "code": "CN-TIANSHUI",
+  "cc": "CN",
+  "label": "Tianshui, CN",
+  "lat": 34.57952,
+  "long": 105.74238
+ },
+ {
+  "code": "CN-WANZHOU",
+  "cc": "CN",
+  "label": "Wanzhou, CN",
+  "lat": 30.76451,
+  "long": 108.39586
+ },
+ {
+  "code": "CN-WEIFANG",
+  "cc": "CN",
+  "label": "Weifang, CN",
+  "lat": 36.71,
+  "long": 119.10194
+ },
+ {
+  "code": "CN-WEINAN",
+  "cc": "CN",
+  "label": "Weinan, CN",
+  "lat": 34.50355,
+  "long": 109.50891
+ },
+ {
+  "code": "CN-WENZHOU",
+  "cc": "CN",
+  "label": "Wenzhou, CN",
+  "lat": 27.99942,
+  "long": 120.66682
+ },
+ {
+  "code": "CN-WUHAN",
+  "cc": "CN",
+  "label": "Wuhan, CN",
+  "lat": 30.58333,
+  "long": 114.26667
+ },
+ {
+  "code": "CN-WUHU",
+  "cc": "CN",
+  "label": "Wuhu, CN",
+  "lat": 31.35259,
+  "long": 118.42947
+ },
+ {
+  "code": "CN-WUWEI",
+  "cc": "CN",
+  "label": "Wuwei, CN",
+  "lat": 37.92672,
+  "long": 102.63202
+ },
+ {
+  "code": "CN-WUXI",
+  "cc": "CN",
+  "label": "Wuxi, CN",
+  "lat": 31.56887,
+  "long": 120.28857
+ },
+ {
+  "code": "CN-XIAMEN",
+  "cc": "CN",
+  "label": "Xiamen, CN",
+  "lat": 24.47979,
+  "long": 118.08187
+ },
+ {
+  "code": "CN-XIANGYANG",
+  "cc": "CN",
+  "label": "Xiangyang, CN",
+  "lat": 32.0422,
+  "long": 112.14479
+ },
+ {
+  "code": "CN-XIANYANG",
+  "cc": "CN",
+  "label": "Xianyang, CN",
+  "lat": 34.33778,
+  "long": 108.70261
+ },
+ {
+  "code": "CN-XINING",
+  "cc": "CN",
+  "label": "Xining, CN",
+  "lat": 36.62554,
+  "long": 101.75739
+ },
+ {
+  "code": "CN-XINXIANG",
+  "cc": "CN",
+  "label": "Xinxiang, CN",
+  "lat": 35.19033,
+  "long": 113.80151
+ },
+ {
+  "code": "CN-XINYANG",
+  "cc": "CN",
+  "label": "Xinyang, CN",
+  "lat": 32.12278,
+  "long": 114.06556
+ },
+ {
+  "code": "CN-XIAN",
+  "cc": "CN",
+  "label": "Xi’an, CN",
+  "lat": 34.25833,
+  "long": 108.92861
+ },
+ {
+  "code": "CN-XUCHANG",
+  "cc": "CN",
+  "label": "Xuchang, CN",
+  "lat": 34.03189,
+  "long": 113.86299
+ },
+ {
+  "code": "CN-XUZHOU",
+  "cc": "CN",
+  "label": "Xuzhou, CN",
+  "lat": 34.20442,
+  "long": 117.28386
+ },
+ {
+  "code": "CN-YANCHENG",
+  "cc": "CN",
+  "label": "Yancheng, CN",
+  "lat": 33.3575,
+  "long": 120.1573
+ },
+ {
+  "code": "CN-YANGJIANG",
+  "cc": "CN",
+  "label": "Yangjiang, CN",
+  "lat": 21.85563,
+  "long": 111.96272
+ },
+ {
+  "code": "CN-YANGZHOU",
+  "cc": "CN",
+  "label": "Yangzhou, CN",
+  "lat": 32.39722,
+  "long": 119.43583
+ },
+ {
+  "code": "CN-YANTAI",
+  "cc": "CN",
+  "label": "Yantai, CN",
+  "lat": 37.47649,
+  "long": 121.44081
+ },
+ {
+  "code": "CN-YICHANG",
+  "cc": "CN",
+  "label": "Yichang, CN",
+  "lat": 30.71444,
+  "long": 111.28472
+ },
+ {
+  "code": "CN-YICHUN",
+  "cc": "CN",
+  "label": "Yichun, CN",
+  "lat": 27.83333,
+  "long": 114.4
+ },
+ {
+  "code": "CN-YINCHUAN",
+  "cc": "CN",
+  "label": "Yinchuan, CN",
+  "lat": 38.46806,
+  "long": 106.27306
+ },
+ {
+  "code": "CN-YIWU",
+  "cc": "CN",
+  "label": "Yiwu, CN",
+  "lat": 29.31506,
+  "long": 120.07676
+ },
+ {
+  "code": "CN-YIXING",
+  "cc": "CN",
+  "label": "Yixing, CN",
+  "lat": 31.36059,
+  "long": 119.82016
+ },
+ {
+  "code": "CN-YONGZHOU",
+  "cc": "CN",
+  "label": "Yongzhou, CN",
+  "lat": 26.42389,
+  "long": 111.61306
+ },
+ {
+  "code": "CN-YULIN",
+  "cc": "CN",
+  "label": "Yulin, CN",
+  "lat": 22.6305,
+  "long": 110.14686
+ },
+ {
+  "code": "CN-YUNFU",
+  "cc": "CN",
+  "label": "Yunfu, CN",
+  "lat": 22.92787,
+  "long": 112.03809
+ },
+ {
+  "code": "CN-ZHANGJIAG",
+  "cc": "CN",
+  "label": "Zhangjiagang, CN",
+  "lat": 31.865,
+  "long": 120.53889
+ },
+ {
+  "code": "CN-ZHANJIANG",
+  "cc": "CN",
+  "label": "Zhanjiang, CN",
+  "lat": 21.23391,
+  "long": 110.38749
+ },
+ {
+  "code": "CN-ZHAOQING",
+  "cc": "CN",
+  "label": "Zhaoqing, CN",
+  "lat": 23.04893,
+  "long": 112.46091
+ },
+ {
+  "code": "CN-ZHENGZHOU",
+  "cc": "CN",
+  "label": "Zhengzhou, CN",
+  "lat": 34.75778,
+  "long": 113.64861
+ },
+ {
+  "code": "CN-ZHONGSHAN",
+  "cc": "CN",
+  "label": "Zhongshan, CN",
+  "lat": 22.52306,
+  "long": 113.37912
+ },
+ {
+  "code": "CN-ZHUCHENGC",
+  "cc": "CN",
+  "label": "Zhu Cheng City, CN",
+  "lat": 35.99502,
+  "long": 119.40259
+ },
+ {
+  "code": "CN-ZHUHAI",
+  "cc": "CN",
+  "label": "Zhuhai, CN",
+  "lat": 22.27694,
+  "long": 113.56778
+ },
+ {
+  "code": "CN-ZHUZHOU",
+  "cc": "CN",
+  "label": "Zhuzhou, CN",
+  "lat": 27.83333,
+  "long": 113.15
+ },
+ {
+  "code": "CN-ZIBO",
+  "cc": "CN",
+  "label": "Zibo, CN",
+  "lat": 36.79056,
+  "long": 118.06333
+ },
+ {
+  "code": "CN-ZIGONG",
+  "cc": "CN",
+  "label": "Zigong, CN",
+  "lat": 29.34162,
+  "long": 104.77689
+ },
+ {
+  "code": "CN-ZUNYI",
+  "cc": "CN",
+  "label": "Zunyi, CN",
+  "lat": 27.68667,
+  "long": 106.90722
+ },
+ {
+  "code": "CN-RMQI",
+  "cc": "CN",
+  "label": "Ürümqi, CN",
+  "lat": 43.80096,
+  "long": 87.60046
+ },
+ {
+  "code": "CO-BARRANQUI",
+  "cc": "CO",
+  "label": "Barranquilla, CO",
+  "lat": 10.96854,
+  "long": -74.78132
+ },
+ {
+  "code": "CO-BOGOT",
+  "cc": "CO",
+  "label": "Bogotá, CO",
+  "lat": 4.60971,
+  "long": -74.08175
+ },
+ {
+  "code": "CO-CALI",
+  "cc": "CO",
+  "label": "Cali, CO",
+  "lat": 3.43054,
+  "long": -76.5199
+ },
+ {
+  "code": "CO-MEDELLN",
+  "cc": "CO",
+  "label": "Medellín, CO",
+  "lat": 6.245,
+  "long": -75.57151
+ },
+ {
+  "code": "CR-SANJOS",
+  "cc": "CR",
+  "label": "San José, CR",
+  "lat": 9.93388,
+  "long": -84.08489
+ },
+ {
+  "code": "CU-HAVANA",
+  "cc": "CU",
+  "label": "Havana, CU",
+  "lat": 23.13302,
+  "long": -82.38304
+ },
+ {
+  "code": "CV-PRAIA",
+  "cc": "CV",
+  "label": "Praia, CV",
+  "lat": 14.93152,
+  "long": -23.51254
+ },
+ {
+  "code": "CW-WILLEMSTA",
+  "cc": "CW",
+  "label": "Willemstad, CW",
+  "lat": 12.12246,
+  "long": -68.88641
+ },
+ {
+  "code": "CX-FLYINGFIS",
+  "cc": "CX",
+  "label": "Flying Fish Cove, CX",
+  "lat": -10.42172,
+  "long": 105.67912
+ },
+ {
+  "code": "CY-NICOSIA",
+  "cc": "CY",
+  "label": "Nicosia, CY",
+  "lat": 35.17284,
+  "long": 33.35397
+ },
+ {
+  "code": "CZ-PRAGUE",
+  "cc": "CZ",
+  "label": "Prague, CZ",
+  "lat": 50.08804,
+  "long": 14.42076
+ },
+ {
+  "code": "DE-BERLIN",
+  "cc": "DE",
+  "label": "Berlin, DE",
+  "lat": 52.52437,
+  "long": 13.41053
+ },
+ {
+  "code": "DE-HAMBURG",
+  "cc": "DE",
+  "label": "Hamburg, DE",
+  "lat": 53.55073,
+  "long": 9.99302
+ },
+ {
+  "code": "DE-MUNICH",
+  "cc": "DE",
+  "label": "Munich, DE",
+  "lat": 48.13743,
+  "long": 11.57549
+ },
+ {
+  "code": "DJ-DJIBOUTI",
+  "cc": "DJ",
+  "label": "Djibouti, DJ",
+  "lat": 11.58901,
+  "long": 43.14503
+ },
+ {
+  "code": "DK-COPENHAGE",
+  "cc": "DK",
+  "label": "Copenhagen, DK",
+  "lat": 55.67594,
+  "long": 12.56553
+ },
+ {
+  "code": "DM-ROSEAU",
+  "cc": "DM",
+  "label": "Roseau, DM",
+  "lat": 15.30174,
+  "long": -61.38808
+ },
+ {
+  "code": "DO-SANTIAGOD",
+  "cc": "DO",
+  "label": "Santiago de los Caballeros, DO",
+  "lat": 19.45036,
+  "long": -70.69085
+ },
+ {
+  "code": "DO-SANTODOMI",
+  "cc": "DO",
+  "label": "Santo Domingo, DO",
+  "lat": 18.47186,
+  "long": -69.89232
+ },
+ {
+  "code": "DZ-ALGIERS",
+  "cc": "DZ",
+  "label": "Algiers, DZ",
+  "lat": 36.73225,
+  "long": 3.08746
+ },
+ {
+  "code": "EC-GUAYAQUIL",
+  "cc": "EC",
+  "label": "Guayaquil, EC",
+  "lat": -2.19616,
+  "long": -79.88621
+ },
+ {
+  "code": "EC-QUITO",
+  "cc": "EC",
+  "label": "Quito, EC",
+  "lat": -0.22985,
+  "long": -78.52495
+ },
+ {
+  "code": "EE-TALLINN",
+  "cc": "EE",
+  "label": "Tallinn, EE",
+  "lat": 59.43696,
+  "long": 24.75353
+ },
+ {
+  "code": "EG-ALEXANDRI",
+  "cc": "EG",
+  "label": "Alexandria, EG",
+  "lat": 31.20176,
+  "long": 29.91582
+ },
+ {
+  "code": "EG-CAIRO",
+  "cc": "EG",
+  "label": "Cairo, EG",
+  "lat": 30.06263,
+  "long": 31.24967
+ },
+ {
+  "code": "EG-GIZA",
+  "cc": "EG",
+  "label": "Giza, EG",
+  "lat": 30.00944,
+  "long": 31.20861
+ },
+ {
+  "code": "EG-SHUBRALKH",
+  "cc": "EG",
+  "label": "Shubrā al Khaymah, EG",
+  "lat": 30.12511,
+  "long": 31.25053
+ },
+ {
+  "code": "EH-LAAYOUNE",
+  "cc": "EH",
+  "label": "Laayoune, EH",
+  "lat": 27.1418,
+  "long": -13.18797
+ },
+ {
+  "code": "ER-ASMARA",
+  "cc": "ER",
+  "label": "Asmara, ER",
+  "lat": 15.33805,
+  "long": 38.93184
+ },
+ {
+  "code": "ES-BARCELONA",
+  "cc": "ES",
+  "label": "Barcelona, ES",
+  "lat": 41.38879,
+  "long": 2.15899
+ },
+ {
+  "code": "ES-MADRID",
+  "cc": "ES",
+  "label": "Madrid, ES",
+  "lat": 40.4165,
+  "long": -3.70256
+ },
+ {
+  "code": "ET-ADDISABAB",
+  "cc": "ET",
+  "label": "Addis Ababa, ET",
+  "lat": 9.02497,
+  "long": 38.74689
+ },
+ {
+  "code": "FI-HELSINKI",
+  "cc": "FI",
+  "label": "Helsinki, FI",
+  "lat": 60.16952,
+  "long": 24.93545
+ },
+ {
+  "code": "FJ-NASINU",
+  "cc": "FJ",
+  "label": "Nasinu, FJ",
+  "lat": -18.07051,
+  "long": 178.51313
+ },
+ {
+  "code": "FK-STANLEY",
+  "cc": "FK",
+  "label": "Stanley, FK",
+  "lat": -51.69382,
+  "long": -57.85701
+ },
+ {
+  "code": "FM-WENO",
+  "cc": "FM",
+  "label": "Weno, FM",
+  "lat": 7.44648,
+  "long": 151.84135
+ },
+ {
+  "code": "FO-TRSHAVN",
+  "cc": "FO",
+  "label": "Tórshavn, FO",
+  "lat": 62.00973,
+  "long": -6.77164
+ },
+ {
+  "code": "FR-PARIS",
+  "cc": "FR",
+  "label": "Paris, FR",
+  "lat": 48.85341,
+  "long": 2.3488
+ },
+ {
+  "code": "GA-LIBREVILL",
+  "cc": "GA",
+  "label": "Libreville, GA",
+  "lat": 0.39241,
+  "long": 9.45356
+ },
+ {
+  "code": "GB-BIRMINGHA",
+  "cc": "GB",
+  "label": "Birmingham, GB",
+  "lat": 52.48142,
+  "long": -1.89983
+ },
+ {
+  "code": "GB-LONDON",
+  "cc": "GB",
+  "label": "London, GB",
+  "lat": 51.50853,
+  "long": -0.12574
+ },
+ {
+  "code": "GD-SAINTGEOR",
+  "cc": "GD",
+  "label": "Saint George's, GD",
+  "lat": 12.05288,
+  "long": -61.75226
+ },
+ {
+  "code": "GE-TBILISI",
+  "cc": "GE",
+  "label": "Tbilisi, GE",
+  "lat": 41.69143,
+  "long": 44.83412
+ },
+ {
+  "code": "GF-CAYENNE",
+  "cc": "GF",
+  "label": "Cayenne, GF",
+  "lat": 4.9381,
+  "long": -52.33455
+ },
+ {
+  "code": "GG-SAINTPETE",
+  "cc": "GG",
+  "label": "Saint Peter Port, GG",
+  "lat": 49.45981,
+  "long": -2.53527
+ },
+ {
+  "code": "GH-ACCRA",
+  "cc": "GH",
+  "label": "Accra, GH",
+  "lat": 5.55602,
+  "long": -0.1969
+ },
+ {
+  "code": "GH-KUMASI",
+  "cc": "GH",
+  "label": "Kumasi, GH",
+  "lat": 6.68848,
+  "long": -1.62443
+ },
+ {
+  "code": "GI-GIBRALTAR",
+  "cc": "GI",
+  "label": "Gibraltar, GI",
+  "lat": 36.14474,
+  "long": -5.35257
+ },
+ {
+  "code": "GL-NUUK",
+  "cc": "GL",
+  "label": "Nuuk, GL",
+  "lat": 64.18347,
+  "long": -51.72157
+ },
+ {
+  "code": "GM-SEREKUNDA",
+  "cc": "GM",
+  "label": "Serekunda, GM",
+  "lat": 13.43833,
+  "long": -16.67806
+ },
+ {
+  "code": "GN-CAMAYENNE",
+  "cc": "GN",
+  "label": "Camayenne, GN",
+  "lat": 9.535,
+  "long": -13.68778
+ },
+ {
+  "code": "GN-CONAKRY",
+  "cc": "GN",
+  "label": "Conakry, GN",
+  "lat": 9.53795,
+  "long": -13.67729
+ },
+ {
+  "code": "GP-LESABYMES",
+  "cc": "GP",
+  "label": "Les Abymes, GP",
+  "lat": 16.273,
+  "long": -61.50507
+ },
+ {
+  "code": "GQ-BATA",
+  "cc": "GQ",
+  "label": "Bata, GQ",
+  "lat": 1.86391,
+  "long": 9.76582
+ },
+ {
+  "code": "GR-ATHENS",
+  "cc": "GR",
+  "label": "Athens, GR",
+  "lat": 37.98376,
+  "long": 23.72784
+ },
+ {
+  "code": "GT-GUATEMALA",
+  "cc": "GT",
+  "label": "Guatemala City, GT",
+  "lat": 14.64072,
+  "long": -90.51327
+ },
+ {
+  "code": "GU-DEDEDOVIL",
+  "cc": "GU",
+  "label": "Dededo Village, GU",
+  "lat": 13.51777,
+  "long": 144.8391
+ },
+ {
+  "code": "GW-BISSAU",
+  "cc": "GW",
+  "label": "Bissau, GW",
+  "lat": 11.86357,
+  "long": -15.59767
+ },
+ {
+  "code": "GY-GEORGETOW",
+  "cc": "GY",
+  "label": "Georgetown, GY",
+  "lat": 6.80448,
+  "long": -58.15527
+ },
+ {
+  "code": "HK-HONGKONG",
+  "cc": "HK",
+  "label": "Hong Kong, HK",
+  "lat": 22.27832,
+  "long": 114.17469
+ },
+ {
+  "code": "HN-TEGUCIGAL",
+  "cc": "HN",
+  "label": "Tegucigalpa, HN",
+  "lat": 14.0818,
+  "long": -87.20681
+ },
+ {
+  "code": "HR-ZAGREB",
+  "cc": "HR",
+  "label": "Zagreb, HR",
+  "lat": 45.81444,
+  "long": 15.97798
+ },
+ {
+  "code": "HT-PORTAUPRI",
+  "cc": "HT",
+  "label": "Port-au-Prince, HT",
+  "lat": 18.54349,
+  "long": -72.33881
+ },
+ {
+  "code": "HU-BUDAPEST",
+  "cc": "HU",
+  "label": "Budapest, HU",
+  "lat": 47.49835,
+  "long": 19.04045
+ },
+ {
+  "code": "ID-BANDARLAM",
+  "cc": "ID",
+  "label": "Bandar Lampung, ID",
+  "lat": -5.42917,
+  "long": 105.26111
+ },
+ {
+  "code": "ID-BANDUNG",
+  "cc": "ID",
+  "label": "Bandung, ID",
+  "lat": -6.92222,
+  "long": 107.60694
+ },
+ {
+  "code": "ID-BATAM",
+  "cc": "ID",
+  "label": "Batam, ID",
+  "lat": 1.14937,
+  "long": 104.02491
+ },
+ {
+  "code": "ID-BEKASI",
+  "cc": "ID",
+  "label": "Bekasi, ID",
+  "lat": -6.2349,
+  "long": 106.9896
+ },
+ {
+  "code": "ID-BOGOR",
+  "cc": "ID",
+  "label": "Bogor, ID",
+  "lat": -6.59444,
+  "long": 106.78917
+ },
+ {
+  "code": "ID-DEPOK",
+  "cc": "ID",
+  "label": "Depok, ID",
+  "lat": -6.4,
+  "long": 106.81861
+ },
+ {
+  "code": "ID-JAKARTA",
+  "cc": "ID",
+  "label": "Jakarta, ID",
+  "lat": -6.21462,
+  "long": 106.84513
+ },
+ {
+  "code": "ID-JEPARA",
+  "cc": "ID",
+  "label": "Jepara, ID",
+  "lat": -6.5924,
+  "long": 110.671
+ },
+ {
+  "code": "ID-MAKASSAR",
+  "cc": "ID",
+  "label": "Makassar, ID",
+  "lat": -5.14861,
+  "long": 119.43194
+ },
+ {
+  "code": "ID-MEDAN",
+  "cc": "ID",
+  "label": "Medan, ID",
+  "lat": 3.58333,
+  "long": 98.66667
+ },
+ {
+  "code": "ID-PALEMBANG",
+  "cc": "ID",
+  "label": "Palembang, ID",
+  "lat": -2.91673,
+  "long": 104.7458
+ },
+ {
+  "code": "ID-PEKANBARU",
+  "cc": "ID",
+  "label": "Pekanbaru, ID",
+  "lat": 0.51667,
+  "long": 101.44167
+ },
+ {
+  "code": "ID-SEMARANG",
+  "cc": "ID",
+  "label": "Semarang, ID",
+  "lat": -6.99306,
+  "long": 110.42083
+ },
+ {
+  "code": "ID-SOUTHTANG",
+  "cc": "ID",
+  "label": "South Tangerang, ID",
+  "lat": -6.28862,
+  "long": 106.71789
+ },
+ {
+  "code": "ID-SURABAYA",
+  "cc": "ID",
+  "label": "Surabaya, ID",
+  "lat": -7.24917,
+  "long": 112.75083
+ },
+ {
+  "code": "ID-TANGERANG",
+  "cc": "ID",
+  "label": "Tangerang, ID",
+  "lat": -6.17806,
+  "long": 106.63
+ },
+ {
+  "code": "IE-DUBLIN",
+  "cc": "IE",
+  "label": "Dublin, IE",
+  "lat": 53.33306,
+  "long": -6.24889
+ },
+ {
+  "code": "IL-JERUSALEM",
+  "cc": "IL",
+  "label": "Jerusalem, IL",
+  "lat": 31.76904,
+  "long": 35.21633
+ },
+ {
+  "code": "IM-DOUGLAS",
+  "cc": "IM",
+  "label": "Douglas, IM",
+  "lat": 54.15,
+  "long": -4.48333
+ },
+ {
+  "code": "IN-AGRA",
+  "cc": "IN",
+  "label": "Agra, IN",
+  "lat": 27.18333,
+  "long": 78.01667
+ },
+ {
+  "code": "IN-AHMEDABAD",
+  "cc": "IN",
+  "label": "Ahmedabad, IN",
+  "lat": 23.02579,
+  "long": 72.58727
+ },
+ {
+  "code": "IN-AMRITSAR",
+  "cc": "IN",
+  "label": "Amritsar, IN",
+  "lat": 31.62234,
+  "long": 74.87534
+ },
+ {
+  "code": "IN-AURANGABA",
+  "cc": "IN",
+  "label": "Aurangabad, IN",
+  "lat": 19.87757,
+  "long": 75.34226
+ },
+ {
+  "code": "IN-BENGALURU",
+  "cc": "IN",
+  "label": "Bengaluru, IN",
+  "lat": 12.97194,
+  "long": 77.59369
+ },
+ {
+  "code": "IN-BHOPAL",
+  "cc": "IN",
+  "label": "Bhopal, IN",
+  "lat": 23.25469,
+  "long": 77.40289
+ },
+ {
+  "code": "IN-CHENNAI",
+  "cc": "IN",
+  "label": "Chennai, IN",
+  "lat": 13.08784,
+  "long": 80.27847
+ },
+ {
+  "code": "IN-COIMBATOR",
+  "cc": "IN",
+  "label": "Coimbatore, IN",
+  "lat": 11.00555,
+  "long": 76.96612
+ },
+ {
+  "code": "IN-DELHI",
+  "cc": "IN",
+  "label": "Delhi, IN",
+  "lat": 28.65195,
+  "long": 77.23149
+ },
+ {
+  "code": "IN-DHANBAD",
+  "cc": "IN",
+  "label": "Dhanbad, IN",
+  "lat": 23.79759,
+  "long": 86.42992
+ },
+ {
+  "code": "IN-DOMBIVALI",
+  "cc": "IN",
+  "label": "Dombivali, IN",
+  "lat": 19.21667,
+  "long": 73.08333
+ },
+ {
+  "code": "IN-FARIDABAD",
+  "cc": "IN",
+  "label": "Faridabad, IN",
+  "lat": 28.41124,
+  "long": 77.31316
+ },
+ {
+  "code": "IN-GHZIBD",
+  "cc": "IN",
+  "label": "Ghāziābād, IN",
+  "lat": 28.66535,
+  "long": 77.43915
+ },
+ {
+  "code": "IN-GORAKHPUR",
+  "cc": "IN",
+  "label": "Gorakhpur, IN",
+  "lat": 29.44768,
+  "long": 75.67206
+ },
+ {
+  "code": "IN-GWALIOR",
+  "cc": "IN",
+  "label": "Gwalior, IN",
+  "lat": 26.22983,
+  "long": 78.17337
+ },
+ {
+  "code": "IN-HOWRAH",
+  "cc": "IN",
+  "label": "Howrah, IN",
+  "lat": 22.57688,
+  "long": 88.31857
+ },
+ {
+  "code": "IN-HYDERABAD",
+  "cc": "IN",
+  "label": "Hyderabad, IN",
+  "lat": 17.38405,
+  "long": 78.45636
+ },
+ {
+  "code": "IN-INDORE",
+  "cc": "IN",
+  "label": "Indore, IN",
+  "lat": 22.71792,
+  "long": 75.8333
+ },
+ {
+  "code": "IN-JABALPUR",
+  "cc": "IN",
+  "label": "Jabalpur, IN",
+  "lat": 23.16697,
+  "long": 79.95006
+ },
+ {
+  "code": "IN-JAIPUR",
+  "cc": "IN",
+  "label": "Jaipur, IN",
+  "lat": 26.91962,
+  "long": 75.78781
+ },
+ {
+  "code": "IN-JAMSHEDPU",
+  "cc": "IN",
+  "label": "Jamshedpur, IN",
+  "lat": 22.80278,
+  "long": 86.18545
+ },
+ {
+  "code": "IN-JODHPUR",
+  "cc": "IN",
+  "label": "Jodhpur, IN",
+  "lat": 26.26841,
+  "long": 73.00594
+ },
+ {
+  "code": "IN-KALLAKURI",
+  "cc": "IN",
+  "label": "Kallakurichi, IN",
+  "lat": 11.73379,
+  "long": 78.95925
+ },
+ {
+  "code": "IN-KALYN",
+  "cc": "IN",
+  "label": "Kalyān, IN",
+  "lat": 19.2437,
+  "long": 73.13554
+ },
+ {
+  "code": "IN-KANPUR",
+  "cc": "IN",
+  "label": "Kanpur, IN",
+  "lat": 26.46523,
+  "long": 80.34975
+ },
+ {
+  "code": "IN-KOLKATA",
+  "cc": "IN",
+  "label": "Kolkata, IN",
+  "lat": 22.56263,
+  "long": 88.36304
+ },
+ {
+  "code": "IN-KOTA",
+  "cc": "IN",
+  "label": "Kota, IN",
+  "lat": 25.18254,
+  "long": 75.83907
+ },
+ {
+  "code": "IN-LUCKNOW",
+  "cc": "IN",
+  "label": "Lucknow, IN",
+  "lat": 26.83928,
+  "long": 80.92313
+ },
+ {
+  "code": "IN-LUDHIANA",
+  "cc": "IN",
+  "label": "Ludhiana, IN",
+  "lat": 30.91204,
+  "long": 75.85379
+ },
+ {
+  "code": "IN-MADURAI",
+  "cc": "IN",
+  "label": "Madurai, IN",
+  "lat": 9.919,
+  "long": 78.11953
+ },
+ {
+  "code": "IN-MEERUT",
+  "cc": "IN",
+  "label": "Meerut, IN",
+  "lat": 28.98002,
+  "long": 77.70636
+ },
+ {
+  "code": "IN-MUMBAI",
+  "cc": "IN",
+  "label": "Mumbai, IN",
+  "lat": 19.07283,
+  "long": 72.88261
+ },
+ {
+  "code": "IN-NAGPUR",
+  "cc": "IN",
+  "label": "Nagpur, IN",
+  "lat": 21.14631,
+  "long": 79.08491
+ },
+ {
+  "code": "IN-NAJAFGARH",
+  "cc": "IN",
+  "label": "Najafgarh, IN",
+  "lat": 28.60922,
+  "long": 76.97982
+ },
+ {
+  "code": "IN-NASHIK",
+  "cc": "IN",
+  "label": "Nashik, IN",
+  "lat": 19.99727,
+  "long": 73.79096
+ },
+ {
+  "code": "IN-NOWRANGAP",
+  "cc": "IN",
+  "label": "Nowrangapur, IN",
+  "lat": 19.23114,
+  "long": 82.54826
+ },
+ {
+  "code": "IN-PATNA",
+  "cc": "IN",
+  "label": "Patna, IN",
+  "lat": 25.59408,
+  "long": 85.13563
+ },
+ {
+  "code": "IN-PIMPRI",
+  "cc": "IN",
+  "label": "Pimpri, IN",
+  "lat": 18.62292,
+  "long": 73.80696
+ },
+ {
+  "code": "IN-PIMPRICHI",
+  "cc": "IN",
+  "label": "Pimpri-Chinchwad, IN",
+  "lat": 18.61867,
+  "long": 73.80375
+ },
+ {
+  "code": "IN-PRAYAGRAJ",
+  "cc": "IN",
+  "label": "Prayagraj, IN",
+  "lat": 25.44478,
+  "long": 81.84322
+ },
+ {
+  "code": "IN-PUNE",
+  "cc": "IN",
+  "label": "Pune, IN",
+  "lat": 18.51957,
+  "long": 73.85535
+ },
+ {
+  "code": "IN-RAIPUR",
+  "cc": "IN",
+  "label": "Raipur, IN",
+  "lat": 21.23333,
+  "long": 81.63333
+ },
+ {
+  "code": "IN-RANCHI",
+  "cc": "IN",
+  "label": "Ranchi, IN",
+  "lat": 23.34316,
+  "long": 85.3094
+ },
+ {
+  "code": "IN-RASAPDIPA",
+  "cc": "IN",
+  "label": "Rasapūdipalem, IN",
+  "lat": 17.73308,
+  "long": 83.31622
+ },
+ {
+  "code": "IN-RJKOT",
+  "cc": "IN",
+  "label": "Rājkot, IN",
+  "lat": 22.29161,
+  "long": 70.79322
+ },
+ {
+  "code": "IN-SRINAGAR",
+  "cc": "IN",
+  "label": "Srinagar, IN",
+  "lat": 34.08565,
+  "long": 74.80555
+ },
+ {
+  "code": "IN-SURAT",
+  "cc": "IN",
+  "label": "Surat, IN",
+  "lat": 21.19594,
+  "long": 72.83023
+ },
+ {
+  "code": "IN-THNE",
+  "cc": "IN",
+  "label": "Thāne, IN",
+  "lat": 19.19704,
+  "long": 72.96355
+ },
+ {
+  "code": "IN-TIRUCHIRA",
+  "cc": "IN",
+  "label": "Tiruchirappalli, IN",
+  "lat": 10.8155,
+  "long": 78.69651
+ },
+ {
+  "code": "IN-TIRUNELVE",
+  "cc": "IN",
+  "label": "Tirunelveli, IN",
+  "lat": 8.72742,
+  "long": 77.6838
+ },
+ {
+  "code": "IN-VADODARA",
+  "cc": "IN",
+  "label": "Vadodara, IN",
+  "lat": 22.29941,
+  "long": 73.20812
+ },
+ {
+  "code": "IN-VARANASI",
+  "cc": "IN",
+  "label": "Varanasi, IN",
+  "lat": 25.31668,
+  "long": 83.01041
+ },
+ {
+  "code": "IN-VIJAYAWAD",
+  "cc": "IN",
+  "label": "Vijayawada, IN",
+  "lat": 16.50745,
+  "long": 80.6466
+ },
+ {
+  "code": "IN-VIRR",
+  "cc": "IN",
+  "label": "Virār, IN",
+  "lat": 19.45591,
+  "long": 72.81136
+ },
+ {
+  "code": "IN-VISAKHAPA",
+  "cc": "IN",
+  "label": "Visakhapatnam, IN",
+  "lat": 17.68009,
+  "long": 83.20161
+ },
+ {
+  "code": "IO-DOWNTOWN",
+  "cc": "IO",
+  "label": "Downtown, IO",
+  "lat": -7.26229,
+  "long": 72.37676
+ },
+ {
+  "code": "IQ-BAGHDAD",
+  "cc": "IQ",
+  "label": "Baghdad, IQ",
+  "lat": 33.34058,
+  "long": 44.40088
+ },
+ {
+  "code": "IQ-BASRAH",
+  "cc": "IQ",
+  "label": "Basrah, IQ",
+  "lat": 30.50852,
+  "long": 47.7804
+ },
+ {
+  "code": "IQ-ERBIL",
+  "cc": "IQ",
+  "label": "Erbil, IQ",
+  "lat": 36.19117,
+  "long": 44.00943
+ },
+ {
+  "code": "IQ-KARBALA",
+  "cc": "IQ",
+  "label": "Karbala, IQ",
+  "lat": 32.61603,
+  "long": 44.02488
+ },
+ {
+  "code": "IQ-KIRKUK",
+  "cc": "IQ",
+  "label": "Kirkuk, IQ",
+  "lat": 35.46806,
+  "long": 44.39222
+ },
+ {
+  "code": "IQ-MOSUL",
+  "cc": "IQ",
+  "label": "Mosul, IQ",
+  "lat": 36.335,
+  "long": 43.11889
+ },
+ {
+  "code": "IR-ISFAHAN",
+  "cc": "IR",
+  "label": "Isfahan, IR",
+  "lat": 32.65246,
+  "long": 51.67462
+ },
+ {
+  "code": "IR-KARAJ",
+  "cc": "IR",
+  "label": "Karaj, IR",
+  "lat": 35.83266,
+  "long": 50.99155
+ },
+ {
+  "code": "IR-MASHHAD",
+  "cc": "IR",
+  "label": "Mashhad, IR",
+  "lat": 36.29807,
+  "long": 59.60567
+ },
+ {
+  "code": "IR-SHIRAZ",
+  "cc": "IR",
+  "label": "Shiraz, IR",
+  "lat": 29.61031,
+  "long": 52.53113
+ },
+ {
+  "code": "IR-TABRIZ",
+  "cc": "IR",
+  "label": "Tabriz, IR",
+  "lat": 38.08,
+  "long": 46.2919
+ },
+ {
+  "code": "IR-TEHRAN",
+  "cc": "IR",
+  "label": "Tehran, IR",
+  "lat": 35.69439,
+  "long": 51.42151
+ },
+ {
+  "code": "IS-REYKJAVK",
+  "cc": "IS",
+  "label": "Reykjavík, IS",
+  "lat": 64.13548,
+  "long": -21.89541
+ },
+ {
+  "code": "IT-MILAN",
+  "cc": "IT",
+  "label": "Milan, IT",
+  "lat": 45.46427,
+  "long": 9.18951
+ },
+ {
+  "code": "IT-ROME",
+  "cc": "IT",
+  "label": "Rome, IT",
+  "lat": 41.89193,
+  "long": 12.51133
+ },
+ {
+  "code": "JE-SAINTHELI",
+  "cc": "JE",
+  "label": "Saint Helier, JE",
+  "lat": 49.18804,
+  "long": -2.10491
+ },
+ {
+  "code": "JM-KINGSTON",
+  "cc": "JM",
+  "label": "Kingston, JM",
+  "lat": 17.99702,
+  "long": -76.79358
+ },
+ {
+  "code": "JO-AMMAN",
+  "cc": "JO",
+  "label": "Amman, JO",
+  "lat": 31.95522,
+  "long": 35.94503
+ },
+ {
+  "code": "JP-FUKUOKA",
+  "cc": "JP",
+  "label": "Fukuoka, JP",
+  "lat": 33.6,
+  "long": 130.41667
+ },
+ {
+  "code": "JP-HIROSHIMA",
+  "cc": "JP",
+  "label": "Hiroshima, JP",
+  "lat": 34.4,
+  "long": 132.45
+ },
+ {
+  "code": "JP-KAWASAKI",
+  "cc": "JP",
+  "label": "Kawasaki, JP",
+  "lat": 35.52056,
+  "long": 139.71722
+ },
+ {
+  "code": "JP-KOBE",
+  "cc": "JP",
+  "label": "Kobe, JP",
+  "lat": 34.6913,
+  "long": 135.183
+ },
+ {
+  "code": "JP-KYOTO",
+  "cc": "JP",
+  "label": "Kyoto, JP",
+  "lat": 35.02107,
+  "long": 135.75385
+ },
+ {
+  "code": "JP-NAGOYA",
+  "cc": "JP",
+  "label": "Nagoya, JP",
+  "lat": 35.18147,
+  "long": 136.90641
+ },
+ {
+  "code": "JP-OSAKA",
+  "cc": "JP",
+  "label": "Osaka, JP",
+  "lat": 34.69379,
+  "long": 135.50107
+ },
+ {
+  "code": "JP-SAITAMA",
+  "cc": "JP",
+  "label": "Saitama, JP",
+  "lat": 35.90807,
+  "long": 139.65657
+ },
+ {
+  "code": "JP-SAPPORO",
+  "cc": "JP",
+  "label": "Sapporo, JP",
+  "lat": 43.06667,
+  "long": 141.35
+ },
+ {
+  "code": "JP-SENDAI",
+  "cc": "JP",
+  "label": "Sendai, JP",
+  "lat": 38.26667,
+  "long": 140.86667
+ },
+ {
+  "code": "JP-TOKYO",
+  "cc": "JP",
+  "label": "Tokyo, JP",
+  "lat": 35.6895,
+  "long": 139.69171
+ },
+ {
+  "code": "JP-YOKOHAMA",
+  "cc": "JP",
+  "label": "Yokohama, JP",
+  "lat": 35.43333,
+  "long": 139.65
+ },
+ {
+  "code": "KE-KAKAMEGA",
+  "cc": "KE",
+  "label": "Kakamega, KE",
+  "lat": 0.28422,
+  "long": 34.75229
+ },
+ {
+  "code": "KE-MOMBASA",
+  "cc": "KE",
+  "label": "Mombasa, KE",
+  "lat": -4.05466,
+  "long": 39.66359
+ },
+ {
+  "code": "KE-NAIROBI",
+  "cc": "KE",
+  "label": "Nairobi, KE",
+  "lat": -1.28333,
+  "long": 36.81667
+ },
+ {
+  "code": "KG-BISHKEK",
+  "cc": "KG",
+  "label": "Bishkek, KG",
+  "lat": 42.87,
+  "long": 74.59
+ },
+ {
+  "code": "KH-PHNOMPENH",
+  "cc": "KH",
+  "label": "Phnom Penh, KH",
+  "lat": 11.56245,
+  "long": 104.91601
+ },
+ {
+  "code": "KI-TARAWA",
+  "cc": "KI",
+  "label": "Tarawa, KI",
+  "lat": 1.3278,
+  "long": 172.97696
+ },
+ {
+  "code": "KM-MORONI",
+  "cc": "KM",
+  "label": "Moroni, KM",
+  "lat": -11.70216,
+  "long": 43.25506
+ },
+ {
+  "code": "KN-BASSETERR",
+  "cc": "KN",
+  "label": "Basseterre, KN",
+  "lat": 17.2955,
+  "long": -62.72499
+ },
+ {
+  "code": "KP-PYONGYANG",
+  "cc": "KP",
+  "label": "Pyongyang, KP",
+  "lat": 39.03385,
+  "long": 125.75432
+ },
+ {
+  "code": "KR-BUSAN",
+  "cc": "KR",
+  "label": "Busan, KR",
+  "lat": 35.10168,
+  "long": 129.03004
+ },
+ {
+  "code": "KR-CHANGWON",
+  "cc": "KR",
+  "label": "Changwon, KR",
+  "lat": 35.22806,
+  "long": 128.68111
+ },
+ {
+  "code": "KR-DAEGU",
+  "cc": "KR",
+  "label": "Daegu, KR",
+  "lat": 35.87028,
+  "long": 128.59111
+ },
+ {
+  "code": "KR-DAEJEON",
+  "cc": "KR",
+  "label": "Daejeon, KR",
+  "lat": 36.34913,
+  "long": 127.38493
+ },
+ {
+  "code": "KR-GOYANGSI",
+  "cc": "KR",
+  "label": "Goyang-si, KR",
+  "lat": 37.65639,
+  "long": 126.835
+ },
+ {
+  "code": "KR-GWANGJU",
+  "cc": "KR",
+  "label": "Gwangju, KR",
+  "lat": 35.15472,
+  "long": 126.91556
+ },
+ {
+  "code": "KR-INCHEON",
+  "cc": "KR",
+  "label": "Incheon, KR",
+  "lat": 37.45646,
+  "long": 126.70515
+ },
+ {
+  "code": "KR-SEOUL",
+  "cc": "KR",
+  "label": "Seoul, KR",
+  "lat": 37.566,
+  "long": 126.9784
+ },
+ {
+  "code": "KR-SUWON",
+  "cc": "KR",
+  "label": "Suwon, KR",
+  "lat": 37.29111,
+  "long": 127.00889
+ },
+ {
+  "code": "KR-ULSAN",
+  "cc": "KR",
+  "label": "Ulsan, KR",
+  "lat": 35.53722,
+  "long": 129.31667
+ },
+ {
+  "code": "KW-ALAMAD",
+  "cc": "KW",
+  "label": "Al Aḩmadī, KW",
+  "lat": 29.07694,
+  "long": 48.08389
+ },
+ {
+  "code": "KY-GEORGETOW",
+  "cc": "KY",
+  "label": "George Town, KY",
+  "lat": 19.2866,
+  "long": -81.37436
+ },
+ {
+  "code": "KZ-ALMATY",
+  "cc": "KZ",
+  "label": "Almaty, KZ",
+  "lat": 43.25249,
+  "long": 76.9115
+ },
+ {
+  "code": "KZ-SHYMKENT",
+  "cc": "KZ",
+  "label": "Shymkent, KZ",
+  "lat": 42.30988,
+  "long": 69.60042
+ },
+ {
+  "code": "LA-VIENTIANE",
+  "cc": "LA",
+  "label": "Vientiane, LA",
+  "lat": 17.96667,
+  "long": 102.6
+ },
+ {
+  "code": "LB-BEIRUT",
+  "cc": "LB",
+  "label": "Beirut, LB",
+  "lat": 33.89332,
+  "long": 35.50157
+ },
+ {
+  "code": "LC-GROSISLET",
+  "cc": "LC",
+  "label": "Gros Islet, LC",
+  "lat": 14.06667,
+  "long": -60.95
+ },
+ {
+  "code": "LI-SCHAAN",
+  "cc": "LI",
+  "label": "Schaan, LI",
+  "lat": 47.16498,
+  "long": 9.50867
+ },
+ {
+  "code": "LK-COLOMBO",
+  "cc": "LK",
+  "label": "Colombo, LK",
+  "lat": 6.93548,
+  "long": 79.84868
+ },
+ {
+  "code": "LR-MONROVIA",
+  "cc": "LR",
+  "label": "Monrovia, LR",
+  "lat": 6.30054,
+  "long": -10.7969
+ },
+ {
+  "code": "LS-MASERU",
+  "cc": "LS",
+  "label": "Maseru, LS",
+  "lat": -29.31667,
+  "long": 27.48333
+ },
+ {
+  "code": "LT-VILNIUS",
+  "cc": "LT",
+  "label": "Vilnius, LT",
+  "lat": 54.68916,
+  "long": 25.2798
+ },
+ {
+  "code": "LU-LUXEMBOUR",
+  "cc": "LU",
+  "label": "Luxembourg, LU",
+  "lat": 49.60982,
+  "long": 6.13268
+ },
+ {
+  "code": "LV-RIGA",
+  "cc": "LV",
+  "label": "Riga, LV",
+  "lat": 56.946,
+  "long": 24.10589
+ },
+ {
+  "code": "LY-TRIPOLI",
+  "cc": "LY",
+  "label": "Tripoli, LY",
+  "lat": 32.88743,
+  "long": 13.18733
+ },
+ {
+  "code": "MA-CASABLANC",
+  "cc": "MA",
+  "label": "Casablanca, MA",
+  "lat": 33.58831,
+  "long": -7.61138
+ },
+ {
+  "code": "MA-FES",
+  "cc": "MA",
+  "label": "Fes, MA",
+  "lat": 34.03313,
+  "long": -5.00028
+ },
+ {
+  "code": "MA-RABAT",
+  "cc": "MA",
+  "label": "Rabat, MA",
+  "lat": 34.01325,
+  "long": -6.83255
+ },
+ {
+  "code": "MA-TANGIER",
+  "cc": "MA",
+  "label": "Tangier, MA",
+  "lat": 35.76727,
+  "long": -5.79975
+ },
+ {
+  "code": "MC-MONACO",
+  "cc": "MC",
+  "label": "Monaco, MC",
+  "lat": 43.73718,
+  "long": 7.42145
+ },
+ {
+  "code": "MD-CHISINAU",
+  "cc": "MD",
+  "label": "Chisinau, MD",
+  "lat": 47.00902,
+  "long": 28.85938
+ },
+ {
+  "code": "ME-PODGORICA",
+  "cc": "ME",
+  "label": "Podgorica, ME",
+  "lat": 42.44124,
+  "long": 19.26309
+ },
+ {
+  "code": "MF-GRANDCASE",
+  "cc": "MF",
+  "label": "Grand-Case, MF",
+  "lat": 18.10476,
+  "long": -63.05358
+ },
+ {
+  "code": "MG-ANTANANAR",
+  "cc": "MG",
+  "label": "Antananarivo, MG",
+  "lat": -18.91368,
+  "long": 47.53613
+ },
+ {
+  "code": "MH-MAJURO",
+  "cc": "MH",
+  "label": "Majuro, MH",
+  "lat": 7.08971,
+  "long": 171.38027
+ },
+ {
+  "code": "MK-SKOPJE",
+  "cc": "MK",
+  "label": "Skopje, MK",
+  "lat": 41.99646,
+  "long": 21.43141
+ },
+ {
+  "code": "ML-BAMAKO",
+  "cc": "ML",
+  "label": "Bamako, ML",
+  "lat": 12.60915,
+  "long": -7.97522
+ },
+ {
+  "code": "MM-MANDALAY",
+  "cc": "MM",
+  "label": "Mandalay, MM",
+  "lat": 21.97473,
+  "long": 96.08359
+ },
+ {
+  "code": "MM-YANGON",
+  "cc": "MM",
+  "label": "Yangon, MM",
+  "lat": 16.80528,
+  "long": 96.15611
+ },
+ {
+  "code": "MN-ULANBATOR",
+  "cc": "MN",
+  "label": "Ulan Bator, MN",
+  "lat": 47.90771,
+  "long": 106.88324
+ },
+ {
+  "code": "MO-MACAU",
+  "cc": "MO",
+  "label": "Macau, MO",
+  "lat": 22.20056,
+  "long": 113.54611
+ },
+ {
+  "code": "MP-SAIPAN",
+  "cc": "MP",
+  "label": "Saipan, MP",
+  "lat": 15.21233,
+  "long": 145.7545
+ },
+ {
+  "code": "MQ-FORTDEFRA",
+  "cc": "MQ",
+  "label": "Fort-de-France, MQ",
+  "lat": 14.60365,
+  "long": -61.07418
+ },
+ {
+  "code": "MR-NOUAKCHOT",
+  "cc": "MR",
+  "label": "Nouakchott, MR",
+  "lat": 18.08581,
+  "long": -15.9785
+ },
+ {
+  "code": "MS-SALEM",
+  "cc": "MS",
+  "label": "Salem, MS",
+  "lat": 16.75095,
+  "long": -62.22175
+ },
+ {
+  "code": "MT-SANPAWLIL",
+  "cc": "MT",
+  "label": "San Pawl il-Baħar, MT",
+  "lat": 35.95064,
+  "long": 14.41561
+ },
+ {
+  "code": "MU-PORTLOUIS",
+  "cc": "MU",
+  "label": "Port Louis, MU",
+  "lat": -20.16194,
+  "long": 57.49889
+ },
+ {
+  "code": "MV-MALE",
+  "cc": "MV",
+  "label": "Male, MV",
+  "lat": 4.17521,
+  "long": 73.50916
+ },
+ {
+  "code": "MW-LILONGWE",
+  "cc": "MW",
+  "label": "Lilongwe, MW",
+  "lat": -13.96692,
+  "long": 33.78725
+ },
+ {
+  "code": "MX-CIUDADJUR",
+  "cc": "MX",
+  "label": "Ciudad Juárez, MX",
+  "lat": 31.72024,
+  "long": -106.46084
+ },
+ {
+  "code": "MX-CIUDADNEZ",
+  "cc": "MX",
+  "label": "Ciudad Nezahualcoyotl, MX",
+  "lat": 19.40061,
+  "long": -99.01483
+ },
+ {
+  "code": "MX-ECATEPECD",
+  "cc": "MX",
+  "label": "Ecatepec de Morelos, MX",
+  "lat": 19.60492,
+  "long": -99.06064
+ },
+ {
+  "code": "MX-GUADALAJA",
+  "cc": "MX",
+  "label": "Guadalajara, MX",
+  "lat": 20.67738,
+  "long": -103.34749
+ },
+ {
+  "code": "MX-GUSTAVOAD",
+  "cc": "MX",
+  "label": "Gustavo Adolfo Madero, MX",
+  "lat": 19.49392,
+  "long": -99.11075
+ },
+ {
+  "code": "MX-IZTAPALAP",
+  "cc": "MX",
+  "label": "Iztapalapa, MX",
+  "lat": 19.35529,
+  "long": -99.06224
+ },
+ {
+  "code": "MX-LENDELOSA",
+  "cc": "MX",
+  "label": "León de los Aldama, MX",
+  "lat": 21.12908,
+  "long": -101.67374
+ },
+ {
+  "code": "MX-MEXICALI",
+  "cc": "MX",
+  "label": "Mexicali, MX",
+  "lat": 32.62781,
+  "long": -115.45446
+ },
+ {
+  "code": "MX-MEXICOCIT",
+  "cc": "MX",
+  "label": "Mexico City, MX",
+  "lat": 19.42847,
+  "long": -99.12766
+ },
+ {
+  "code": "MX-MONTERREY",
+  "cc": "MX",
+  "label": "Monterrey, MX",
+  "lat": 25.68435,
+  "long": -100.31721
+ },
+ {
+  "code": "MX-MRIDA",
+  "cc": "MX",
+  "label": "Mérida, MX",
+  "lat": 20.967,
+  "long": -89.62318
+ },
+ {
+  "code": "MX-PUEBLA",
+  "cc": "MX",
+  "label": "Puebla, MX",
+  "lat": 19.04778,
+  "long": -98.20723
+ },
+ {
+  "code": "MX-SANTIAGOD",
+  "cc": "MX",
+  "label": "Santiago de Querétaro, MX",
+  "lat": 20.58806,
+  "long": -100.38806
+ },
+ {
+  "code": "MX-TIJUANA",
+  "cc": "MX",
+  "label": "Tijuana, MX",
+  "lat": 32.5027,
+  "long": -117.00371
+ },
+ {
+  "code": "MX-ZAPOPAN",
+  "cc": "MX",
+  "label": "Zapopan, MX",
+  "lat": 20.72111,
+  "long": -103.38742
+ },
+ {
+  "code": "MY-KUALALUMP",
+  "cc": "MY",
+  "label": "Kuala Lumpur, MY",
+  "lat": 3.1412,
+  "long": 101.68653
+ },
+ {
+  "code": "MZ-MAPUTO",
+  "cc": "MZ",
+  "label": "Maputo, MZ",
+  "lat": -25.96553,
+  "long": 32.58322
+ },
+ {
+  "code": "MZ-MATOLA",
+  "cc": "MZ",
+  "label": "Matola, MZ",
+  "lat": -25.96222,
+  "long": 32.45889
+ },
+ {
+  "code": "NA-WINDHOEK",
+  "cc": "NA",
+  "label": "Windhoek, NA",
+  "lat": -22.55941,
+  "long": 17.08323
+ },
+ {
+  "code": "NC-NOUMA",
+  "cc": "NC",
+  "label": "Nouméa, NC",
+  "lat": -22.27407,
+  "long": 166.44884
+ },
+ {
+  "code": "NE-NIAMEY",
+  "cc": "NE",
+  "label": "Niamey, NE",
+  "lat": 13.51366,
+  "long": 2.1098
+ },
+ {
+  "code": "NF-KINGSTON",
+  "cc": "NF",
+  "label": "Kingston, NF",
+  "lat": -29.05459,
+  "long": 167.96628
+ },
+ {
+  "code": "NG-ABA",
+  "cc": "NG",
+  "label": "Aba, NG",
+  "lat": 5.10658,
+  "long": 7.36667
+ },
+ {
+  "code": "NG-ABUJA",
+  "cc": "NG",
+  "label": "Abuja, NG",
+  "lat": 9.05785,
+  "long": 7.49508
+ },
+ {
+  "code": "NG-BENINCITY",
+  "cc": "NG",
+  "label": "Benin City, NG",
+  "lat": 6.33815,
+  "long": 5.62575
+ },
+ {
+  "code": "NG-IBADAN",
+  "cc": "NG",
+  "label": "Ibadan, NG",
+  "lat": 7.37756,
+  "long": 3.90591
+ },
+ {
+  "code": "NG-ILORIN",
+  "cc": "NG",
+  "label": "Ilorin, NG",
+  "lat": 8.49664,
+  "long": 4.54214
+ },
+ {
+  "code": "NG-JOS",
+  "cc": "NG",
+  "label": "Jos, NG",
+  "lat": 9.92849,
+  "long": 8.89212
+ },
+ {
+  "code": "NG-KADUNA",
+  "cc": "NG",
+  "label": "Kaduna, NG",
+  "lat": 10.52641,
+  "long": 7.43879
+ },
+ {
+  "code": "NG-KANO",
+  "cc": "NG",
+  "label": "Kano, NG",
+  "lat": 12.00012,
+  "long": 8.51672
+ },
+ {
+  "code": "NG-LAGOS",
+  "cc": "NG",
+  "label": "Lagos, NG",
+  "lat": 6.45407,
+  "long": 3.39467
+ },
+ {
+  "code": "NG-MAIDUGURI",
+  "cc": "NG",
+  "label": "Maiduguri, NG",
+  "lat": 11.84692,
+  "long": 13.15712
+ },
+ {
+  "code": "NG-ONITSHA",
+  "cc": "NG",
+  "label": "Onitsha, NG",
+  "lat": 6.14978,
+  "long": 6.78569
+ },
+ {
+  "code": "NG-PORTHARCO",
+  "cc": "NG",
+  "label": "Port Harcourt, NG",
+  "lat": 4.77742,
+  "long": 7.0134
+ },
+ {
+  "code": "NG-SOKOTO",
+  "cc": "NG",
+  "label": "Sokoto, NG",
+  "lat": 13.06269,
+  "long": 5.24322
+ },
+ {
+  "code": "NI-MANAGUA",
+  "cc": "NI",
+  "label": "Managua, NI",
+  "lat": 12.13282,
+  "long": -86.2504
+ },
+ {
+  "code": "NL-ROTTERDAM",
+  "cc": "NL",
+  "label": "Rotterdam, NL",
+  "lat": 51.9225,
+  "long": 4.47917
+ },
+ {
+  "code": "NO-OSLO",
+  "cc": "NO",
+  "label": "Oslo, NO",
+  "lat": 59.91273,
+  "long": 10.74609
+ },
+ {
+  "code": "NP-KATHMANDU",
+  "cc": "NP",
+  "label": "Kathmandu, NP",
+  "lat": 27.70169,
+  "long": 85.3206
+ },
+ {
+  "code": "NR-ARIJEJEN",
+  "cc": "NR",
+  "label": "Arijejen, NR",
+  "lat": -0.52545,
+  "long": 166.91247
+ },
+ {
+  "code": "NU-ALOFI",
+  "cc": "NU",
+  "label": "Alofi, NU",
+  "lat": -19.05294,
+  "long": -169.91957
+ },
+ {
+  "code": "NZ-AUCKLAND",
+  "cc": "NZ",
+  "label": "Auckland, NZ",
+  "lat": -36.84853,
+  "long": 174.76349
+ },
+ {
+  "code": "OM-MUSCAT",
+  "cc": "OM",
+  "label": "Muscat, OM",
+  "lat": 23.58413,
+  "long": 58.40778
+ },
+ {
+  "code": "PA-PANAM",
+  "cc": "PA",
+  "label": "Panamá, PA",
+  "lat": 8.9936,
+  "long": -79.51973
+ },
+ {
+  "code": "PE-AREQUIPA",
+  "cc": "PE",
+  "label": "Arequipa, PE",
+  "lat": -16.39899,
+  "long": -71.53747
+ },
+ {
+  "code": "PE-CALLAO",
+  "cc": "PE",
+  "label": "Callao, PE",
+  "lat": -12.05162,
+  "long": -77.13452
+ },
+ {
+  "code": "PE-LIMA",
+  "cc": "PE",
+  "label": "Lima, PE",
+  "lat": -12.04318,
+  "long": -77.02824
+ },
+ {
+  "code": "PF-FAAA",
+  "cc": "PF",
+  "label": "Faaa, PF",
+  "lat": -17.55933,
+  "long": -149.60352
+ },
+ {
+  "code": "PG-PORTMORES",
+  "cc": "PG",
+  "label": "Port Moresby, PG",
+  "lat": -9.47723,
+  "long": 147.15089
+ },
+ {
+  "code": "PH-BUDTA",
+  "cc": "PH",
+  "label": "Budta, PH",
+  "lat": 7.20417,
+  "long": 124.43972
+ },
+ {
+  "code": "PH-CALOOCANC",
+  "cc": "PH",
+  "label": "Caloocan City, PH",
+  "lat": 14.64953,
+  "long": 120.96788
+ },
+ {
+  "code": "PH-DAVAO",
+  "cc": "PH",
+  "label": "Davao, PH",
+  "lat": 7.07306,
+  "long": 125.61278
+ },
+ {
+  "code": "PH-MALINGAO",
+  "cc": "PH",
+  "label": "Malingao, PH",
+  "lat": 7.16083,
+  "long": 124.475
+ },
+ {
+  "code": "PH-MANILA",
+  "cc": "PH",
+  "label": "Manila, PH",
+  "lat": 14.6042,
+  "long": 120.9822
+ },
+ {
+  "code": "PH-QUEZONCIT",
+  "cc": "PH",
+  "label": "Quezon City, PH",
+  "lat": 14.6488,
+  "long": 121.0509
+ },
+ {
+  "code": "PH-TAGUIG",
+  "cc": "PH",
+  "label": "Taguig, PH",
+  "lat": 14.5243,
+  "long": 121.0792
+ },
+ {
+  "code": "PH-ZAMBOANGA",
+  "cc": "PH",
+  "label": "Zamboanga, PH",
+  "lat": 6.91028,
+  "long": 122.07389
+ },
+ {
+  "code": "PK-BANNU",
+  "cc": "PK",
+  "label": "Bannu, PK",
+  "lat": 32.98527,
+  "long": 70.60403
+ },
+ {
+  "code": "PK-FAISALABA",
+  "cc": "PK",
+  "label": "Faisalabad, PK",
+  "lat": 31.41554,
+  "long": 73.08969
+ },
+ {
+  "code": "PK-GUJRANWAL",
+  "cc": "PK",
+  "label": "Gujranwala, PK",
+  "lat": 32.15567,
+  "long": 74.18705
+ },
+ {
+  "code": "PK-HYDERABAD",
+  "cc": "PK",
+  "label": "Hyderabad, PK",
+  "lat": 25.39689,
+  "long": 68.37718
+ },
+ {
+  "code": "PK-KARACHI",
+  "cc": "PK",
+  "label": "Karachi, PK",
+  "lat": 24.8608,
+  "long": 67.0104
+ },
+ {
+  "code": "PK-LAHORE",
+  "cc": "PK",
+  "label": "Lahore, PK",
+  "lat": 31.558,
+  "long": 74.35071
+ },
+ {
+  "code": "PK-MULTAN",
+  "cc": "PK",
+  "label": "Multan, PK",
+  "lat": 30.19679,
+  "long": 71.47824
+ },
+ {
+  "code": "PK-PESHAWAR",
+  "cc": "PK",
+  "label": "Peshawar, PK",
+  "lat": 34.008,
+  "long": 71.57849
+ },
+ {
+  "code": "PK-QUETTA",
+  "cc": "PK",
+  "label": "Quetta, PK",
+  "lat": 30.18414,
+  "long": 67.00141
+ },
+ {
+  "code": "PK-RAWALPIND",
+  "cc": "PK",
+  "label": "Rawalpindi, PK",
+  "lat": 33.59733,
+  "long": 73.0479
+ },
+ {
+  "code": "PL-WARSAW",
+  "cc": "PL",
+  "label": "Warsaw, PL",
+  "lat": 52.22977,
+  "long": 21.01178
+ },
+ {
+  "code": "PM-SAINTPIER",
+  "cc": "PM",
+  "label": "Saint-Pierre, PM",
+  "lat": 46.77914,
+  "long": -56.1773
+ },
+ {
+  "code": "PR-SANJUAN",
+  "cc": "PR",
+  "label": "San Juan, PR",
+  "lat": 18.46633,
+  "long": -66.10572
+ },
+ {
+  "code": "PS-GAZA",
+  "cc": "PS",
+  "label": "Gaza, PS",
+  "lat": 31.50161,
+  "long": 34.46672
+ },
+ {
+  "code": "PT-LISBON",
+  "cc": "PT",
+  "label": "Lisbon, PT",
+  "lat": 38.72509,
+  "long": -9.1498
+ },
+ {
+  "code": "PW-KOROR",
+  "cc": "PW",
+  "label": "Koror, PW",
+  "lat": 7.33978,
+  "long": 134.47326
+ },
+ {
+  "code": "PY-ASUNCIN",
+  "cc": "PY",
+  "label": "Asunción, PY",
+  "lat": -25.28646,
+  "long": -57.647
+ },
+ {
+  "code": "QA-DOHA",
+  "cc": "QA",
+  "label": "Doha, QA",
+  "lat": 25.28545,
+  "long": 51.53096
+ },
+ {
+  "code": "RE-SAINTDENI",
+  "cc": "RE",
+  "label": "Saint-Denis, RE",
+  "lat": -20.88231,
+  "long": 55.4504
+ },
+ {
+  "code": "RO-BUCHAREST",
+  "cc": "RO",
+  "label": "Bucharest, RO",
+  "lat": 44.43225,
+  "long": 26.10626
+ },
+ {
+  "code": "RS-BELGRADE",
+  "cc": "RS",
+  "label": "Belgrade, RS",
+  "lat": 44.80401,
+  "long": 20.46513
+ },
+ {
+  "code": "RU-CHELYABIN",
+  "cc": "RU",
+  "label": "Chelyabinsk, RU",
+  "lat": 55.1611,
+  "long": 61.42877
+ },
+ {
+  "code": "RU-KAZAN",
+  "cc": "RU",
+  "label": "Kazan, RU",
+  "lat": 55.78874,
+  "long": 49.12214
+ },
+ {
+  "code": "RU-KRASNOYAR",
+  "cc": "RU",
+  "label": "Krasnoyarsk, RU",
+  "lat": 56.03742,
+  "long": 92.93136
+ },
+ {
+  "code": "RU-MOSCOW",
+  "cc": "RU",
+  "label": "Moscow, RU",
+  "lat": 55.75204,
+  "long": 37.61781
+ },
+ {
+  "code": "RU-NIZHNIYNO",
+  "cc": "RU",
+  "label": "Nizhniy Novgorod, RU",
+  "lat": 56.32867,
+  "long": 44.00205
+ },
+ {
+  "code": "RU-NOVOSIBIR",
+  "cc": "RU",
+  "label": "Novosibirsk, RU",
+  "lat": 55.02259,
+  "long": 82.93175
+ },
+ {
+  "code": "RU-OMSK",
+  "cc": "RU",
+  "label": "Omsk, RU",
+  "lat": 54.99244,
+  "long": 73.36859
+ },
+ {
+  "code": "RU-ROSTOVNAD",
+  "cc": "RU",
+  "label": "Rostov-na-Donu, RU",
+  "lat": 47.21997,
+  "long": 39.70769
+ },
+ {
+  "code": "RU-SAINTPETE",
+  "cc": "RU",
+  "label": "Saint Petersburg, RU",
+  "lat": 59.93863,
+  "long": 30.31413
+ },
+ {
+  "code": "RU-SAMARA",
+  "cc": "RU",
+  "label": "Samara, RU",
+  "lat": 53.20767,
+  "long": 50.13553
+ },
+ {
+  "code": "RU-UFA",
+  "cc": "RU",
+  "label": "Ufa, RU",
+  "lat": 54.74306,
+  "long": 55.96779
+ },
+ {
+  "code": "RU-VOLGOGRAD",
+  "cc": "RU",
+  "label": "Volgograd, RU",
+  "lat": 48.71378,
+  "long": 44.4976
+ },
+ {
+  "code": "RU-VORONEZH",
+  "cc": "RU",
+  "label": "Voronezh, RU",
+  "lat": 51.66833,
+  "long": 39.19204
+ },
+ {
+  "code": "RU-YEKATERIN",
+  "cc": "RU",
+  "label": "Yekaterinburg, RU",
+  "lat": 56.85733,
+  "long": 60.61529
+ },
+ {
+  "code": "RW-KIGALI",
+  "cc": "RW",
+  "label": "Kigali, RW",
+  "lat": -1.94995,
+  "long": 30.05885
+ },
+ {
+  "code": "SA-DAMMAM",
+  "cc": "SA",
+  "label": "Dammam, SA",
+  "lat": 26.43442,
+  "long": 50.10326
+ },
+ {
+  "code": "SA-JEDDAH",
+  "cc": "SA",
+  "label": "Jeddah, SA",
+  "lat": 21.49012,
+  "long": 39.18624
+ },
+ {
+  "code": "SA-MADINAH",
+  "cc": "SA",
+  "label": "Madinah, SA",
+  "lat": 24.46861,
+  "long": 39.61417
+ },
+ {
+  "code": "SA-MAKKAH",
+  "cc": "SA",
+  "label": "Makkah, SA",
+  "lat": 21.42664,
+  "long": 39.82563
+ },
+ {
+  "code": "SA-RIYADH",
+  "cc": "SA",
+  "label": "Riyadh, SA",
+  "lat": 24.68773,
+  "long": 46.72185
+ },
+ {
+  "code": "SB-HONIARA",
+  "cc": "SB",
+  "label": "Honiara, SB",
+  "lat": -9.43333,
+  "long": 159.95
+ },
+ {
+  "code": "SC-VICTORIA",
+  "cc": "SC",
+  "label": "Victoria, SC",
+  "lat": -4.62001,
+  "long": 55.45501
+ },
+ {
+  "code": "SD-KHARTOUM",
+  "cc": "SD",
+  "label": "Khartoum, SD",
+  "lat": 15.55177,
+  "long": 32.53241
+ },
+ {
+  "code": "SD-KHARTOUMN",
+  "cc": "SD",
+  "label": "Khartoum North, SD",
+  "lat": 15.64925,
+  "long": 32.53458
+ },
+ {
+  "code": "SD-OMDURMAN",
+  "cc": "SD",
+  "label": "Omdurman, SD",
+  "lat": 15.64453,
+  "long": 32.47773
+ },
+ {
+  "code": "SE-STOCKHOLM",
+  "cc": "SE",
+  "label": "Stockholm, SE",
+  "lat": 59.32938,
+  "long": 18.06871
+ },
+ {
+  "code": "SG-SINGAPORE",
+  "cc": "SG",
+  "label": "Singapore, SG",
+  "lat": 1.28967,
+  "long": 103.85007
+ },
+ {
+  "code": "SH-GEORGETOW",
+  "cc": "SH",
+  "label": "Georgetown, SH",
+  "lat": -7.92861,
+  "long": -14.41194
+ },
+ {
+  "code": "SI-LJUBLJANA",
+  "cc": "SI",
+  "label": "Ljubljana, SI",
+  "lat": 46.05108,
+  "long": 14.50513
+ },
+ {
+  "code": "SJ-LONGYEARB",
+  "cc": "SJ",
+  "label": "Longyearbyen, SJ",
+  "lat": 78.22334,
+  "long": 15.64689
+ },
+ {
+  "code": "SK-BRATISLAV",
+  "cc": "SK",
+  "label": "Bratislava, SK",
+  "lat": 48.14816,
+  "long": 17.10674
+ },
+ {
+  "code": "SL-FREETOWN",
+  "cc": "SL",
+  "label": "Freetown, SL",
+  "lat": 8.48714,
+  "long": -13.2356
+ },
+ {
+  "code": "SM-SERRAVALL",
+  "cc": "SM",
+  "label": "Serravalle, SM",
+  "lat": 43.96897,
+  "long": 12.48167
+ },
+ {
+  "code": "SN-DAKAR",
+  "cc": "SN",
+  "label": "Dakar, SN",
+  "lat": 14.6937,
+  "long": -17.44406
+ },
+ {
+  "code": "SN-TOUBA",
+  "cc": "SN",
+  "label": "Touba, SN",
+  "lat": 14.85,
+  "long": -15.88333
+ },
+ {
+  "code": "SO-MOGADISHU",
+  "cc": "SO",
+  "label": "Mogadishu, SO",
+  "lat": 2.03711,
+  "long": 45.34375
+ },
+ {
+  "code": "SR-PARAMARIB",
+  "cc": "SR",
+  "label": "Paramaribo, SR",
+  "lat": 5.86638,
+  "long": -55.16682
+ },
+ {
+  "code": "SS-JUBA",
+  "cc": "SS",
+  "label": "Juba, SS",
+  "lat": 4.85165,
+  "long": 31.58247
+ },
+ {
+  "code": "ST-SOTOM",
+  "cc": "ST",
+  "label": "São Tomé, ST",
+  "lat": 0.33756,
+  "long": 6.7299
+ },
+ {
+  "code": "SV-SANSALVAD",
+  "cc": "SV",
+  "label": "San Salvador, SV",
+  "lat": 13.68935,
+  "long": -89.18718
+ },
+ {
+  "code": "SX-CULDESAC",
+  "cc": "SX",
+  "label": "Cul de Sac, SX",
+  "lat": 18.04852,
+  "long": -63.06513
+ },
+ {
+  "code": "SY-ALEPPO",
+  "cc": "SY",
+  "label": "Aleppo, SY",
+  "lat": 36.20124,
+  "long": 37.16117
+ },
+ {
+  "code": "SY-DAMASCUS",
+  "cc": "SY",
+  "label": "Damascus, SY",
+  "lat": 33.5102,
+  "long": 36.29128
+ },
+ {
+  "code": "SZ-MANZINI",
+  "cc": "SZ",
+  "label": "Manzini, SZ",
+  "lat": -26.49884,
+  "long": 31.38004
+ },
+ {
+  "code": "TC-PROVIDENC",
+  "cc": "TC",
+  "label": "Providenciales, TC",
+  "lat": 21.78254,
+  "long": -72.25206
+ },
+ {
+  "code": "TD-NDJAMENA",
+  "cc": "TD",
+  "label": "N'Djamena, TD",
+  "lat": 12.10672,
+  "long": 15.0444
+ },
+ {
+  "code": "TG-LOM",
+  "cc": "TG",
+  "label": "Lomé, TG",
+  "lat": 6.12874,
+  "long": 1.22154
+ },
+ {
+  "code": "TH-BANGKOK",
+  "cc": "TH",
+  "label": "Bangkok, TH",
+  "lat": 13.75398,
+  "long": 100.50144
+ },
+ {
+  "code": "TJ-DUSHANBE",
+  "cc": "TJ",
+  "label": "Dushanbe, TJ",
+  "lat": 38.53575,
+  "long": 68.77905
+ },
+ {
+  "code": "TK-NUKUNONU",
+  "cc": "TK",
+  "label": "Nukunonu, TK",
+  "lat": -9.20045,
+  "long": -171.84804
+ },
+ {
+  "code": "TL-DILI",
+  "cc": "TL",
+  "label": "Dili, TL",
+  "lat": -8.55861,
+  "long": 125.57361
+ },
+ {
+  "code": "TM-ASHGABAT",
+  "cc": "TM",
+  "label": "Ashgabat, TM",
+  "lat": 37.95,
+  "long": 58.38333
+ },
+ {
+  "code": "TN-TUNIS",
+  "cc": "TN",
+  "label": "Tunis, TN",
+  "lat": 36.81897,
+  "long": 10.16579
+ },
+ {
+  "code": "TO-NUKUALOFA",
+  "cc": "TO",
+  "label": "Nuku‘alofa, TO",
+  "lat": -21.13683,
+  "long": -175.20114
+ },
+ {
+  "code": "TR-ADANA",
+  "cc": "TR",
+  "label": "Adana, TR",
+  "lat": 36.98615,
+  "long": 35.32531
+ },
+ {
+  "code": "TR-ANKARA",
+  "cc": "TR",
+  "label": "Ankara, TR",
+  "lat": 39.91987,
+  "long": 32.85427
+ },
+ {
+  "code": "TR-ANTALYA",
+  "cc": "TR",
+  "label": "Antalya, TR",
+  "lat": 36.90812,
+  "long": 30.69556
+ },
+ {
+  "code": "TR-BURSA",
+  "cc": "TR",
+  "label": "Bursa, TR",
+  "lat": 40.19559,
+  "long": 29.06013
+ },
+ {
+  "code": "TR-DIYARBAKI",
+  "cc": "TR",
+  "label": "Diyarbakır, TR",
+  "lat": 37.91363,
+  "long": 40.21721
+ },
+ {
+  "code": "TR-GAZIANTEP",
+  "cc": "TR",
+  "label": "Gaziantep, TR",
+  "lat": 37.05944,
+  "long": 37.3825
+ },
+ {
+  "code": "TR-ISTANBUL",
+  "cc": "TR",
+  "label": "Istanbul, TR",
+  "lat": 41.01384,
+  "long": 28.94966
+ },
+ {
+  "code": "TR-KAYSERI",
+  "cc": "TR",
+  "label": "Kayseri, TR",
+  "lat": 38.73222,
+  "long": 35.48528
+ },
+ {
+  "code": "TR-KONYA",
+  "cc": "TR",
+  "label": "Konya, TR",
+  "lat": 37.87135,
+  "long": 32.48464
+ },
+ {
+  "code": "TR-ZMIR",
+  "cc": "TR",
+  "label": "İzmir, TR",
+  "lat": 38.41273,
+  "long": 27.13838
+ },
+ {
+  "code": "TT-CHAGUANAS",
+  "cc": "TT",
+  "label": "Chaguanas, TT",
+  "lat": 10.51667,
+  "long": -61.41667
+ },
+ {
+  "code": "TV-FUNAFUTI",
+  "cc": "TV",
+  "label": "Funafuti, TV",
+  "lat": -8.52425,
+  "long": 179.19417
+ },
+ {
+  "code": "TW-KAOHSIUNG",
+  "cc": "TW",
+  "label": "Kaohsiung, TW",
+  "lat": 22.61626,
+  "long": 120.31333
+ },
+ {
+  "code": "TW-NEWTAIPEI",
+  "cc": "TW",
+  "label": "New Taipei City, TW",
+  "lat": 25.06199,
+  "long": 121.45703
+ },
+ {
+  "code": "TW-TAICHUNG",
+  "cc": "TW",
+  "label": "Taichung, TW",
+  "lat": 24.1469,
+  "long": 120.6839
+ },
+ {
+  "code": "TW-TAINAN",
+  "cc": "TW",
+  "label": "Tainan, TW",
+  "lat": 22.99083,
+  "long": 120.21333
+ },
+ {
+  "code": "TW-TAIPEI",
+  "cc": "TW",
+  "label": "Taipei, TW",
+  "lat": 25.05306,
+  "long": 121.52639
+ },
+ {
+  "code": "TZ-DARESSALA",
+  "cc": "TZ",
+  "label": "Dar es Salaam, TZ",
+  "lat": -6.82349,
+  "long": 39.26951
+ },
+ {
+  "code": "TZ-MWANZA",
+  "cc": "TZ",
+  "label": "Mwanza, TZ",
+  "lat": -2.51667,
+  "long": 32.9
+ },
+ {
+  "code": "UA-KHARKIV",
+  "cc": "UA",
+  "label": "Kharkiv, UA",
+  "lat": 49.98177,
+  "long": 36.25475
+ },
+ {
+  "code": "UA-KYIV",
+  "cc": "UA",
+  "label": "Kyiv, UA",
+  "lat": 50.45466,
+  "long": 30.5238
+ },
+ {
+  "code": "UA-ODESA",
+  "cc": "UA",
+  "label": "Odesa, UA",
+  "lat": 46.48572,
+  "long": 30.74383
+ },
+ {
+  "code": "UG-KAMPALA",
+  "cc": "UG",
+  "label": "Kampala, UG",
+  "lat": 0.31628,
+  "long": 32.58219
+ },
+ {
+  "code": "US-BROOKLYN",
+  "cc": "US",
+  "label": "Brooklyn, US",
+  "lat": 40.6501,
+  "long": -73.94958
+ },
+ {
+  "code": "US-CHICAGO",
+  "cc": "US",
+  "label": "Chicago, US",
+  "lat": 41.85003,
+  "long": -87.65005
+ },
+ {
+  "code": "US-DALLAS",
+  "cc": "US",
+  "label": "Dallas, US",
+  "lat": 32.78306,
+  "long": -96.80667
+ },
+ {
+  "code": "US-FORTWORTH",
+  "cc": "US",
+  "label": "Fort Worth, US",
+  "lat": 32.72541,
+  "long": -97.32085
+ },
+ {
+  "code": "US-HOUSTON",
+  "cc": "US",
+  "label": "Houston, US",
+  "lat": 29.76328,
+  "long": -95.36327
+ },
+ {
+  "code": "US-JACKSONVI",
+  "cc": "US",
+  "label": "Jacksonville, US",
+  "lat": 30.33218,
+  "long": -81.65565
+ },
+ {
+  "code": "US-LOSANGELE",
+  "cc": "US",
+  "label": "Los Angeles, US",
+  "lat": 34.05223,
+  "long": -118.24368
+ },
+ {
+  "code": "US-MANHATTAN",
+  "cc": "US",
+  "label": "Manhattan, US",
+  "lat": 40.78343,
+  "long": -73.96625
+ },
+ {
+  "code": "US-NEWYORKCI",
+  "cc": "US",
+  "label": "New York City, US",
+  "lat": 40.71427,
+  "long": -74.00597
+ },
+ {
+  "code": "US-PHILADELP",
+  "cc": "US",
+  "label": "Philadelphia, US",
+  "lat": 39.95238,
+  "long": -75.16362
+ },
+ {
+  "code": "US-PHOENIX",
+  "cc": "US",
+  "label": "Phoenix, US",
+  "lat": 33.44838,
+  "long": -112.07404
+ },
+ {
+  "code": "US-QUEENS",
+  "cc": "US",
+  "label": "Queens, US",
+  "lat": 40.68149,
+  "long": -73.83652
+ },
+ {
+  "code": "US-SANANTONI",
+  "cc": "US",
+  "label": "San Antonio, US",
+  "lat": 29.42412,
+  "long": -98.49363
+ },
+ {
+  "code": "US-SANDIEGO",
+  "cc": "US",
+  "label": "San Diego, US",
+  "lat": 32.71571,
+  "long": -117.16472
+ },
+ {
+  "code": "US-THEBRONX",
+  "cc": "US",
+  "label": "The Bronx, US",
+  "lat": 40.84985,
+  "long": -73.86641
+ },
+ {
+  "code": "UY-MONTEVIDE",
+  "cc": "UY",
+  "label": "Montevideo, UY",
+  "lat": -34.90328,
+  "long": -56.18816
+ },
+ {
+  "code": "UZ-TASHKENT",
+  "cc": "UZ",
+  "label": "Tashkent, UZ",
+  "lat": 41.26465,
+  "long": 69.21627
+ },
+ {
+  "code": "VA-VATICANCI",
+  "cc": "VA",
+  "label": "Vatican City, VA",
+  "lat": 41.90268,
+  "long": 12.45414
+ },
+ {
+  "code": "VC-KINGSTOWN",
+  "cc": "VC",
+  "label": "Kingstown, VC",
+  "lat": 13.15527,
+  "long": -61.22742
+ },
+ {
+  "code": "VE-BARQUISIM",
+  "cc": "VE",
+  "label": "Barquisimeto, VE",
+  "lat": 10.0647,
+  "long": -69.35703
+ },
+ {
+  "code": "VE-CARACAS",
+  "cc": "VE",
+  "label": "Caracas, VE",
+  "lat": 10.48801,
+  "long": -66.87919
+ },
+ {
+  "code": "VE-MARACAIBO",
+  "cc": "VE",
+  "label": "Maracaibo, VE",
+  "lat": 10.64232,
+  "long": -71.61089
+ },
+ {
+  "code": "VE-VALENCIA",
+  "cc": "VE",
+  "label": "Valencia, VE",
+  "lat": 10.16153,
+  "long": -68.00044
+ },
+ {
+  "code": "VG-ROADTOWN",
+  "cc": "VG",
+  "label": "Road Town, VG",
+  "lat": 18.42693,
+  "long": -64.62079
+ },
+ {
+  "code": "VI-SAINTCROI",
+  "cc": "VI",
+  "label": "Saint Croix, VI",
+  "lat": 17.72751,
+  "long": -64.74698
+ },
+ {
+  "code": "VN-BINHA",
+  "cc": "VN",
+  "label": "Biên Hòa, VN",
+  "lat": 10.94469,
+  "long": 106.82432
+ },
+ {
+  "code": "VN-CNTH",
+  "cc": "VN",
+  "label": "Cần Thơ, VN",
+  "lat": 10.03711,
+  "long": 105.78825
+ },
+ {
+  "code": "VN-DANANG",
+  "cc": "VN",
+  "label": "Da Nang, VN",
+  "lat": 16.06778,
+  "long": 108.22083
+ },
+ {
+  "code": "VN-HAIPHONG",
+  "cc": "VN",
+  "label": "Haiphong, VN",
+  "lat": 20.86481,
+  "long": 106.68345
+ },
+ {
+  "code": "VN-HANOI",
+  "cc": "VN",
+  "label": "Hanoi, VN",
+  "lat": 21.0245,
+  "long": 105.84117
+ },
+ {
+  "code": "VN-HOCHIMINH",
+  "cc": "VN",
+  "label": "Ho Chi Minh City, VN",
+  "lat": 10.82302,
+  "long": 106.62965
+ },
+ {
+  "code": "VN-HU",
+  "cc": "VN",
+  "label": "Huế, VN",
+  "lat": 16.4619,
+  "long": 107.59546
+ },
+ {
+  "code": "VU-PORTVILA",
+  "cc": "VU",
+  "label": "Port-Vila, VU",
+  "lat": -17.73648,
+  "long": 168.31366
+ },
+ {
+  "code": "WF-MUA",
+  "cc": "WF",
+  "label": "Mua, WF",
+  "lat": -13.34169,
+  "long": -176.18701
+ },
+ {
+  "code": "WS-APIA",
+  "cc": "WS",
+  "label": "Apia, WS",
+  "lat": -13.83333,
+  "long": -171.76666
+ },
+ {
+  "code": "XK-PRISTINA",
+  "cc": "XK",
+  "label": "Pristina, XK",
+  "lat": 42.67272,
+  "long": 21.16688
+ },
+ {
+  "code": "YE-ADEN",
+  "cc": "YE",
+  "label": "Aden, YE",
+  "lat": 12.77957,
+  "long": 45.03852
+ },
+ {
+  "code": "YE-SANAA",
+  "cc": "YE",
+  "label": "Sanaa, YE",
+  "lat": 15.35452,
+  "long": 44.20646
+ },
+ {
+  "code": "YT-MAMOUDZOU",
+  "cc": "YT",
+  "label": "Mamoudzou, YT",
+  "lat": -12.78234,
+  "long": 45.22878
+ },
+ {
+  "code": "ZA-CAPETOWN",
+  "cc": "ZA",
+  "label": "Cape Town, ZA",
+  "lat": -33.92584,
+  "long": 18.42322
+ },
+ {
+  "code": "ZA-DURBAN",
+  "cc": "ZA",
+  "label": "Durban, ZA",
+  "lat": -29.8579,
+  "long": 31.0292
+ },
+ {
+  "code": "ZA-JOHANNESB",
+  "cc": "ZA",
+  "label": "Johannesburg, ZA",
+  "lat": -26.20227,
+  "long": 28.04363
+ },
+ {
+  "code": "ZA-PORTELIZA",
+  "cc": "ZA",
+  "label": "Port Elizabeth, ZA",
+  "lat": -33.96109,
+  "long": 25.61494
+ },
+ {
+  "code": "ZA-PRETORIA",
+  "cc": "ZA",
+  "label": "Pretoria, ZA",
+  "lat": -25.74486,
+  "long": 28.18783
+ },
+ {
+  "code": "ZA-SOWETO",
+  "cc": "ZA",
+  "label": "Soweto, ZA",
+  "lat": -26.26781,
+  "long": 27.85849
+ },
+ {
+  "code": "ZM-LUSAKA",
+  "cc": "ZM",
+  "label": "Lusaka, ZM",
+  "lat": -15.40669,
+  "long": 28.28713
+ },
+ {
+  "code": "ZW-HARARE",
+  "cc": "ZW",
+  "label": "Harare, ZW",
+  "lat": -17.82772,
+  "long": 31.05337
+ }
+]

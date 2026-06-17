@@ -1,0 +1,18 @@
+# Lua-edge local lab (Phase 4 Step 5) — ISOLATED project (own network), completely
+# separate from the live brisk-control stack. 1 origin + 1 edge (4 zones). The
+# brisk-lua-edge image is built by run.sh first.
+name: brisk-lua-lab
+
+services:
+  origin:
+    image: nginx:alpine
+    volumes:
+      - ./origin.conf:/etc/nginx/conf.d/default.conf:ro
+
+  edge:
+    image: brisk-lua-edge:latest
+    volumes:
+      - ./agent-edge.yaml:/etc/brisk/agent.yaml:ro
+    depends_on: [origin]
+    ports:
+      - "20443:443"

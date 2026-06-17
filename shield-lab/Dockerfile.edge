@@ -1,0 +1,35 @@
+# Brisk edge/shield image for LOCAL origin-shield testing (Phase 4 Step 3).
+# The official nginx.org build + headers-more + ngx_brotli (ABI-matched to the
+# image's exact nginx version) + the brisk-agent binary — so the agent's REAL
+# template (Server: Brisk, X-Brisk-*, brotli, slice video) runs unmodified.
+# Build context = repo root. Not for production (edges are bare-metal via bootstrap.go).
+FROM nginx:1.27-bookworm AS modbuild
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      build-essential cmake git wget ca-certificates \
+      libpcre2-dev zlib1g-dev libssl-dev \
+ && rm -rf /var/lib/apt/lists/*
+WORKDIR /src
+RUN set -eux; \
+    NGV="$(nginx -v 2>&1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')"; \
+    wget -q "https://nginx.org/download/nginx-${NGV}.tar.gz"; tar xzf "nginx-${NGV}.tar.gz"; \
+    git clone --depth=1 https://github.com/openresty/headers-more-nginx-module.git; \
+    git clone --depth=1 --recurse-submodules https://github.com/google/ngx_brotli.git; \
+    cd ngx_brotli/deps/brotli && mkdir -p out && cd out && \
+      cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS=-fPIC .. && \
+      cmake --build . --config Release -j"$(nproc)"; \
+    cd "/src/nginx-${NGV}" && ./configure --with-compat \
+      --add-dynamic-module=../headers-more-nginx-module \
+      --add-dynamic-module=../ngx_brotli && \
+    make -j"$(nproc)" modules; \
+    mkdir -p /out && cp objs/*.so /out/
+
+FROM nginx:1.27-bookworm
+COPY --from=modbuild /out/ngx_http_headers_more_filter_module.so /etc/nginx/modules/
+COPY --from=modbuild /out/ngx_http_brotli_filter_module.so      /etc/nginx/modules/
+COPY --from=modbuild /out/ngx_http_brotli_static_module.so      /etc/nginx/modules/
+COPY brisk-agent/dist/brisk-agent-linux-amd64 /usr/local/bin/brisk-agent
+COPY shield-lab/edge-entrypoint.sh /entrypoint.sh
+RUN chmod +x /usr/local/bin/brisk-agent /entrypoint.sh \
+ && mkdir -p /var/cache/brisk /var/www/brisk-acme /etc/brisk/tls \
+ && chown -R www-data:www-data /var/cache/brisk
+ENTRYPOINT ["/entrypoint.sh"]

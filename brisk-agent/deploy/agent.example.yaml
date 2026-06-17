@@ -1,0 +1,56 @@
+# Brisk edge agent config — Phase 1 shape (Spec §5).
+# Copy to /etc/brisk/agent.yaml and edit for the target edge.
+
+edge_id: "LOCAL-01"            # shows up in the X-Brisk-Edge header
+mode: "local"                  # local | production
+control_plane_url: ""          # empty in Phase 1 (edge runs standalone)
+nats_url: ""                   # NATS JetStream for instant purge (Step 5); empty = disabled
+cache_dir: "/var/cache/brisk"
+cache_max_size: "200g"         # set to ~80% of the NVMe disk
+
+# --- TLS (Step 4) ---
+tls_mode: "selfsigned"         # selfsigned | mkcert | letsencrypt (default for all zones)
+letsencrypt_email: ""          # required when tls_mode/zone tls = letsencrypt (VPS)
+letsencrypt_staging: false     # true = LE staging (test, untrusted); flip to false for real certs
+session_tickets: true          # on = faster TLS resume (CDN); off = stricter forward secrecy
+
+# --- Compression (Step 5) ---
+brotli_comp_level: 5           # on-the-fly Brotli level 1..11 (4-6 sweet spot)
+
+# --- Edge self-protection (#4) — the instant local brake ---
+# Edge-LOCAL + independent of the control plane: it keeps working when the dashboard is
+# down, and a config pull never clobbers it. OFF by default (omit/false) => byte-identical
+# to today. When on, nginx caps concurrent connections (503 over limit) and optionally the
+# request rate (429 over limit) PER CLIENT IP, shedding floods in milliseconds while the
+# control plane's slow DNS load-steering (#3) catches up. Per-IP keying keeps the
+# health-checker's own budget intact, so /healthz stays answerable.
+# edge_protect: true                 # master switch (default false)
+# edge_max_conn_per_ip: 200          # max concurrent conns per client IP (default 200 when on)
+# edge_req_per_sec_per_ip: 0         # sustained req/s per IP ceiling (0 = off; e.g. 20)
+# edge_req_burst: 0                  # burst above the rate (default 2×rate when a rate is set)
+
+# --- Origin lockdown (Phase 4 Step 6 Part 6) ---
+# When set, the edge adds a secret header to every ORIGIN request so the origin can
+# reject non-Brisk traffic (the #1 CDN gap: a reachable origin bypasses the whole edge
+# stack). The customer origin must verify the header. NEVER logged. Empty = off.
+# origin_pull_secret: ""       # a long random token (32+ chars)
+# origin_pull_header: ""       # header name (default X-Brisk-Pull-Token)
+
+# --- GeoIP (Phase 4 Step 6 Part 5) ---
+# bootstrap builds the ngx_http_geoip2 module; supply BRISK_GEOIP_LICENSE_KEY (free
+# MaxMind) at bootstrap to auto-download GeoLite2-Country.mmdb, or drop it at
+# /etc/brisk/geoip/GeoLite2-Country.mmdb. The agent renders the geoip2 block + adds
+# country to logs/analytics + enables WAF country rules ONLY when both module + DB
+# are present (else country is "-", byte-identical).
+
+zones:
+  - domain: "test.example.com"
+    origin: "http://origin:8000"
+    tls: "selfsigned"          # selfsigned (local) | letsencrypt (production)
+    # --- HLS / video (Step 3) — all optional; sane defaults applied ---
+    video: true                # enable HLS/video locations (slice + CORS)
+    profile: "vod"             # vod | live (or omit) -> sets TTL defaults
+    playlist_ttl: "1h"         # .m3u8/.mpd TTL (override; vod=1h, live=2s, unknown=2s)
+    segment_ttl: "12h"         # .ts/.m4s/.mp4 TTL (override; vod/unknown=12h, live=10s)
+    cors_origin: "*"           # Access-Control-Allow-Origin (default *)
+    min_uses: 1                # proxy_cache_min_uses (1 = cache on first hit)

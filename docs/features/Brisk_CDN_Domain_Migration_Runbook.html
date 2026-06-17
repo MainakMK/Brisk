@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Brisk — CDN Base-Domain Migration Runbook (keep Bunny geo-DNS)</title>
+<style>
+  :root {
+    --background: #ffffff;
+    --background-secondary: #f5f5f7;
+    --border-color: #d8d8de;
+    --text-primary: #1a1a1f;
+    --text-secondary: #6b7280;
+    --accent: #4f46e5;
+    --success: #16a34a;
+    --warning: #d97706;
+    --danger: #dc2626;
+  }
+  body {
+    margin: 0; padding: 28px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--text-primary); background: #fafafb; line-height: 1.55;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  h1 { font-size: 21px; margin: 0 0 4px; }
+  h2 { font-size: 16px; margin: 2px 0 10px; }
+  h3 { font-size: 14px; margin: 0 0 6px; }
+  .sub { color: var(--text-secondary); font-size: 13px; margin: 0 0 22px; }
+  .card { background: var(--background); border: 1px solid var(--border-color); border-radius: 14px; padding: 18px; margin-bottom: 18px; }
+  .badge { display:inline-block; font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px; }
+  .built { color: var(--success); background: rgba(22,163,74,.1); }
+  .next { color: var(--accent); background: rgba(79,70,229,.1); }
+  .warnb { color: var(--warning); background: rgba(217,119,6,.12); }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border-color); vertical-align: top; }
+  th { color: var(--text-secondary); font-weight: 600; }
+  svg { width: 100%; height: auto; }
+  .note { font-size: 13px; color: var(--text-secondary); }
+  strong { color: var(--text-primary); }
+  code { background: var(--background-secondary); border: 1px solid var(--border-color); border-radius: 5px; padding: 1px 5px; font-size: 12.5px; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  pre { background: #0f1117; color: #e6e6ea; border-radius: 10px; padding: 13px 15px; overflow-x: auto; font-size: 12.5px; line-height: 1.5; }
+  pre .c { color: #7d8590; }            /* comment */
+  pre .k { color: #7ee787; }            /* key/keyword */
+  pre .v { color: #a5d6ff; }            /* value */
+  ol.steps { padding-left: 0; counter-reset: s; list-style: none; margin: 0; }
+  ol.steps > li { position: relative; padding: 0 0 16px 44px; }
+  ol.steps > li::before {
+    counter-increment: s; content: counter(s);
+    position: absolute; left: 0; top: 0; width: 28px; height: 28px;
+    border-radius: 50%; background: var(--accent); color: #fff;
+    font-weight: 700; font-size: 14px; display: grid; place-items: center;
+  }
+  ol.steps > li::after {
+    content: ""; position: absolute; left: 13px; top: 30px; bottom: 2px; width: 2px; background: var(--border-color);
+  }
+  ol.steps > li:last-child::after { display: none; }
+  .who { display:inline-block; font-size:10.5px; font-weight:700; padding:1px 7px; border-radius:999px; margin-left:6px; vertical-align:middle; }
+  .who-bunny { color:#b45309; background:rgba(217,119,6,.12); }
+  .who-cp { color:var(--accent); background:rgba(79,70,229,.1); }
+  .who-data { color:#0e7490; background:rgba(14,116,144,.12); }
+  .who-dash { color:var(--success); background:rgba(22,163,74,.1); }
+  .callout { border-left: 4px solid var(--warning); background: rgba(217,119,6,.06); border-radius: 0 8px 8px 0; padding: 10px 14px; font-size: 13px; margin: 10px 0; }
+  .callout.danger { border-left-color: var(--danger); background: rgba(220,38,38,.05); }
+  .callout.ok { border-left-color: var(--success); background: rgba(22,163,74,.05); }
+  .legend { display:flex; flex-wrap:wrap; gap:14px; font-size:12px; color:var(--text-secondary); margin-top:8px; }
+  .legend span { display:inline-flex; align-items:center; gap:6px; }
+  .dot { width:11px; height:11px; border-radius:3px; display:inline-block; }
+  ul.tight { margin: 4px 0 0; padding-left: 18px; font-size: 13px; }
+  ul.tight li { margin: 3px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Brisk — Changing the CDN Base Domain</h1>
+  <p class="sub">Runbook for migrating <code>a2zjav.com</code> → a new base domain, <strong>while keeping Bunny Smart-DNS for geo-routing</strong>. <span class="badge next">CONFIG + DNS + CERT — no core code rewrite</span></p>
+
+  <!-- ============ TL;DR ============ -->
+  <div class="card">
+    <h2>The one-paragraph answer</h2>
+    <p class="note" style="margin-top:0">
+      The base domain is <strong>parameterized, not hardcoded</strong> — it lives in a handful of env values, a few Bunny DNS records, a wildcard TLS cert, and each zone's stored hostname. Bunny's geo-DNS "brain" (Smart Records) is <strong>reused exactly as-is</strong>: the new domain's zone simply lives in Bunny, and the same reconciler writes the same kind of weighted/geo records — only the <em>names</em> change. You migrate by <strong>dual-running</strong> both domains (old stays live), then retire the old once the new is proven on ≥2 edges. Zero downtime.
+    </p>
+  </div>
+
+  <!-- ============ INFOGRAPHIC 1: where the domain lives ============ -->
+  <div class="card">
+    <h2>Infographic 1 — Where <code>a2zjav.com</code> actually lives (5 places, all config/data)</h2>
+    <svg viewBox="0 0 920 470" xmlns="http://www.w3.org/2000/svg" role="img">
+      <title>The five configurable places the base CDN domain appears</title>
+      <desc>A central domain pill with five spokes: Bunny DNS zone, the CDN record name, the wildcard TLS cert SANs, the dashboard base-domain env, and each zone's stored cdn_hostname.</desc>
+      <style>
+        .b{ fill:#fff; stroke:var(--border-color,#c8c8d0); stroke-width:1.5;}
+        .t{ fill:var(--text-primary,#1a1a1f); font-size:13.5px; font-weight:700;}
+        .s{ fill:var(--text-secondary,#6b7280); font-size:11px;}
+        .mono{ font-family:ui-monospace,Menlo,Consolas,monospace; fill:var(--accent,#4f46e5); font-size:11.5px; font-weight:600;}
+        .arw{ stroke:var(--text-secondary,#9aa0aa); stroke-width:1.8; fill:none; marker-end:url(#a1);}
+        .tag{ font-size:10px; font-weight:700;}
+        .cap{ fill:var(--accent,#4f46e5);}
+      </style>
+      <defs><marker id="a1" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="var(--text-secondary,#9aa0aa)"/></marker></defs>
+
+      <!-- center -->
+      <rect x="350" y="195" width="220" height="78" rx="14" class="cap"/>
+      <text x="460" y="228" text-anchor="middle" fill="#fff" font-size="16" font-weight="700">a2zjav.com</text>
+      <text x="460" y="250" text-anchor="middle" fill="#dfe0ff" font-size="11.5">the base CDN domain</text>
+
+      <!-- 1 Bunny DNS zone (top-left) -->
+      <rect x="20" y="30" width="270" height="84" rx="10" class="b"/>
+      <text x="36" y="54" class="t">1 · Bunny DNS zone</text>
+      <text x="36" y="73" class="mono">BUNNY_DNS_ZONE / _ZONE_ID</text>
+      <text x="36" y="90" class="s">the zone Bunny manages = where the</text>
+      <text x="36" y="104" class="s">geo Smart-Records are written</text>
+      <text x="270" y="20" text-anchor="end" class="tag" fill="#b45309">control plane .env</text>
+
+      <!-- 2 CDN record (top-right) -->
+      <rect x="630" y="30" width="270" height="84" rx="10" class="b"/>
+      <text x="646" y="54" class="t">2 · CDN record name</text>
+      <text x="646" y="73" class="mono">BRISK_CDN_RECORD = "cdn"</text>
+      <text x="646" y="90" class="s">the label under the zone Brisk</text>
+      <text x="646" y="104" class="s">routes (cdn → *.cdn.&lt;zone&gt;)</text>
+      <text x="630" y="20" class="tag" fill="#b45309">control plane .env</text>
+
+      <!-- 3 TLS cert SANs (mid-left) -->
+      <rect x="20" y="200" width="270" height="84" rx="10" class="b"/>
+      <text x="36" y="224" class="t">3 · Wildcard TLS cert</text>
+      <text x="36" y="243" class="mono">BRISK_TLS_DOMAINS</text>
+      <text x="36" y="260" class="s">*.cdn.a2zjav.com, *.a2zjav.com …</text>
+      <text x="36" y="274" class="s">issued via Bunny DNS-01, fanned to edges</text>
+      <text x="270" y="190" text-anchor="end" class="tag" fill="#b45309">control plane .env</text>
+
+      <!-- 4 dashboard base (mid-right) -->
+      <rect x="630" y="200" width="270" height="84" rx="10" class="b"/>
+      <text x="646" y="224" class="t">4 · Dashboard suggestion</text>
+      <text x="646" y="243" class="mono">VITE_CDN_BASE_DOMAIN</text>
+      <text x="646" y="260" class="s">what new zones suggest as their</text>
+      <text x="646" y="274" class="s">hostname (cosmetic / UX only)</text>
+      <text x="630" y="190" class="tag" fill="#16a34a">dashboard .env</text>
+
+      <!-- 5 zone cdn_hostname (bottom) -->
+      <rect x="325" y="380" width="270" height="78" rx="10" class="b"/>
+      <text x="341" y="404" class="t">5 · Each zone's hostname</text>
+      <text x="341" y="423" class="mono">zones.cdn_hostname</text>
+      <text x="341" y="440" class="s">x.cdn.a2zjav.com — stored per zone</text>
+      <text x="341" y="453" class="s">(the actual served name)</text>
+      <text x="460" y="372" text-anchor="middle" class="tag" fill="#0e7490">database</text>
+
+      <!-- spokes -->
+      <path class="arw" d="M290 80 C 330 110, 350 170, 380 198"/>
+      <path class="arw" d="M630 80 C 590 110, 570 170, 545 198"/>
+      <path class="arw" d="M290 240 L 348 236"/>
+      <path class="arw" d="M630 240 L 572 236"/>
+      <path class="arw" d="M460 380 L 460 275"/>
+    </svg>
+    <div class="legend">
+      <span><span class="dot" style="background:#d97706"></span> Bunny + control-plane env</span>
+      <span><span class="dot" style="background:#16a34a"></span> dashboard env (cosmetic)</span>
+      <span><span class="dot" style="background:#0e7490"></span> database (per-zone data)</span>
+    </div>
+  </div>
+
+  <!-- ============ INFOGRAPHIC 2: before / after request path ============ -->
+  <div class="card">
+    <h2>Infographic 2 — The request path: same geo-DNS brain, new names</h2>
+    <svg viewBox="0 0 920 430" xmlns="http://www.w3.org/2000/svg" role="img">
+      <title>Before and after request path; the Bunny Smart-Record geo-routing and the three edges are unchanged</title>
+      <desc>Two rows. Top: a client resolves x.cdn.a2zjav.com through a Bunny Smart Record that geo-routes to the nearest of three edges, served with the old wildcard cert. Bottom: the same flow for x.cdn.newcdn.com using a new zone and new cert, hitting the identical three edges.</desc>
+      <style>
+        .b{ fill:#fff; stroke:var(--border-color,#c8c8d0); stroke-width:1.5;}
+        .old{ fill:#fff; stroke:var(--text-secondary,#9aa0aa); stroke-width:1.8; }
+        .new{ fill:#fff; stroke:var(--success,#16a34a); stroke-width:2.2;}
+        .bun{ fill:var(--warning,#d97706);}
+        .edge{ fill:#fff; stroke:var(--accent,#4f46e5); stroke-width:2;}
+        .t{ fill:var(--text-primary,#1a1a1f); font-size:13px; font-weight:700;}
+        .s{ fill:var(--text-secondary,#6b7280); font-size:10.5px;}
+        .wt{ fill:#fff; font-size:12px; font-weight:700;}
+        .mono{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11px; }
+        .arw{ stroke:var(--text-secondary,#9aa0aa); stroke-width:1.8; fill:none; marker-end:url(#a2);}
+        .arwg{ stroke:var(--success,#16a34a); stroke-width:2; fill:none; marker-end:url(#a2g);}
+      </style>
+      <defs>
+        <marker id="a2" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="var(--text-secondary,#9aa0aa)"/></marker>
+        <marker id="a2g" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="var(--success,#16a34a)"/></marker>
+      </defs>
+
+      <text x="20" y="26" class="t" fill="#6b7280">TODAY</text>
+      <rect x="20" y="40" width="150" height="56" rx="10" class="old"/>
+      <text x="36" y="63" class="t">Client</text>
+      <text x="36" y="82" class="s mono">x.cdn.a2zjav.com</text>
+
+      <rect x="240" y="34" width="190" height="68" rx="10" class="bun"/>
+      <text x="335" y="60" text-anchor="middle" class="wt">Bunny Smart-DNS</text>
+      <text x="335" y="78" text-anchor="middle" class="wt" font-size="10.5" opacity=".92">geo + weight routing</text>
+      <text x="335" y="92" text-anchor="middle" class="wt" font-size="10" opacity=".85">zone: a2zjav.com</text>
+
+      <rect x="500" y="20" width="150" height="40" rx="8" class="edge"/><text x="575" y="45" text-anchor="middle" class="t">Edge · NY</text>
+      <rect x="500" y="68" width="150" height="40" rx="8" class="edge"/><text x="575" y="93" text-anchor="middle" class="t">Edge · FRA</text>
+      <rect x="500" y="116" width="150" height="40" rx="8" class="edge"/><text x="575" y="141" text-anchor="middle" class="t">Edge · BLR</text>
+
+      <rect x="710" y="48" width="190" height="56" rx="10" class="b"/>
+      <text x="726" y="71" class="t">200 · Server: Brisk</text>
+      <text x="726" y="90" class="s">cert *.cdn.a2zjav.com</text>
+
+      <path class="arw" d="M170 68 L 240 68"/>
+      <path class="arw" d="M430 60 L 500 42"/>
+      <path class="arw" d="M430 72 L 500 88"/>
+      <path class="arw" d="M430 84 L 500 134"/>
+      <path class="arw" d="M650 88 L 710 80"/>
+
+      <!-- divider -->
+      <line x1="20" y1="195" x2="900" y2="195" stroke="var(--border-color,#d8d8de)" stroke-dasharray="4 4"/>
+
+      <text x="20" y="232" class="t" fill="#16a34a">AFTER (same edges, new names)</text>
+      <rect x="20" y="246" width="150" height="56" rx="10" class="new"/>
+      <text x="36" y="269" class="t">Client</text>
+      <text x="36" y="288" class="s mono" fill="#16a34a">x.cdn.newcdn.com</text>
+
+      <rect x="240" y="240" width="190" height="68" rx="10" class="bun"/>
+      <text x="335" y="266" text-anchor="middle" class="wt">Bunny Smart-DNS</text>
+      <text x="335" y="284" text-anchor="middle" class="wt" font-size="10.5" opacity=".92">SAME geo + weight logic</text>
+      <text x="335" y="298" text-anchor="middle" class="wt" font-size="10" opacity=".85">zone: newcdn.com</text>
+
+      <rect x="500" y="226" width="150" height="40" rx="8" class="edge"/><text x="575" y="251" text-anchor="middle" class="t">Edge · NY</text>
+      <rect x="500" y="274" width="150" height="40" rx="8" class="edge"/><text x="575" y="299" text-anchor="middle" class="t">Edge · FRA</text>
+      <rect x="500" y="322" width="150" height="40" rx="8" class="edge"/><text x="575" y="347" text-anchor="middle" class="t">Edge · BLR</text>
+
+      <rect x="710" y="254" width="190" height="56" rx="10" class="b"/>
+      <text x="726" y="277" class="t">200 · Server: Brisk</text>
+      <text x="726" y="296" class="s" fill="#16a34a">cert *.cdn.newcdn.com</text>
+
+      <path class="arwg" d="M170 274 L 240 274"/>
+      <path class="arwg" d="M430 266 L 500 248"/>
+      <path class="arwg" d="M430 278 L 500 294"/>
+      <path class="arwg" d="M430 290 L 500 340"/>
+      <path class="arwg" d="M650 294 L 710 286"/>
+
+      <text x="460" y="392" text-anchor="middle" class="s" font-size="12">The three edges, the geo brain, and all agent/edge logic are <tspan font-weight="700" fill="#1a1a1f">untouched</tspan>. Only the DNS zone, the records, the cert, and the hostnames change.</text>
+    </svg>
+  </div>
+
+  <!-- ============ INFOGRAPHIC 3: phase pipeline ============ -->
+  <div class="card">
+    <h2>Infographic 3 — The 7-phase migration pipeline</h2>
+    <svg viewBox="0 0 920 300" xmlns="http://www.w3.org/2000/svg" role="img">
+      <title>Seven migration phases as a left-to-right pipeline with a dual-run window over the middle phases</title>
+      <desc>Phase 1 delegate the new zone to Bunny; 2 issue the new wildcard cert and fan to edges; 3 point the reconciler at the new zone; 4 update the dashboard base; 5 add the new hostname to zones (dual-host); 6 tenants re-CNAME; 7 verify then retire the old. Phases 2 through 6 run inside a dual-run window where both domains serve.</desc>
+      <style>
+        .bunny{ fill:#fff; stroke:var(--warning,#d97706); stroke-width:2.2;}
+        .cp{ fill:#fff; stroke:var(--accent,#4f46e5); stroke-width:2.2;}
+        .data{ fill:#fff; stroke:#0e7490; stroke-width:2.2;}
+        .dash{ fill:#fff; stroke:var(--success,#16a34a); stroke-width:2.2;}
+        .num{ font-size:15px; font-weight:800; }
+        .t{ fill:var(--text-primary,#1a1a1f); font-size:11.5px; font-weight:700;}
+        .s{ fill:var(--text-secondary,#6b7280); font-size:10px;}
+        .arw{ stroke:var(--text-secondary,#9aa0aa); stroke-width:2; fill:none; marker-end:url(#a3);}
+      </style>
+      <defs><marker id="a3" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="var(--text-secondary,#9aa0aa)"/></marker></defs>
+
+      <!-- dual run window -->
+      <rect x="138" y="40" width="612" height="150" rx="12" fill="rgba(22,163,74,.05)" stroke="var(--success,#16a34a)" stroke-dasharray="6 5" stroke-width="1.5"/>
+      <text x="444" y="58" text-anchor="middle" fill="#16a34a" font-size="11.5" font-weight="700">DUAL-RUN WINDOW — both domains serve, zero downtime</text>
+
+      <!-- phase boxes row -->
+      <g>
+        <rect x="20" y="80" width="115" height="92" rx="10" class="bunny"/>
+        <text x="32" y="104" class="num" fill="#d97706">1</text>
+        <text x="32" y="124" class="t">Delegate zone</text>
+        <text x="32" y="140" class="s">new domain's NS</text>
+        <text x="32" y="153" class="s">→ Bunny</text>
+        <text x="32" y="168" class="s" font-weight="700" fill="#b45309">Bunny / you</text>
+
+        <rect x="148" y="80" width="115" height="92" rx="10" class="cp"/>
+        <text x="160" y="104" class="num" fill="#4f46e5">2</text>
+        <text x="160" y="124" class="t">New cert</text>
+        <text x="160" y="140" class="s">DNS-01 wildcard</text>
+        <text x="160" y="153" class="s">fan to 3 edges</text>
+        <text x="160" y="168" class="s" font-weight="700" fill="#4f46e5">CP .env</text>
+
+        <rect x="276" y="80" width="115" height="92" rx="10" class="cp"/>
+        <text x="288" y="104" class="num" fill="#4f46e5">3</text>
+        <text x="288" y="124" class="t">Reconciler</text>
+        <text x="288" y="140" class="s">point at new zone</text>
+        <text x="288" y="153" class="s">→ Smart A-set</text>
+        <text x="288" y="168" class="s" font-weight="700" fill="#4f46e5">CP .env</text>
+
+        <rect x="404" y="80" width="115" height="92" rx="10" class="dash"/>
+        <text x="416" y="104" class="num" fill="#16a34a">4</text>
+        <text x="416" y="124" class="t">Dashboard</text>
+        <text x="416" y="140" class="s">base domain env</text>
+        <text x="416" y="153" class="s">(new zones)</text>
+        <text x="416" y="168" class="s" font-weight="700" fill="#16a34a">dash .env</text>
+
+        <rect x="532" y="80" width="115" height="92" rx="10" class="data"/>
+        <text x="544" y="104" class="num" fill="#0e7490">5</text>
+        <text x="544" y="124" class="t">Dual-host zones</text>
+        <text x="544" y="140" class="s">add new name</text>
+        <text x="544" y="153" class="s">beside the old</text>
+        <text x="544" y="168" class="s" font-weight="700" fill="#0e7490">data</text>
+
+        <rect x="660" y="80" width="115" height="92" rx="10" class="data"/>
+        <text x="672" y="104" class="num" fill="#0e7490">6</text>
+        <text x="672" y="124" class="t">Tenants</text>
+        <text x="672" y="140" class="s">re-CNAME to</text>
+        <text x="672" y="153" class="s">new hostname</text>
+        <text x="672" y="168" class="s" font-weight="700" fill="#0e7490">tenants</text>
+
+        <rect x="788" y="80" width="115" height="92" rx="10" class="bunny" stroke="var(--danger,#dc2626)"/>
+        <text x="800" y="104" class="num" fill="#dc2626">7</text>
+        <text x="800" y="124" class="t">Verify + retire</text>
+        <text x="800" y="140" class="s">prove new, then</text>
+        <text x="800" y="153" class="s">drop the old</text>
+        <text x="800" y="168" class="s" font-weight="700" fill="#dc2626">gated</text>
+      </g>
+
+      <path class="arw" d="M135 126 L 148 126"/>
+      <path class="arw" d="M263 126 L 276 126"/>
+      <path class="arw" d="M391 126 L 404 126"/>
+      <path class="arw" d="M519 126 L 532 126"/>
+      <path class="arw" d="M647 126 L 660 126"/>
+      <path class="arw" d="M775 126 L 788 126"/>
+
+      <text x="20" y="226" class="s" font-size="11.5"><tspan font-weight="700" fill="#1a1a1f">Order matters:</tspan> the cert (2) and the new DNS records (3) must exist <tspan font-style="italic">before</tspan> a client can be sent to the new name. Steps 5–6 can roll out gradually, zone by zone.</text>
+      <text x="20" y="248" class="s" font-size="11.5"><tspan font-weight="700" fill="#dc2626">Golden rule:</tspan> never remove an old hostname (7) until the new one is verified serving on ≥2 edges. Never leave a live hostname with zero PoPs.</text>
+    </svg>
+    <div class="legend">
+      <span><span class="dot" style="background:#d97706"></span> Bunny / you</span>
+      <span><span class="dot" style="background:#4f46e5"></span> control-plane env</span>
+      <span><span class="dot" style="background:#16a34a"></span> dashboard env</span>
+      <span><span class="dot" style="background:#0e7490"></span> data / tenants</span>
+    </div>
+  </div>
+
+  <!-- ============ INFOGRAPHIC 4: dual-run cutover timeline ============ -->
+  <div class="card">
+    <h2>Infographic 4 — Dual-run cutover timeline (no downtime)</h2>
+    <svg viewBox="0 0 920 250" xmlns="http://www.w3.org/2000/svg" role="img">
+      <title>Gantt-style timeline showing the old domain serving throughout while the new domain ramps up, with a verification gate before the old domain is retired</title>
+      <desc>The old domain serves at full traffic from the start. The new domain begins serving after the cert and DNS are in place and ramps as tenants re-point. A verification gate must pass before the old domain's records and cert are retired.</desc>
+      <style>
+        .axis{ stroke:var(--border-color,#d8d8de); stroke-width:1.5;}
+        .lbl{ fill:var(--text-secondary,#6b7280); font-size:11px;}
+        .t{ fill:var(--text-primary,#1a1a1f); font-size:12px; font-weight:700;}
+        .gate{ stroke:var(--danger,#dc2626); stroke-width:2; stroke-dasharray:5 4;}
+      </style>
+      <!-- lanes -->
+      <text x="20" y="58" class="t">Old domain</text>
+      <text x="20" y="74" class="lbl">a2zjav.com</text>
+      <text x="20" y="128" class="t">New domain</text>
+      <text x="20" y="144" class="lbl">newcdn.com</text>
+      <text x="20" y="198" class="t">Traffic</text>
+
+      <!-- old bar: full then fades to retire -->
+      <rect x="150" y="42" width="560" height="34" rx="8" fill="rgba(107,114,128,.18)" stroke="var(--text-secondary,#9aa0aa)" stroke-width="1.5"/>
+      <rect x="710" y="42" width="60" height="34" rx="8" fill="rgba(220,38,38,.10)" stroke="var(--danger,#dc2626)" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <text x="430" y="64" text-anchor="middle" class="lbl" font-size="11.5">serving — stays live the whole time</text>
+      <text x="740" y="64" text-anchor="middle" fill="#dc2626" font-size="10" font-weight="700">retire</text>
+
+      <!-- new bar: starts after cert+dns -->
+      <rect x="300" y="112" width="470" height="34" rx="8" fill="rgba(22,163,74,.14)" stroke="var(--success,#16a34a)" stroke-width="2"/>
+      <text x="535" y="134" text-anchor="middle" fill="#16a34a" font-size="11.5" font-weight="600">serving + ramping (tenants re-CNAME)</text>
+
+      <!-- verify gate -->
+      <line x1="700" y1="30" x2="700" y2="210" class="gate"/>
+      <text x="700" y="24" text-anchor="middle" fill="#dc2626" font-size="11" font-weight="700">✓ VERIFY GATE</text>
+
+      <!-- traffic curves -->
+      <path d="M150 200 L 300 200 L 540 200 L 770 200" fill="none" stroke="var(--text-secondary,#9aa0aa)" stroke-width="2"/>
+      <path d="M300 200 C 420 198, 560 178, 770 168" fill="none" stroke="var(--success,#16a34a)" stroke-width="2.5"/>
+      <circle cx="770" cy="168" r="4" fill="#16a34a"/>
+      <text x="600" y="190" class="lbl" fill="#16a34a">new domain share grows</text>
+
+      <!-- phase ticks -->
+      <line x1="150" y1="214" x2="770" y2="214" class="axis"/>
+      <text x="150" y="232" class="lbl">start</text>
+      <text x="300" y="232" text-anchor="middle" class="lbl">cert + DNS ready (ph 2–3)</text>
+      <text x="540" y="232" text-anchor="middle" class="lbl">tenants migrate (ph 5–6)</text>
+      <text x="770" y="232" text-anchor="end" class="lbl">old retired (ph 7)</text>
+    </svg>
+    <div class="callout ok"><strong>Why no downtime:</strong> the old domain keeps serving from start to retire. The new domain only needs to be <em>added</em>, never swapped in destructively. A client is only ever sent to a name that already has a working cert + edge vhost.</div>
+  </div>
+
+  <!-- ============ DETAILED STEPS ============ -->
+  <div class="card">
+    <h2>Detailed steps</h2>
+    <ol class="steps">
+      <li>
+        <h3>Delegate the new domain's DNS zone to Bunny <span class="who who-bunny">Bunny · you</span></h3>
+        <p class="note" style="margin-top:2px">In the Bunny dashboard add <code>newcdn.com</code> as a DNS Zone, then point the domain's nameservers (at your registrar) to the Bunny nameservers it gives you. This one move is what lets Bunny do <strong>both</strong> geo-DNS routing <strong>and</strong> answer the ACME DNS-01 TXT challenge for the cert. Nothing about the routing logic changes — it's the same Smart-Record engine, just a new zone. Wait for the zone to go live (<code>dig NS newcdn.com</code> shows Bunny).</p>
+      </li>
+      <li>
+        <h3>Issue the new managed wildcard TLS cert + fan to edges <span class="who who-cp">control plane .env</span></h3>
+        <p class="note" style="margin-top:2px">Append the new wildcard(s) to <code>BRISK_TLS_DOMAINS</code> — <strong>keep the old ones during migration</strong> so both serve:</p>
+<pre><span class="c"># brisk-control/.env  (control plane)</span>
+<span class="k">BRISK_TLS_DOMAINS</span>=<span class="v">*.cdn.newcdn.com,*.newcdn.com,*.cdn.a2zjav.com,*.a2zjav.com</span>
+<span class="k">BRISK_TLS_STAGING</span>=<span class="v">true</span>   <span class="c"># dry-run on LE staging first; flip to false at cutover</span></pre>
+        <p class="note">Restart the control plane → it issues the managed wildcard via Bunny DNS-01 and ships it to all 3 edges over the agent-config channel. The agent already selects the longest-suffix covering cert per zone, so once issued, both <code>a2zjav.com</code> and <code>newcdn.com</code> hostnames are served. Verify in <strong>DNS / TLS status</strong> and with <code>openssl s_client -connect &lt;edge&gt;:443 -servername x.cdn.newcdn.com</code>.</p>
+      </li>
+      <li>
+        <h3>Point the DNS reconciler at the new zone <span class="who who-cp">control plane .env</span></h3>
+        <p class="note" style="margin-top:2px">Tell the reconciler which Bunny zone + record to manage:</p>
+<pre><span class="c"># brisk-control/.env</span>
+<span class="k">BUNNY_DNS_ZONE</span>=<span class="v">newcdn.com</span>          <span class="c"># (or BUNNY_DNS_ZONE_ID for the numeric id)</span>
+<span class="k">BRISK_CDN_RECORD</span>=<span class="v">cdn</span>                <span class="c"># label under the zone Brisk routes</span></pre>
+        <p class="note">Restart the control plane. The DNS syncer creates the geo/weighted <strong>Smart A-set</strong> for <code>*.cdn.newcdn.com</code> → your NY / FRA / BLR edges — exactly the same record shape as the old zone (same weights, same health-monitor backstop if enabled). Confirm in the dashboard <strong>DNS</strong> page and with <code>dig x.cdn.newcdn.com</code> from a couple of regions.</p>
+        <div class="callout"><strong>Heads-up — one zone at a time:</strong> the reconciler manages the zone it's pointed at. If you want it to keep maintaining the <em>old</em> records during the overlap, leave the old records in Bunny as static (they don't need active reconciliation to keep resolving) and let the syncer own only the new zone.</div>
+      </li>
+      <li>
+        <h3>Update the dashboard's suggested base domain <span class="who who-dash">dashboard .env</span></h3>
+<pre><span class="c"># brisk-dashboard/.env</span>
+<span class="k">VITE_CDN_BASE_DOMAIN</span>=<span class="v">cdn.newcdn.com</span></pre>
+        <p class="note">Rebuild/restart the dashboard. This is purely cosmetic — it changes what a <em>new</em> zone suggests as its hostname (e.g. <code>my-site.cdn.newcdn.com</code>). Existing zones are unaffected by this value.</p>
+      </li>
+      <li>
+        <h3>Give each live zone the new hostname (dual-host) <span class="who who-data">data</span></h3>
+        <p class="note" style="margin-top:2px">Each existing zone serves <code>x.cdn.a2zjav.com</code> (its stored <code>cdn_hostname</code>). The <strong>safe</strong> path is to <em>add</em> the new name beside the old rather than rename in place — add <code>x.cdn.newcdn.com</code> via the zone's <strong>Domains</strong> tab (it renders as its own SNI vhost on every serving edge, using the new cert). Now both names answer for the same zone. Do <strong>not</strong> bulk-rewrite <code>cdn_hostname</code> out from under a tenant who has already CNAME'd to the old name — that would break them until they re-point.</p>
+      </li>
+      <li>
+        <h3>Tenants re-point their CNAME <span class="who who-data">tenants</span></h3>
+        <p class="note" style="margin-top:2px">Anyone who CNAME'd their site to <code>x.cdn.a2zjav.com</code> updates the CNAME to <code>x.cdn.newcdn.com</code>. This can happen gradually — both resolve during the overlap. Tenants on their <strong>own custom domains</strong> (e.g. <code>cdn.theirsite.com</code> added in the Domains tab) are <strong>unaffected</strong>: their ACME HTTP-01 certs are independent of the platform's base domain.</p>
+      </li>
+      <li>
+        <h3>Verify, then retire the old <span class="who" style="color:#dc2626;background:rgba(220,38,38,.08)">gated</span></h3>
+        <p class="note" style="margin-top:2px">Only once the new domain is proven (see checklist below) do you retire the old: remove <code>*.cdn.a2zjav.com</code> / <code>*.a2zjav.com</code> from <code>BRISK_TLS_DOMAINS</code> and re-issue (drops the old SANs), delete the old Bunny records, and remove the old hostnames from zones.</p>
+        <div class="callout danger"><strong>Golden rule:</strong> never remove an old hostname until the new one is verified serving on <strong>≥2 edges</strong>, and never leave any live hostname with zero in-rotation PoPs. Confirm the currently-serving hostnames from the control plane before any removal — derive them live, don't assume.</div>
+      </li>
+    </ol>
+  </div>
+
+  <!-- ============ VERIFY CHECKLIST ============ -->
+  <div class="card">
+    <h2>Verification checklist (before retiring the old)</h2>
+    <table>
+      <tr><th>Check</th><th>How</th><th>Pass</th></tr>
+      <tr><td>New wildcard resolves geo-correctly</td><td><code>dig x.cdn.newcdn.com</code> from ≥2 regions</td><td>returns the nearest edge IP per region</td></tr>
+      <tr><td>Every edge serves the new host</td><td><code>curl -k --resolve x.cdn.newcdn.com:443:&lt;edgeIP&gt; https://x.cdn.newcdn.com/</code> for each edge</td><td><code>200</code> + <code>Server: Brisk</code> on all 3</td></tr>
+      <tr><td>Cert valid for the new wildcard</td><td><code>openssl s_client -servername x.cdn.newcdn.com</code></td><td>SAN covers <code>*.cdn.newcdn.com</code>, not expired, trusted (staging off)</td></tr>
+      <tr><td>Edge config still byte-clean</td><td><code>nginx -t</code> on each edge; agent + nginx active</td><td>config test OK, both services active</td></tr>
+      <tr><td>Health probe answers</td><td><code>curl http://&lt;edge&gt;/healthz</code></td><td><code>200 ok</code> on all 3 (so DNS health/monitor keeps them in rotation)</td></tr>
+      <tr><td>Fleet healthy</td><td>control plane servers list</td><td>3/3 online + heartbeating, none drained/unhealthy</td></tr>
+    </table>
+  </div>
+
+  <!-- ============ GOTCHAS ============ -->
+  <div class="card">
+    <h2>Don't-forget gotchas</h2>
+    <ul class="tight">
+      <li><strong>Management plane is separate.</strong> If the control-plane / agent-tunnel hostname or the ACME-challenge proxy lives under <code>a2zjav.com</code>, that's its own cert + DNS record to migrate — independent of the CDN data plane, and not required for the customer-facing cutover.</li>
+      <li><strong>Apex SAN.</strong> Only keep the bare <code>newcdn.com</code> in the cert if you actually serve the apex; otherwise just the <code>*.cdn.newcdn.com</code> wildcard is enough.</li>
+      <li><strong>Zone-create coverage is automatic.</strong> The "is this hostname covered by a managed cert?" gate reads from the <em>issued</em> certs, so once step 2's wildcard exists, new zones under the new domain pass with no code change.</li>
+      <li><strong>Staging first.</strong> Leave <code>BRISK_TLS_STAGING=true</code> for a dry run (untrusted cert, but proves the DNS-01 + fan-out works), then flip to <code>false</code> and re-issue for the real, trusted cert at cutover.</li>
+      <li><strong>TTL.</strong> <code>BRISK_DNS_TTL</code> is short by design (~15s) so the new records propagate fast — but registrar NS-delegation propagation (step 1) can take hours; do step 1 well ahead.</li>
+      <li><strong>Bunny API key is shared.</strong> The same <code>BUNNY_API_KEY</code> drives geo-DNS <em>and</em> DNS-01 — make sure the new zone is in the same Bunny account.</li>
+    </ul>
+  </div>
+
+  <!-- ============ ROLLBACK ============ -->
+  <div class="card">
+    <h2>Rollback (if the new domain misbehaves)</h2>
+    <p class="note" style="margin-top:0">Because it's a dual-run, rollback is trivial: the old domain never stopped serving. To abort, simply stop migrating tenants and (optionally) remove the new <code>*.cdn.newcdn.com</code> records/SANs again. Nothing about the old <code>a2zjav.com</code> path was changed until step 7, so there is nothing to restore. The edge-level safety nets (agent <code>nginx -t</code> before reload, last-known-good config, never-drop-live-hostname) all still apply.</p>
+  </div>
+
+  <p class="note" style="text-align:center; margin-top:24px;">Brisk CDN · base-domain migration runbook · Bunny geo-DNS retained · open this file in any browser.</p>
+</div>
+</body>
+</html>

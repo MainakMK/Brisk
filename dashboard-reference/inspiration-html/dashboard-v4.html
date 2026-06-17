@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WP Sync Pro — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f1f3f8; --surface:#fff; --surface2:#f7f8fc; --border:#e5e9f2; --border2:#d0d7eb;
+  --accent:#5b5fc7; --accent2:#4f52b2; --accent-light:#eeeffe; --accent-mid:#c7c9f3;
+  --green:#16a34a; --green-light:#dcfce7; --green-mid:#bbf7d0;
+  --red:#dc2626; --red-light:#fee2e2; --yellow:#ca8a04; --yellow-light:#fef9c3;
+  --purple:#7c3aed; --purple-light:#ede9fe;
+  --text:#111827; --text2:#374151; --muted:#6b7280; --muted2:#9ca3af;
+  --sh:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+  --sh-md:0 4px 20px rgba(0,0,0,0.1);
+  --sh-lg:0 8px 32px rgba(0,0,0,0.14);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;display:flex;min-height:100vh;font-size:13px;-webkit-font-smoothing:antialiased;}
+
+/* ── SIDEBAR ── */
+.sb{width:216px;min-height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:18px 0;position:fixed;top:0;left:0;bottom:0;z-index:50;}
+.sb-logo{padding:0 16px 18px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sb-logo-row{display:flex;align-items:center;gap:9px;}
+.sb-logo-box{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),#818cf8);border-radius:9px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(91,95,199,0.35);}
+.sb-logo-box svg{width:16px;height:16px;}
+.sb-logo-name{font-size:14px;font-weight:800;color:var(--text);letter-spacing:-0.02em;}
+.sb-logo-tag{font-size:9.5px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.07em;font-weight:600;}
+.sb-grp{padding:0 9px;margin-bottom:18px;}
+.sb-grp-lbl{font-size:9.5px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.09em;padding:0 7px;margin-bottom:4px;}
+.nav{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;cursor:pointer;color:var(--muted);font-size:12.5px;font-weight:500;transition:all 0.13s;margin-bottom:1px;position:relative;user-select:none;}
+.nav:hover{background:var(--surface2);color:var(--text2);}
+.nav.on{background:var(--accent-light);color:var(--accent);font-weight:600;}
+.nav.on::before{content:'';position:absolute;left:-9px;top:7px;bottom:7px;width:3px;background:var(--accent);border-radius:0 3px 3px 0;}
+.nav-ic{width:15px;height:15px;flex-shrink:0;opacity:0.65;}
+.nav.on .nav-ic{opacity:1;}
+.nb{margin-left:auto;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;background:var(--accent);color:#fff;}
+.nb.g{background:var(--green);}
+.nb.y{background:var(--yellow);color:#fff;}
+.sb-foot{margin-top:auto;padding:12px 9px 0;border-top:1px solid var(--border);}
+.run-pill{display:flex;align-items:center;gap:7px;padding:7px 9px;border-radius:8px;background:var(--green-light);font-size:11.5px;font-weight:600;color:var(--green);}
+.pdot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 1.8s infinite;flex-shrink:0;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* ── TOPBAR ── */
+.tb{position:fixed;top:0;left:216px;right:0;height:52px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 26px;gap:14px;z-index:40;}
+.tb-title{font-size:15px;font-weight:800;color:var(--text);letter-spacing:-0.025em;}
+.tb-bc{font-size:11px;color:var(--muted2);display:flex;align-items:center;gap:3px;}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;border:none;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.15s;}
+.btn svg{width:13px;height:13px;}
+.btn-p{background:var(--accent);color:#fff;box-shadow:0 2px 6px rgba(91,95,199,0.3);}
+.btn-p:hover{background:var(--accent2);transform:translateY(-1px);}
+.btn-p:active{transform:translateY(0);}
+.btn-o{background:var(--surface);border:1px solid var(--border2);color:var(--text2);}
+.btn-o:hover{border-color:var(--accent);color:var(--accent);}
+.btn-sm{padding:5px 11px;font-size:11.5px;}
+.btn-d{background:var(--red-light);color:var(--red);border:1px solid #fecaca;}
+.btn-d:hover{background:#fecaca;}
+.btn-g{background:var(--green-light);color:var(--green);border:1px solid var(--green-mid);}
+.btn-g:hover{background:var(--green-mid);}
+
+/* ── MAIN ── */
+.main{margin-left:216px;padding-top:52px;flex:1;padding:52px 26px 32px;}
+.pg{padding-top:22px;}
+.sec{display:none;}.sec.on{display:block;}
+
+/* ── STAT CARDS ── */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:13px;margin-bottom:18px;}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 17px;box-shadow:var(--sh);transition:box-shadow 0.15s,transform 0.15s;position:relative;overflow:hidden;}
+.sc:hover{box-shadow:var(--sh-md);transform:translateY(-2px);}
+.sc::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0;}
+.sc:nth-child(1)::after{background:var(--accent);}
+.sc:nth-child(2)::after{background:var(--green);}
+.sc:nth-child(3)::after{background:var(--yellow);}
+.sc:nth-child(4)::after{background:var(--red);}
+.sc:nth-child(5)::after{background:var(--purple);}
+.sc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:11px;}
+.sc-lbl{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;}
+.sc-ico{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.sc-ico svg{width:14px;height:14px;}
+.sc-val{font-size:27px;font-weight:800;color:var(--text);letter-spacing:-0.04em;line-height:1;margin-bottom:8px;}
+.sc-val sup{font-size:13px;font-weight:700;vertical-align:super;}
+.sc-ft{display:flex;align-items:center;justify-content:space-between;}
+.sc-sub{font-size:11px;color:var(--muted2);}
+.bdg{display:inline-flex;align-items:center;gap:2px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;}
+.bdg.g{background:var(--green-light);color:var(--green);}
+.bdg.r{background:var(--red-light);color:var(--red);}
+.bdg.y{background:var(--yellow-light);color:var(--yellow);}
+.bdg.b{background:var(--accent-light);color:var(--accent);}
+.bdg.p{background:var(--purple-light);color:var(--purple);}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;box-shadow:var(--sh);}
+.card-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;}
+.card-t{font-size:13.5px;font-weight:700;color:var(--text);letter-spacing:-0.01em;}
+.card-s{font-size:11.5px;color:var(--muted2);margin-top:2px;}
+.lbtn{font-size:12px;font-weight:600;color:var(--accent);background:none;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;}
+.lbtn:hover{text-decoration:underline;}
+
+/* ── GRID LAYOUTS ── */
+.mid-grid{display:grid;grid-template-columns:1fr 310px;gap:15px;margin-bottom:15px;}
+.bot-grid{display:grid;grid-template-columns:1fr 1fr 280px;gap:15px;}
+
+/* ── CHART ── */
+.tabs{display:flex;gap:2px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:2px;}
+.tab{padding:4px 10px;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;color:var(--muted);transition:all 0.12s;}
+.tab.on{background:var(--surface);color:var(--accent);box-shadow:var(--sh);}
+.chart-w{height:182px;}
+.chart-w svg{width:100%;height:100%;}
+
+/* ── PAIRS ── */
+.pair-row{display:flex;align-items:center;gap:7px;padding:10px 0;border-bottom:1px solid var(--border);}
+.pair-row:last-child{border:none;padding-bottom:0;}
+.site-chip{width:27px;height:27px;border-radius:6px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.pl{flex:1;min-width:0;}
+.pl-n{font-size:11.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pl-s{font-size:10px;color:var(--muted2);}
+.arr{color:var(--muted2);font-size:11px;flex-shrink:0;}
+.sc-pill{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;flex-shrink:0;}
+.sc-pill.a{background:var(--green-light);color:var(--green);}
+.sc-pill.p{background:var(--yellow-light);color:var(--yellow);}
+.sc-pill.e{background:var(--red-light);color:var(--red);}
+
+/* ── TABLE ── */
+.tbl{width:100%;border-collapse:collapse;}
+.tbl th{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;padding:0 10px 10px;text-align:left;border-bottom:1px solid var(--border);}
+.tbl td{padding:9px 10px;font-size:12.5px;color:var(--text2);border-bottom:1px solid var(--border);vertical-align:middle;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:var(--surface2);}
+.td-t{font-weight:600;color:var(--text);max-width:195px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;}
+.el{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-light);padding:3px 9px;border-radius:5px;cursor:pointer;border:none;font-family:'Plus Jakarta Sans',sans-serif;transition:background 0.12s;}
+.el:hover{background:#ddd6fe;}
+.el svg{width:10px;height:10px;}
+.stpill{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:20px;}
+.stpill svg{width:5px;height:5px;}
+.stpill.sy{background:var(--green-light);color:var(--green);}
+.stpill.pe{background:var(--yellow-light);color:var(--yellow);}
+.stpill.fa{background:var(--red-light);color:var(--red);}
+.cfo{font-size:11px;font-weight:700;color:var(--green);}
+.cfw{font-size:11px;font-weight:700;color:var(--yellow);}
+.cfe{font-size:11px;font-weight:700;color:var(--red);}
+
+/* ── BAR ── */
+.br-row{display:flex;align-items:center;gap:9px;margin-bottom:11px;}
+.br-row:last-child{margin:0;}
+.br-lbl{font-size:11.5px;color:var(--text2);font-weight:500;width:84px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.br-bg{flex:1;height:6px;background:var(--bg);border-radius:10px;overflow:hidden;border:1px solid var(--border);}
+.br-fill{height:100%;border-radius:10px;}
+.br-n{font-size:11px;font-weight:600;color:var(--muted);width:32px;text-align:right;}
+
+/* ── SCHEDULE ── */
+.sch-r{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);}
+.sch-r:last-child{border:none;}
+.sch-n{font-size:12.5px;font-weight:600;color:var(--text);}
+.sch-i{font-size:11px;color:var(--muted2);}
+.sch-t{font-size:12px;font-weight:700;color:var(--accent);}
+
+/* ── INT ── */
+.int-r{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--border);}
+.int-r:last-child{border:none;}
+.int-ico{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.int-ico svg{width:14px;height:14px;}
+.int-n{font-size:12.5px;font-weight:600;color:var(--text);}
+.int-d{font-size:11px;color:var(--muted2);}
+.int-st{margin-left:auto;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.int-st svg{width:10px;height:10px;}
+.int-st.ok{background:var(--green-light);color:var(--green);}
+.int-st.wn{background:var(--yellow-light);color:var(--yellow);}
+
+/* ── SECTION LABEL ── */
+.slbl{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;}
+.ctag{background:var(--bg);border:1px solid var(--border);color:var(--muted);font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:20px;}
+
+/* ── PAIR ACTION BTNS ── */
+.pac{display:flex;gap:4px;margin-left:4px;}
+.pb{width:24px;height:24px;border-radius:5px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all 0.12s;}
+.pb:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
+.pb.del:hover{border-color:var(--red);color:var(--red);background:var(--red-light);}
+.pb svg{width:11px;height:11px;}
+
+/* ── SITES PAGE ── */
+.site-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;box-shadow:var(--sh);display:flex;align-items:center;gap:12px;transition:box-shadow 0.15s;}
+.site-card:hover{box-shadow:var(--sh-md);}
+.site-avatar{width:40px;height:40px;border-radius:10px;background:var(--accent-light);border:1px solid var(--accent-mid);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.site-avatar svg{width:18px;height:18px;color:var(--accent);}
+.site-info{flex:1;min-width:0;}
+.site-url{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.site-user{font-size:11px;color:var(--muted2);}
+.site-conn{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;}
+.site-conn.ok{color:var(--green);}
+.site-conn.fail{color:var(--red);}
+.sites-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:16px;}
+
+/* ── MODAL ── */
+.ov{display:none;position:fixed;inset:0;background:rgba(17,24,39,0.4);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(3px);}
+.ov.open{display:flex;}
+.modal{background:var(--surface);border-radius:14px;box-shadow:var(--sh-lg);width:500px;max-width:96vw;max-height:92vh;overflow-y:auto;animation:fu 0.2s ease;}
+.modal.sm{width:400px;}
+@keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.mhd{display:flex;align-items:center;justify-content:space-between;padding:20px 22px 16px;border-bottom:1px solid var(--border);}
+.mhd-t{font-size:15px;font-weight:800;color:var(--text);}
+.mcl{width:28px;height:28px;border-radius:6px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:16px;transition:all 0.12s;}
+.mcl:hover{background:var(--red-light);color:var(--red);border-color:#fecaca;}
+.mbd{padding:20px 22px;}
+.mft{padding:14px 22px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;}
+.fg{margin-bottom:15px;}
+.flbl{display:block;font-size:11.5px;font-weight:700;color:var(--text2);margin-bottom:5px;}
+.fi{width:100%;padding:8px 11px;border:1px solid var(--border2);border-radius:7px;font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);outline:none;transition:border-color 0.15s,box-shadow 0.15s;}
+.fi:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(91,95,199,0.1);}
+.fsel{width:100%;padding:8px 11px;border:1px solid var(--border2);border-radius:7px;font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);outline:none;background:var(--surface);cursor:pointer;}
+.fsel:focus{border-color:var(--accent);}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.fhint{font-size:10.5px;color:var(--muted2);margin-top:4px;}
+.fdiv{border:none;border-top:1px solid var(--border);margin:16px 0;}
+.fsect{font-size:10.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.09em;margin-bottom:12px;}
+
+/* ── CONNECT STATUS BOX ── */
+.conn-box{border-radius:8px;padding:10px 13px;font-size:12px;font-weight:600;margin-top:8px;display:none;align-items:center;gap:8px;}
+.conn-box.ok{background:var(--green-light);color:var(--green);border:1px solid var(--green-mid);display:flex;}
+.conn-box.fail{background:var(--red-light);color:var(--red);border:1px solid #fecaca;display:flex;}
+.conn-box.loading{background:var(--accent-light);color:var(--accent);border:1px solid var(--accent-mid);display:flex;}
+.conn-box svg{width:14px;height:14px;flex-shrink:0;}
+
+/* ── POLYLANG SECTION ── */
+.poly-section{background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:8px;padding:13px;margin-top:10px;display:none;}
+.poly-section.show{display:block;}
+.poly-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--accent);margin-bottom:10px;}
+
+/* ── CATEGORY CHECKBOXES ── */
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-height:150px;overflow-y:auto;padding-right:4px;}
+.cat-item{display:flex;align-items:center;gap:7px;padding:6px 9px;border-radius:7px;border:1px solid var(--border);background:var(--surface);cursor:pointer;transition:all 0.12s;}
+.cat-item:hover{border-color:var(--accent);background:var(--accent-light);}
+.cat-item input[type=checkbox]{accent-color:var(--accent);width:13px;height:13px;cursor:pointer;}
+.cat-item label{font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cat-loading{text-align:center;padding:20px;color:var(--muted2);font-size:12px;}
+
+/* ── TOAST ── */
+.tst-wrap{position:fixed;bottom:22px;right:22px;z-index:999;display:flex;flex-direction:column;gap:7px;}
+.tst{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:11px 14px;box-shadow:var(--sh-md);display:flex;align-items:center;gap:9px;min-width:275px;animation:tsi 0.22s ease;}
+@keyframes tsi{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
+.tst.su{border-left:3px solid var(--green);}
+.tst.er{border-left:3px solid var(--red);}
+.tst.in{border-left:3px solid var(--accent);}
+.tst-ic{width:17px;height:17px;flex-shrink:0;}
+.tst-t{flex:1;font-size:12.5px;font-weight:600;color:var(--text);}
+.tst-x{color:var(--muted2);cursor:pointer;font-size:15px;line-height:1;background:none;border:none;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin 0.8s linear infinite;display:inline-block;}
+
+/* ── PAGE HEADER ── */
+.pg-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.pg-ttl{font-size:16px;font-weight:800;color:var(--text);letter-spacing:-0.02em;}
+.pg-sub{font-size:12px;color:var(--muted2);margin-top:2px;}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:44px 20px;color:var(--muted2);}
+.empty svg{width:38px;height:38px;margin:0 auto 12px;display:block;opacity:0.25;}
+.empty p{font-size:12.5px;line-height:1.7;}
+
+/* ── FAVICON ── */
+.fav{width:28px;height:28px;border-radius:6px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;}
+.fav img{width:20px;height:20px;object-fit:contain;}
+.fav-lg{width:40px;height:40px;border-radius:10px;background:var(--accent-light);border:1px solid var(--accent-mid);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;}
+.fav-lg img{width:24px;height:24px;object-fit:contain;}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+</style>
+</head>
+<body>
+
+<!-- ════════ LOGIN PAGE ════════ -->
+<div id="login-page" style="position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;">
+  <div style="width:100%;max-width:400px;padding:24px;">
+    <div style="text-align:center;margin-bottom:32px;">
+      <div style="width:52px;height:52px;background:linear-gradient(135deg,var(--accent),#818cf8);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 6px 16px rgba(91,95,199,0.35);">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M4 12h16M12 4l8 8-8 8"/></svg>
+      </div>
+      <div style="font-size:22px;font-weight:800;color:var(--text);letter-spacing:-0.03em;">WP Sync Pro</div>
+      <div style="font-size:12px;color:var(--muted2);margin-top:4px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;">Post Aggregator</div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;box-shadow:var(--sh-md);">
+      <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:4px;letter-spacing:-0.02em;">Welcome back</div>
+      <div style="font-size:12.5px;color:var(--muted2);margin-bottom:22px;">Sign in to access your dashboard</div>
+      <div id="login-error" style="display:none;background:var(--red-light);border:1px solid #fecaca;border-radius:8px;padding:10px 13px;font-size:12.5px;color:var(--red);font-weight:600;margin-bottom:16px;align-items:center;gap:8px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        Invalid username or password. Please try again.
+      </div>
+      <div class="fg">
+        <label class="flbl">Username</label>
+        <div style="position:relative;">
+          <svg style="position:absolute;left:11px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--muted2);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <input class="fi" id="login-user" type="text" placeholder="Enter your username" style="padding-left:34px;" onkeydown="if(event.key==='Enter')doLogin()"/>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="flbl">Password</label>
+        <div style="position:relative;">
+          <svg style="position:absolute;left:11px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--muted2);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          <input class="fi" id="login-pass" type="password" placeholder="Enter your password" style="padding-left:34px;padding-right:38px;" onkeydown="if(event.key==='Enter')doLogin()"/>
+          <button onclick="togglePass()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted2);padding:2px;">
+            <svg id="eye-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;margin-top:-6px;">
+        <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:12px;color:var(--text2);">
+          <input type="checkbox" id="remember-me" style="accent-color:var(--accent);cursor:pointer;"> Remember me
+        </label>
+        <button onclick="toast('Contact your admin to reset password','in')" style="font-size:12px;color:var(--accent);background:none;border:none;cursor:pointer;font-weight:600;font-family:'Plus Jakarta Sans',sans-serif;">Forgot password?</button>
+      </div>
+      <button class="btn btn-p" id="login-btn" onclick="doLogin()" style="width:100%;justify-content:center;padding:10px;font-size:13.5px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10,17 15,12 10,7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        <span id="login-btn-text">Sign In</span>
+      </button>
+      <div style="text-align:center;margin-top:16px;font-size:11.5px;color:var(--muted2);">Demo: username <strong style="color:var(--text);">admin</strong> · password <strong style="color:var(--text);">admin123</strong></div>
+    </div>
+    <div style="text-align:center;margin-top:20px;font-size:11.5px;color:var(--muted2);">Protected by WP Sync Pro · <span style="color:var(--accent);font-weight:600;">v1.0.0</span></div>
+  </div>
+</div>
+
+<!-- ══════════════ SIDEBAR ══════════════ -->
+<aside class="sb">
+  <div class="sb-logo">
+    <div class="sb-logo-row">
+      <div class="sb-logo-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M4 12h16M12 4l8 8-8 8"/></svg>
+      </div>
+      <div>
+        <div class="sb-logo-name">WP Sync Pro</div>
+        <div class="sb-logo-tag">Post Aggregator</div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="sb-grp">
+    <div class="sb-grp-lbl">Main</div>
+    <div class="nav on" onclick="goPage('dashboard',this)">
+      <svg class="nav-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </div>
+    <div class="nav" onclick="goPage('sites',this)">
+      <svg class="nav-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+      Sites
+      <span class="nb" id="nb-sites">5</span>
+    </div>
+    <div class="nav" onclick="goPage('sitepairs',this)">
+      <svg class="nav-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07L11 5.9"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07L13 18.1"/></svg>
+      Site Pairs
+      <span class="nb" id="nb-pairs">6</span>
+    </div>
+    <div class="nav" onclick="goPage('synclogs',this)">
+      <svg class="nav-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+      Sync Logs
+      <span class="nb g">New</span>
+    </div>
+    <div class="nav" onclick="goPage('drafts',this)">
+      <svg class="nav-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Draft Posts
+      <span class="nb" id="nb-drafts">24</span>
+    </div>
+    <div class="nav" onclick="goPage('analytics',this)">
+      <svg class="nav-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Analytics
+    </div>
+  </nav>
+
+  <nav class="sb-grp">
+    <div class="sb-grp-lbl">System</div>
+    <div class="nav" onclick="goPage('scheduler',this)">
+      <svg class="nav-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+      Scheduler
+    </div>
+    <div class="nav" onclick="goPage('fieldmapping',this)">
+      <svg class="nav-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="1,6 1,22 8,18 16,22 23,18 23,2 16,6 8,2"/></svg>
+      Field Mapping
+    </div>
+    <div class="nav" onclick="goPage('settings',this)">
+      <svg class="nav-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M22 12h-2M2 12h2"/></svg>
+      Settings
+    </div>
+  </nav>
+
+  <div class="sb-foot">
+    <div class="run-pill"><span class="pdot"></span>Scheduler Running</div>
+    <div class="nav" onclick="doLogout()" style="margin-top:8px;color:var(--red);">
+      <svg class="nav-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="opacity:1;"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Logout
+    </div>
+  </div>
+</aside>
+
+<!-- ══════════════ TOPBAR ══════════════ -->
+<header class="tb">
+  <div>
+    <div class="tb-title" id="pg-title">Dashboard</div>
+  </div>
+  <div class="tb-bc">
+    <span>HOME</span>
+    <span style="color:var(--border2);margin:0 3px;">›</span>
+    <span id="pg-bc" style="color:var(--muted);">OVERVIEW</span>
+  </div>
+  <div class="tb-right">
+    <button class="btn btn-o" onclick="doSync(this)">
+      <svg id="sync-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+      <span id="sync-txt">Sync Now</span>
+    </button>
+    <button class="btn btn-p" onclick="openModal('modal-add-pair')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Site Pair
+    </button>
+  </div>
+</header>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<main class="main"><div class="pg">
+
+<!-- ════ DASHBOARD ════ -->
+<div class="sec on" id="sec-dashboard">
+  <div class="stats">
+    <div class="sc">
+      <div class="sc-top"><div class="sc-lbl">Total Sites</div><div class="sc-ico" style="background:var(--accent-light);color:var(--accent);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div></div>
+      <div class="sc-val" id="sv-sites">5</div>
+      <div class="sc-ft"><span class="sc-sub">Connected sites</span><span class="bdg b">+1 week</span></div>
+    </div>
+    <div class="sc">
+      <div class="sc-top"><div class="sc-lbl">Posts Synced</div><div class="sc-ico" style="background:var(--green-light);color:var(--green);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg></div></div>
+      <div class="sc-val">12.4<sup>k</sup></div>
+      <div class="sc-ft"><span class="sc-sub">Across all pairs</span><span class="bdg g">↑ 12.4%</span></div>
+    </div>
+    <div class="sc">
+      <div class="sc-top"><div class="sc-lbl">Pending Drafts</div><div class="sc-ico" style="background:var(--yellow-light);color:var(--yellow);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div></div>
+      <div class="sc-val" id="sv-drafts">24</div>
+      <div class="sc-ft"><span class="sc-sub">Awaiting review</span><span class="bdg y">Review</span></div>
+    </div>
+    <div class="sc">
+      <div class="sc-top"><div class="sc-lbl">Sync Errors</div><div class="sc-ico" style="background:var(--red-light);color:var(--red);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div></div>
+      <div class="sc-val">3</div>
+      <div class="sc-ft"><span class="sc-sub">Need attention</span><span class="bdg r">↑ 3.1%</span></div>
+    </div>
+    <div class="sc">
+      <div class="sc-top"><div class="sc-lbl">Next Sync</div><div class="sc-ico" style="background:var(--purple-light);color:var(--purple);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></div></div>
+      <div class="sc-val" style="font-size:22px;" id="countdown">14m</div>
+      <div class="sc-ft"><span class="sc-sub">site1 → site2</span><span class="bdg p">1hr interval</span></div>
+    </div>
+  </div>
+
+  <div class="mid-grid">
+    <div class="card">
+      <div class="card-hd">
+        <div><div class="card-t">Sync Activity</div><div class="card-s">Posts synced · Last 30 days</div></div>
+        <div class="tabs" id="ch-tabs">
+          <div class="tab" onclick="selTab(this)">7d</div>
+          <div class="tab on" onclick="selTab(this)">30d</div>
+          <div class="tab" onclick="selTab(this)">90d</div>
+          <div class="tab" onclick="selTab(this)">6m</div>
+          <div class="tab" onclick="selTab(this)">1y</div>
+        </div>
+      </div>
+      <div class="chart-w">
+        <svg viewBox="0 0 580 175" preserveAspectRatio="none">
+          <defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5b5fc7" stop-opacity="0.13"/><stop offset="100%" stop-color="#5b5fc7" stop-opacity="0"/></linearGradient></defs>
+          <line x1="28" y1="18" x2="578" y2="18" stroke="#e5e9f2" stroke-width="1"/><text x="0" y="22" font-size="9" fill="#9ca3af" font-family="Plus Jakarta Sans">800</text>
+          <line x1="28" y1="54" x2="578" y2="54" stroke="#e5e9f2" stroke-width="1"/><text x="0" y="58" font-size="9" fill="#9ca3af" font-family="Plus Jakarta Sans">600</text>
+          <line x1="28" y1="90" x2="578" y2="90" stroke="#e5e9f2" stroke-width="1"/><text x="0" y="94" font-size="9" fill="#9ca3af" font-family="Plus Jakarta Sans">400</text>
+          <line x1="28" y1="126" x2="578" y2="126" stroke="#e5e9f2" stroke-width="1"/><text x="0" y="130" font-size="9" fill="#9ca3af" font-family="Plus Jakarta Sans">200</text>
+          <path d="M32,118 C62,108 82,90 112,80 C142,70 162,100 192,85 C222,70 244,52 274,42 C304,32 322,56 352,46 C382,36 402,22 432,17 C462,12 482,30 510,26 C540,22 560,14 578,10 L578,155 L32,155 Z" fill="url(#cg)"/>
+          <path d="M32,118 C62,108 82,90 112,80 C142,70 162,100 192,85 C222,70 244,52 274,42 C304,32 322,56 352,46 C382,36 402,22 432,17 C462,12 482,30 510,26 C540,22 560,14 578,10" fill="none" stroke="#5b5fc7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="274" cy="42" r="3.5" fill="#5b5fc7" stroke="white" stroke-width="2"/>
+          <circle cx="432" cy="17" r="3.5" fill="#5b5fc7" stroke="white" stroke-width="2"/>
+          <circle cx="578" cy="10" r="4.5" fill="#5b5fc7" stroke="white" stroke-width="2.5"/>
+          <text x="28" y="170" font-size="9" fill="#9ca3af" font-family="Plus Jakarta Sans">Mar 1</text>
+          <text x="138" y="170" font-size="9" fill="#9ca3af" font-family="Plus Jakarta Sans">Mar 5</text>
+          <text x="258" y="170" font-size="9" fill="#9ca3af" font-family="Plus Jakarta Sans">Mar 9</text>
+          <text x="378" y="170" font-size="9" fill="#9ca3af" font-family="Plus Jakarta Sans">Mar 13</text>
+          <text x="508" y="170" font-size="9" fill="#9ca3af" font-family="Plus Jakarta Sans">Mar 17</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd">
+        <div><div class="card-t">Site Pairs</div><div class="card-s">Active connections</div></div>
+        <button class="lbtn" onclick="goPage('sitepairs',document.querySelectorAll('.nav')[2])">View All</button>
+      </div>
+      <div class="pair-row"><div class="fav"><img src="https://www.google.com/s2/favicons?domain=site1.com&sz=64" onerror="this.src='data:image/svg+xml,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%239ca3af\' stroke-width=\'2\' xmlns=\'http://www.w3.org/2000/svg\'><circle cx=\'12\' cy=\'12\' r=\'10\'/><line x1=\'2\' y1=\'12\' x2=\'22\' y2=\'12\'/><path d=\'M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z\'/></svg>'"/></div><div class="pl"><div class="pl-n">site1.com</div><div class="pl-s">Source · ID</div></div><div class="arr">→</div><div class="fav"><img src="https://www.google.com/s2/favicons?domain=site2.com&sz=64" onerror="this.style.display='none'"/></div><div class="pl"><div class="pl-n">site2.com</div><div class="pl-s">Dest.</div></div><div class="sc-pill a">Active</div></div>
+      <div class="pair-row"><div class="fav"><img src="https://www.google.com/s2/favicons?domain=site1.com&sz=64" onerror="this.style.display='none'"/></div><div class="pl"><div class="pl-n">site1.com</div><div class="pl-s">Source · DE</div></div><div class="arr">→</div><div class="fav"><img src="https://www.google.com/s2/favicons?domain=site3.com&sz=64" onerror="this.style.display='none'"/></div><div class="pl"><div class="pl-n">site3.com</div><div class="pl-s">Dest.</div></div><div class="sc-pill a">Active</div></div>
+      <div class="pair-row"><div class="fav"><img src="https://www.google.com/s2/favicons?domain=news-hub.com&sz=64" onerror="this.style.display='none'"/></div><div class="pl"><div class="pl-n">news-hub.com</div><div class="pl-s">Source · All</div></div><div class="arr">→</div><div class="fav"><img src="https://www.google.com/s2/favicons?domain=blog-net.com&sz=64" onerror="this.style.display='none'"/></div><div class="pl"><div class="pl-n">blog-net.com</div><div class="pl-s">Dest.</div></div><div class="sc-pill p">Paused</div></div>
+      <div class="pair-row"><div class="fav"><img src="https://www.google.com/s2/favicons?domain=tech-daily.io&sz=64" onerror="this.style.display='none'"/></div><div class="pl"><div class="pl-n">tech-daily.io</div><div class="pl-s">Source · All</div></div><div class="arr">→</div><div class="fav"><img src="https://www.google.com/s2/favicons?domain=mysite.com&sz=64" onerror="this.style.display='none'"/></div><div class="pl"><div class="pl-n">mysite.com</div><div class="pl-s">Dest.</div></div><div class="sc-pill e">Error</div></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:15px;">
+    <div class="card-hd">
+      <div><div class="slbl">Recent Synced Posts <span class="ctag">24 TOTAL</span></div></div>
+      <button class="btn btn-p btn-sm" onclick="goPage('synclogs',document.querySelectorAll('.nav')[3])">+ View All Logs</button>
+    </div>
+    <table class="tbl">
+      <thead><tr><th>Title</th><th>Source</th><th>Destination</th><th>Language</th><th>Draft Link</th><th>Custom Fields</th><th>Status</th><th>Synced</th></tr></thead>
+      <tbody>
+        <tr><td><span class="td-t">10 Best SEO Tips for 2024</span></td><td>site1.com</td><td>site2.com</td><td><span class="bdg b">🇮🇩 ID</span></td><td><button class="el" onclick="toast('Opening draft...','in')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit Draft</button></td><td><span class="cfo">✓ 4 fields</span></td><td><span class="stpill sy"><svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>Synced</span></td><td style="color:var(--muted2);font-size:11.5px;">2 min ago</td></tr>
+        <tr><td><span class="td-t">How to Speed Up WordPress</span></td><td>site1.com</td><td>site2.com</td><td><span class="bdg b">🇮🇩 ID</span></td><td><button class="el" onclick="toast('Opening draft...','in')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit Draft</button></td><td><span class="cfo">✓ 6 fields</span></td><td><span class="stpill sy"><svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>Synced</span></td><td style="color:var(--muted2);font-size:11.5px;">18 min ago</td></tr>
+        <tr><td><span class="td-t">Technologie Trends 2024</span></td><td>site1.com</td><td>site3.com</td><td><span class="bdg p">🇩🇪 DE</span></td><td><button class="el" onclick="toast('Opening draft...','in')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit Draft</button></td><td><span class="cfo">✓ 3 fields</span></td><td><span class="stpill sy"><svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>Synced</span></td><td style="color:var(--muted2);font-size:11.5px;">1 hr ago</td></tr>
+        <tr><td><span class="td-t">Top 20 WordPress Plugins</span></td><td>tech-daily.io</td><td>mysite.com</td><td><span class="bdg" style="background:var(--surface2);color:var(--muted);border:1px solid var(--border);">All</span></td><td><span style="color:var(--muted2);font-size:11.5px;">— Not created</span></td><td><span class="cfe">✗ Failed</span></td><td><span class="stpill fa"><svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>Failed</span></td><td style="color:var(--muted2);font-size:11.5px;">2 hr ago</td></tr>
+        <tr><td><span class="td-t">WooCommerce Setup Tutorial</span></td><td>news-hub.com</td><td>blog-net.com</td><td><span class="bdg" style="background:var(--surface2);color:var(--muted);border:1px solid var(--border);">All</span></td><td><button class="el" onclick="toast('Opening draft...','in')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit Draft</button></td><td><span class="cfw">⚠ 2/5 fields</span></td><td><span class="stpill pe"><svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>Pending</span></td><td style="color:var(--muted2);font-size:11.5px;">3 hr ago</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="bot-grid">
+    <div class="card">
+      <div class="card-hd"><div><div class="card-t">Top Site Pairs</div><div class="card-s">By posts synced</div></div></div>
+      <div class="br-row"><div class="br-lbl">site1→site2</div><div class="br-bg"><div class="br-fill" style="width:92%;background:linear-gradient(90deg,#5b5fc7,#818cf8);"></div></div><div class="br-n">4.2k</div></div>
+      <div class="br-row"><div class="br-lbl">site1→site3</div><div class="br-bg"><div class="br-fill" style="width:74%;background:linear-gradient(90deg,#7c3aed,#a78bfa);"></div></div><div class="br-n">3.1k</div></div>
+      <div class="br-row"><div class="br-lbl">news→blog</div><div class="br-bg"><div class="br-fill" style="width:55%;background:linear-gradient(90deg,#ca8a04,#fbbf24);"></div></div><div class="br-n">2.4k</div></div>
+      <div class="br-row"><div class="br-lbl">tech→mysite</div><div class="br-bg"><div class="br-fill" style="width:30%;background:linear-gradient(90deg,#dc2626,#f87171);"></div></div><div class="br-n">1.8k</div></div>
+      <div class="br-row"><div class="br-lbl">hub→archive</div><div class="br-bg"><div class="br-fill" style="width:18%;background:linear-gradient(90deg,#16a34a,#4ade80);"></div></div><div class="br-n">0.9k</div></div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div><div class="card-t">Upcoming Syncs</div><div class="card-s">Scheduler queue</div></div></div>
+      <div class="sch-r"><div><div class="sch-n">site1 → site2</div><div class="sch-i">Every 1 hour · 🇮🇩 ID</div></div><div class="sch-t" id="t1">in 14m</div></div>
+      <div class="sch-r"><div><div class="sch-n">site1 → site3</div><div class="sch-i">Every 1 hour · 🇩🇪 DE</div></div><div class="sch-t">in 14m</div></div>
+      <div class="sch-r"><div><div class="sch-n">news → blog</div><div class="sch-i">Every 12 hours · All</div></div><div class="sch-t">in 5h 12m</div></div>
+      <div class="sch-r"><div><div class="sch-n">tech → mysite</div><div class="sch-i" style="color:var(--red);">Error — retry pending</div></div><div class="sch-t" style="color:var(--red);">Paused</div></div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-t">Active Integrations</div></div>
+      <div class="int-r"><div class="int-ico" style="background:var(--accent-light);color:var(--accent);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div><div><div class="int-n">WordPress REST API</div><div class="int-d">5 sites connected</div></div><div class="int-st ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20,6 9,17 4,12"/></svg></div></div>
+      <div class="int-r"><div class="int-ico" style="background:var(--green-light);color:var(--green);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div><div><div class="int-n">PostgreSQL DB</div><div class="int-d">Supabase · 12.4k rows</div></div><div class="int-st ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20,6 9,17 4,12"/></svg></div></div>
+      <div class="int-r"><div class="int-ico" style="background:var(--yellow-light);color:var(--yellow);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></div><div><div class="int-n">Polylang</div><div class="int-d">2 sites · 4 languages</div></div><div class="int-st ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20,6 9,17 4,12"/></svg></div></div>
+      <div class="int-r"><div class="int-ico" style="background:var(--red-light);color:var(--red);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="1,6 1,22 8,18 16,22 23,18 23,2 16,6 8,2"/></svg></div><div><div class="int-n">Field Mapping</div><div class="int-d">1 pair unconfigured</div></div><div class="int-st wn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div></div>
+      <div style="margin-top:13px;"><button class="btn btn-o" style="width:100%;justify-content:center;font-size:12px;" onclick="openModal('modal-webhooks')">Configure Webhooks</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ SITES ════ -->
+<div class="sec" id="sec-sites">
+  <div class="pg-hd">
+    <div><div class="pg-ttl">Sites</div><div class="pg-sub">Add your WordPress sites once — reuse everywhere in site pairs</div></div>
+    <button class="btn btn-p" onclick="openModal('modal-add-site')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Site
+    </button>
+  </div>
+  <div class="sites-grid" id="sites-grid">
+    <div class="site-card"><div class="fav-lg"><img src="https://www.google.com/s2/favicons?domain=site1.com&sz=64" onerror="this.style.display='none'"/></div><div class="site-info"><div class="site-url">site1.com</div><div class="site-user">admin · 🌍 Polylang: ID, DE, EN, FR</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;"><div class="site-conn ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20,6 9,17 4,12"/></svg>Connected</div><div class="pac"><button class="pb" onclick="toast('Testing connection...','in');setTimeout(()=>toast('✓ site1.com connected!','su'),1200)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg></button><button class="pb del" onclick="confirmDel(this,'site')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button></div></div></div>
+    <div class="site-card"><div class="fav-lg"><img src="https://www.google.com/s2/favicons?domain=site2.com&sz=64" onerror="this.style.display='none'"/></div><div class="site-info"><div class="site-url">site2.com</div><div class="site-user">admin · No Polylang</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;"><div class="site-conn ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20,6 9,17 4,12"/></svg>Connected</div><div class="pac"><button class="pb" onclick="toast('Testing...','in');setTimeout(()=>toast('✓ site2.com connected!','su'),1200)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg></button><button class="pb del" onclick="confirmDel(this,'site')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button></div></div></div>
+    <div class="site-card"><div class="fav-lg"><img src="https://www.google.com/s2/favicons?domain=site3.com&sz=64" onerror="this.style.display='none'"/></div><div class="site-info"><div class="site-url">site3.com</div><div class="site-user">editor · No Polylang</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;"><div class="site-conn ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20,6 9,17 4,12"/></svg>Connected</div><div class="pac"><button class="pb" onclick="toast('Testing...','in');setTimeout(()=>toast('✓ site3.com connected!','su'),1200)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg></button><button class="pb del" onclick="confirmDel(this,'site')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button></div></div></div>
+    <div class="site-card"><div class="fav-lg"><img src="https://www.google.com/s2/favicons?domain=news-hub.com&sz=64" onerror="this.style.display='none'"/></div><div class="site-info"><div class="site-url">news-hub.com</div><div class="site-user">admin · No Polylang</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;"><div class="site-conn ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20,6 9,17 4,12"/></svg>Connected</div><div class="pac"><button class="pb" onclick="toast('Testing...','in');setTimeout(()=>toast('✓ news-hub.com connected!','su'),1200)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg></button><button class="pb del" onclick="confirmDel(this,'site')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button></div></div></div>
+    <div class="site-card"><div class="fav-lg" style="background:var(--red-light);border-color:#fecaca;"><img src="https://www.google.com/s2/favicons?domain=tech-daily.io&sz=64" onerror="this.style.display='none'"/></div><div class="site-info"><div class="site-url">tech-daily.io</div><div class="site-user">editor · No Polylang</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;"><div class="site-conn fail"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Failed</div><div class="pac"><button class="pb" onclick="toast('Retesting connection...','in');setTimeout(()=>toast('Still failing — check credentials','er'),1500)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg></button><button class="pb del" onclick="confirmDel(this,'site')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button></div></div></div>
+  </div>
+</div>
+
+<!-- ════ SITE PAIRS ════ -->
+<div class="sec" id="sec-sitepairs">
+  <div class="pg-hd">
+    <div><div class="pg-ttl">Site Pairs</div><div class="pg-sub">Source → Destination connections with language & category filters</div></div>
+    <button class="btn btn-p" onclick="openModal('modal-add-pair')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Site Pair
+    </button>
+  </div>
+  <div class="card">
+    <table class="tbl">
+      <thead><tr><th>Source</th><th>Destination</th><th>Language</th><th>Categories</th><th>Interval</th><th>First Sync</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody id="pairs-tbody">
+        <tr>
+          <td><div style="display:flex;align-items:center;gap:8px;"><div class="fav"><img src="https://www.google.com/s2/favicons?domain=site1.com&sz=64" onerror="this.style.display='none'"/></div><strong>site1.com</strong></div></td>
+          <td><div style="display:flex;align-items:center;gap:8px;"><div class="fav"><img src="https://www.google.com/s2/favicons?domain=site2.com&sz=64" onerror="this.style.display='none'"/></div><strong>site2.com</strong></div></td>
+          <td><span class="bdg b">🇮🇩 Indonesian</span></td><td style="font-size:11.5px;color:var(--muted2);">All cats</td><td>1 hour</td><td>All posts</td><td><span class="sc-pill a">Active</span></td>
+          <td><div class="pac"><button class="pb" onclick="openModal('modal-add-pair')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="pb" onclick="toggleStatus(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></button><button class="pb del" onclick="confirmDel(this,'pair')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button></div></td>
+        </tr>
+        <tr>
+          <td><div style="display:flex;align-items:center;gap:8px;"><div class="fav"><img src="https://www.google.com/s2/favicons?domain=site1.com&sz=64" onerror="this.style.display='none'"/></div><strong>site1.com</strong></div></td>
+          <td><div style="display:flex;align-items:center;gap:8px;"><div class="fav"><img src="https://www.google.com/s2/favicons?domain=site3.com&sz=64" onerror="this.style.display='none'"/></div><strong>site3.com</strong></div></td>
+          <td><span class="bdg p">🇩🇪 German</span></td><td style="font-size:11.5px;color:var(--muted2);">Tech, News</td><td>1 hour</td><td>All posts</td><td><span class="sc-pill a">Active</span></td>
+          <td><div class="pac"><button class="pb" onclick="openModal('modal-add-pair')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="pb" onclick="toggleStatus(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></button><button class="pb del" onclick="confirmDel(this,'pair')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button></div></td>
+        </tr>
+        <tr>
+          <td><div style="display:flex;align-items:center;gap:8px;"><div class="fav"><img src="https://www.google.com/s2/favicons?domain=news-hub.com&sz=64" onerror="this.style.display='none'"/></div><strong>news-hub.com</strong></div></td>
+          <td><div style="display:flex;align-items:center;gap:8px;"><div class="fav"><img src="https://www.google.com/s2/favicons?domain=blog-net.com&sz=64" onerror="this.style.display='none'"/></div><strong>blog-net.com</strong></div></td>
+          <td><span class="bdg" style="background:var(--surface2);color:var(--muted);border:1px solid var(--border);">All langs</span></td><td style="font-size:11.5px;color:var(--muted2);">All cats</td><td>12 hours</td><td>New only</td><td><span class="sc-pill p">Paused</span></td>
+          <td><div class="pac"><button class="pb" onclick="openModal('modal-add-pair')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="pb" onclick="toggleStatus(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="5,3 19,12 5,21"/></svg></button><button class="pb del" onclick="confirmDel(this,'pair')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button></div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ════ SYNC LOGS ════ -->
+<div class="sec" id="sec-synclogs">
+  <div class="pg-hd">
+    <div><div class="pg-ttl">Sync Logs</div><div class="pg-sub">All posts synced as drafts</div></div>
+    <div style="display:flex;gap:8px;">
+      <select class="fsel" style="width:130px;padding:6px 10px;font-size:12px;" onchange="toast('Filter applied','in')"><option>All statuses</option><option>Synced</option><option>Pending</option><option>Failed</option></select>
+      <select class="fsel" style="width:150px;padding:6px 10px;font-size:12px;" onchange="toast('Filter applied','in')"><option>All languages</option><option>🇮🇩 Indonesian</option><option>🇩🇪 German</option><option>All</option></select>
+    </div>
+  </div>
+  <div class="card">
+    <table class="tbl">
+      <thead><tr><th>Title</th><th>Source</th><th>Dest.</th><th>Language</th><th>Draft Link</th><th>Custom Fields</th><th>Status</th><th>Synced At</th></tr></thead>
+      <tbody>
+        <tr><td><span class="td-t">10 Best SEO Tips for 2024</span></td><td><div style="display:flex;align-items:center;gap:5px;"><div class="fav" style="width:18px;height:18px;border-radius:4px;"><img src="https://www.google.com/s2/favicons?domain=site1.com&sz=32" style="width:12px;height:12px;" onerror="this.style.display='none'"/></div>site1.com</div></td><td><div style="display:flex;align-items:center;gap:5px;"><div class="fav" style="width:18px;height:18px;border-radius:4px;"><img src="https://www.google.com/s2/favicons?domain=site2.com&sz=32" style="width:12px;height:12px;" onerror="this.style.display='none'"/></div>site2.com</div></td><td><span class="bdg b">🇮🇩 ID</span></td><td><button class="el" onclick="toast('Opening draft...','in')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit Draft</button></td><td><span class="cfo">✓ 4 fields</span></td><td><span class="stpill sy"><svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>Synced</span></td><td style="color:var(--muted2);font-size:11.5px;">Mar 21 · 2 min ago</td></tr>
+        <tr><td><span class="td-t">Technologie Trends 2024</span></td><td><div style="display:flex;align-items:center;gap:5px;"><div class="fav" style="width:18px;height:18px;border-radius:4px;"><img src="https://www.google.com/s2/favicons?domain=site1.com&sz=32" style="width:12px;height:12px;" onerror="this.style.display='none'"/></div>site1.com</div></td><td><div style="display:flex;align-items:center;gap:5px;"><div class="fav" style="width:18px;height:18px;border-radius:4px;"><img src="https://www.google.com/s2/favicons?domain=site3.com&sz=32" style="width:12px;height:12px;" onerror="this.style.display='none'"/></div>site3.com</div></td><td><span class="bdg p">🇩🇪 DE</span></td><td><button class="el" onclick="toast('Opening draft...','in')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit Draft</button></td><td><span class="cfo">✓ 3 fields</span></td><td><span class="stpill sy"><svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>Synced</span></td><td style="color:var(--muted2);font-size:11.5px;">Mar 21 · 1 hr ago</td></tr>
+        <tr><td><span class="td-t">Top 20 WordPress Plugins</span></td><td><div style="display:flex;align-items:center;gap:5px;"><div class="fav" style="width:18px;height:18px;border-radius:4px;"><img src="https://www.google.com/s2/favicons?domain=tech-daily.io&sz=32" style="width:12px;height:12px;" onerror="this.style.display='none'"/></div>tech-daily.io</div></td><td><div style="display:flex;align-items:center;gap:5px;"><div class="fav" style="width:18px;height:18px;border-radius:4px;"><img src="https://www.google.com/s2/favicons?domain=mysite.com&sz=32" style="width:12px;height:12px;" onerror="this.style.display='none'"/></div>mysite.com</div></td><td><span class="bdg" style="background:var(--surface2);color:var(--muted);border:1px solid var(--border);">All</span></td><td><span style="color:var(--muted2);font-size:11.5px;">— Not created</span></td><td><span class="cfe">✗ Failed</span></td><td><span class="stpill fa"><svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>Failed</span></td><td style="color:var(--muted2);font-size:11.5px;">Mar 21 · 2 hr ago</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ════ DRAFT POSTS ════ -->
+<div class="sec" id="sec-drafts">
+  <div class="pg-hd">
+    <div><div class="pg-ttl">Draft Posts <span class="ctag" id="draft-count-lbl">5 TOTAL</span></div><div class="pg-sub">Manage all synced posts — publish or draft directly from here</div></div>
+    <div style="display:flex;gap:8px;">
+      <select class="fsel" style="width:140px;padding:6px 10px;font-size:12px;" onchange="filterDrafts(this.value)">
+        <option value="all">All statuses</option>
+        <option value="draft">Draft only</option>
+        <option value="published">Published only</option>
+      </select>
+      <select class="fsel" style="width:150px;padding:6px 10px;font-size:12px;" onchange="toast('Filter applied','in')">
+        <option>All site pairs</option>
+        <option>site1→site2</option>
+        <option>site1→site3</option>
+        <option>news→blog</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- BULK ACTION BAR -->
+  <div id="bulk-bar" style="display:none;background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:10px;padding:10px 16px;margin-bottom:12px;display:none;align-items:center;gap:10px;">
+    <span id="bulk-count" style="font-size:12.5px;font-weight:700;color:var(--accent);">0 selected</span>
+    <div style="margin-left:auto;display:flex;gap:7px;">
+      <button class="btn btn-g btn-sm" onclick="bulkAction('publish')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>
+        Publish Selected
+      </button>
+      <button class="btn btn-sm" style="background:var(--yellow-light);color:var(--yellow);border:1px solid #fde68a;" onclick="bulkAction('draft')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Draft Selected
+      </button>
+      <button class="btn btn-d btn-sm" onclick="bulkAction('delete')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+        Delete Selected
+      </button>
+    </div>
+  </div>
+
+  <div class="card">
+    <table class="tbl" id="drafts-table">
+      <thead>
+        <tr>
+          <th style="width:32px;"><input type="checkbox" id="select-all-drafts" onchange="toggleAllDrafts(this)" style="accent-color:var(--accent);cursor:pointer;"></th>
+          <th>Title</th>
+          <th>Site Pair</th>
+          <th>Language</th>
+          <th>Slug</th>
+          <th>WP Status</th>
+          <th>Synced At</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="drafts-tbody">
+        <tr data-status="draft">
+          <td><input type="checkbox" class="draft-cb" onchange="updateBulkBar()" style="accent-color:var(--accent);cursor:pointer;"></td>
+          <td><span class="td-t">FC2 PPV 4548577</span></td>
+          <td><div style="display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--muted2);"><div class="fav" style="width:18px;height:18px;border-radius:4px;"><img src="https://www.google.com/s2/favicons?domain=site1.com&sz=32" style="width:12px;height:12px;" onerror="this.style.display='none'"/></div>site1<span style="color:var(--muted2);">→</span><div class="fav" style="width:18px;height:18px;border-radius:4px;"><img src="https://www.google.com/s2/favicons?domain=site2.com&sz=32" style="width:12px;height:12px;" onerror="this.style.display='none'"/></div>site2</div></td>
+          <td><span class="bdg b">🇮🇩 ID</span></td>
+          <td style="font-size:11px;color:var(--muted2);">fc2-ppv-4548577</td>
+          <td><span class="stpill pe"><svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>Draft</span></td>
+          <td style="color:var(--muted2);font-size:11.5px;">2 min ago</td>
+          <td>
+            <div style="display:flex;gap:5px;">
+              <button class="btn btn-g btn-sm" onclick="postAction(this,'publish')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>
+                Publish
+              </button>
+              <button class="pb del" title="Delete" onclick="confirmDel(this,'post')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>
+            </div>
+          </td>
+        </tr>
+        <tr data-status="draft">
+          <td><input type="checkbox" class="draft-cb" onchange="updateBulkBar()" style="accent-color:var(--accent);cursor:pointer;"></td>
+          <td><span class="td-t">10 Best SEO Tips for 2024</span></td>
+          <td><div style="display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--muted2);"><div class="fav" style="width:18px;height:18px;border-radius:4px;"><img src="https://www.google.com/s2/favicons?domain=site1.com&sz=32" style="width:12px;height:12px;" onerror="this.style.display='none'"/></div>site1<span style="color:var(--muted2);">→</span><div class="fav" style="width:18px;height:18px;border-radius:4px;"><img src="https://www.google.com/s2/favicons?domain=site2.com&sz=32" style="width:12px;height:12px;" onerror="this.style.display='none'"/></div>site2</div></td>
+          <td><span class="bdg b">🇮🇩 ID</span></td>
+          <td style="font-size:11px;color:var(--muted2);">10-best-seo-tips-2024</td>
+          <td><span class="stpill pe"><svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>Draft</span></td>
+          <td style="color:var(--muted2);font-size:11.5px;">18 min ago</td>
+          <td>
+            <div style="display:flex;gap:5px;">
+              <button class="btn btn-g btn-sm" onclick="postAction(this,'publish')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>
+                Publish
+              </button>
+              <button class="pb del" onclick="confirmDel(this,'post')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>
+            </div>
+          </td>
+        </tr>
+        <tr data-status="published">
+          <td><input type="checkbox" class="draft-cb" onchange="updateBulkBar()" style="accent-color:var(--accent);cursor:pointer;"></td>
+          <td><span class="td-t">Technologie Trends 2024</span></td>
+          <td><div style="display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--muted2);"><div class="fav" style="width:18px;height:18px;border-radius:4px;"><img src="https://www.google.com/s2/favicons?domain=site1.com&sz=32" style="width:12px;height:12px;" onerror="this.style.display='none'"/></div>site1<span>→</span><div class="fav" style="width:18px;height:18px;border-radius:4px;"><img src="https://www.google.com/s2/favicons?domain=site3.com&sz=32" style="width:12px;height:12px;" onerror="this.style.display='none'"/></div>site3</div></td>
+          <td><span class="bdg p">🇩🇪 DE</span></td>
+          <td style="font-size:11px;color:var(--muted2);">technologie-trends-2024</td>
+          <td><span class="stpill sy"><svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>Live</span></td>
+          <td style="color:var(--muted2);font-size:11.5px;">1 hr ago</td>
+          <td>
+            <div style="display:flex;gap:5px;">
+              <button class="btn btn-sm" style="background:var(--yellow-light);color:var(--yellow);border:1px solid #fde68a;" onclick="postAction(this,'draft')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Draft
+              </button>
+              <button class="pb del" onclick="confirmDel(this,'post')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>
+            </div>
+          </td>
+        </tr>
+        <tr data-status="draft">
+          <td><input type="checkbox" class="draft-cb" onchange="updateBulkBar()" style="accent-color:var(--accent);cursor:pointer;"></td>
+          <td><span class="td-t">WooCommerce Setup Tutorial</span></td>
+          <td><div style="display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--muted2);"><div class="fav" style="width:18px;height:18px;border-radius:4px;"><img src="https://www.google.com/s2/favicons?domain=news-hub.com&sz=32" style="width:12px;height:12px;" onerror="this.style.display='none'"/></div>news<span>→</span><div class="fav" style="width:18px;height:18px;border-radius:4px;"><img src="https://www.google.com/s2/favicons?domain=blog-net.com&sz=32" style="width:12px;height:12px;" onerror="this.style.display='none'"/></div>blog</div></td>
+          <td><span class="bdg" style="background:var(--surface2);color:var(--muted);border:1px solid var(--border);">All</span></td>
+          <td style="font-size:11px;color:var(--muted2);">woocommerce-setup-tutorial</td>
+          <td><span class="stpill pe"><svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>Draft</span></td>
+          <td style="color:var(--muted2);font-size:11.5px;">3 hr ago</td>
+          <td>
+            <div style="display:flex;gap:5px;">
+              <button class="btn btn-g btn-sm" onclick="postAction(this,'publish')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>
+                Publish
+              </button>
+              <button class="pb del" onclick="confirmDel(this,'post')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>
+            </div>
+          </td>
+        </tr>
+        <tr data-status="published">
+          <td><input type="checkbox" class="draft-cb" onchange="updateBulkBar()" style="accent-color:var(--accent);cursor:pointer;"></td>
+          <td><span class="td-t">WordPress Speed Optimization</span></td>
+          <td><div style="display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--muted2);"><div class="fav" style="width:18px;height:18px;border-radius:4px;"><img src="https://www.google.com/s2/favicons?domain=site1.com&sz=32" style="width:12px;height:12px;" onerror="this.style.display='none'"/></div>site1<span>→</span><div class="fav" style="width:18px;height:18px;border-radius:4px;"><img src="https://www.google.com/s2/favicons?domain=site2.com&sz=32" style="width:12px;height:12px;" onerror="this.style.display='none'"/></div>site2</div></td>
+          <td><span class="bdg b">🇮🇩 ID</span></td>
+          <td style="font-size:11px;color:var(--muted2);">wordpress-speed-optimization</td>
+          <td><span class="stpill sy"><svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>Live</span></td>
+          <td style="color:var(--muted2);font-size:11.5px;">5 hr ago</td>
+          <td>
+            <div style="display:flex;gap:5px;">
+              <button class="btn btn-sm" style="background:var(--yellow-light);color:var(--yellow);border:1px solid #fde68a;" onclick="postAction(this,'draft')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Draft
+              </button>
+              <button class="pb del" onclick="confirmDel(this,'post')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="sec" id="sec-analytics">
+  <div class="pg-hd">
+    <div><div class="pg-ttl">Analytics</div><div class="pg-sub">Sync performance and post statistics</div></div>
+    <div class="tabs" style="background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:2px;">
+      <div class="tab on" onclick="selTab(this)">7d</div>
+      <div class="tab" onclick="selTab(this)">30d</div>
+      <div class="tab" onclick="selTab(this)">90d</div>
+      <div class="tab" onclick="selTab(this)">1y</div>
+    </div>
+  </div>
+
+  <!-- OVERVIEW STATS -->
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:13px;margin-bottom:18px;">
+    <div class="sc"><div class="sc-top"><div class="sc-lbl">Total Synced</div><div class="sc-ico" style="background:var(--accent-light);color:var(--accent);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg></div></div><div class="sc-val">12.4<sup>k</sup></div><div class="sc-ft"><span class="sc-sub">All time</span><span class="bdg g">↑ 12.4%</span></div></div>
+    <div class="sc"><div class="sc-top"><div class="sc-lbl">Published</div><div class="sc-ico" style="background:var(--green-light);color:var(--green);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg></div></div><div class="sc-val">8.2<sup>k</sup></div><div class="sc-ft"><span class="sc-sub">Live on dest.</span><span class="bdg g">66%</span></div></div>
+    <div class="sc"><div class="sc-top"><div class="sc-lbl">Drafts</div><div class="sc-ico" style="background:var(--yellow-light);color:var(--yellow);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div></div><div class="sc-val">4.0<sup>k</sup></div><div class="sc-ft"><span class="sc-sub">Pending review</span><span class="bdg y">32%</span></div></div>
+    <div class="sc"><div class="sc-top"><div class="sc-lbl">Failed</div><div class="sc-ico" style="background:var(--red-light);color:var(--red);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg></div></div><div class="sc-val">180</div><div class="sc-ft"><span class="sc-sub">Need attention</span><span class="bdg r">1.5%</span></div></div>
+    <div class="sc"><div class="sc-top"><div class="sc-lbl">Success Rate</div><div class="sc-ico" style="background:var(--green-light);color:var(--green);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20,6 9,17 4,12"/></svg></div></div><div class="sc-val" style="font-size:22px;">98.5%</div><div class="sc-ft"><span class="sc-sub">Overall</span><span class="bdg g">↑ 0.3%</span></div></div>
+  </div>
+
+  <!-- CHARTS ROW -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+
+    <!-- SYNC ACTIVITY CHART -->
+    <div class="card">
+      <div class="card-hd"><div><div class="card-t">Sync Activity</div><div class="card-s">Posts synced per day</div></div></div>
+      <div style="height:160px;">
+        <svg viewBox="0 0 500 155" preserveAspectRatio="none" style="width:100%;height:100%;">
+          <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5b5fc7" stop-opacity="0.15"/><stop offset="100%" stop-color="#5b5fc7" stop-opacity="0"/></linearGradient></defs>
+          <line x1="0" y1="30" x2="500" y2="30" stroke="#e5e9f2" stroke-width="1"/>
+          <line x1="0" y1="70" x2="500" y2="70" stroke="#e5e9f2" stroke-width="1"/>
+          <line x1="0" y1="110" x2="500" y2="110" stroke="#e5e9f2" stroke-width="1"/>
+          <text x="0" y="28" font-size="9" fill="#9ca3af" font-family="Plus Jakarta Sans">800</text>
+          <text x="0" y="68" font-size="9" fill="#9ca3af" font-family="Plus Jakarta Sans">400</text>
+          <text x="0" y="108" font-size="9" fill="#9ca3af" font-family="Plus Jakarta Sans">200</text>
+          <path d="M20,100 C60,85 90,60 130,50 C170,40 200,75 240,55 C280,35 310,20 360,15 C400,10 440,25 490,18 L490,140 L20,140 Z" fill="url(#ag)"/>
+          <path d="M20,100 C60,85 90,60 130,50 C170,40 200,75 240,55 C280,35 310,20 360,15 C400,10 440,25 490,18" fill="none" stroke="#5b5fc7" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="360" cy="15" r="3.5" fill="#5b5fc7" stroke="white" stroke-width="2"/>
+          <circle cx="490" cy="18" r="4" fill="#5b5fc7" stroke="white" stroke-width="2"/>
+          <text x="18" y="150" font-size="9" fill="#9ca3af" font-family="Plus Jakarta Sans">Mar 15</text>
+          <text x="160" y="150" font-size="9" fill="#9ca3af" font-family="Plus Jakarta Sans">Mar 17</text>
+          <text x="300" y="150" font-size="9" fill="#9ca3af" font-family="Plus Jakarta Sans">Mar 19</text>
+          <text x="440" y="150" font-size="9" fill="#9ca3af" font-family="Plus Jakarta Sans">Mar 21</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- POSTS BY LANGUAGE DONUT -->
+    <div class="card">
+      <div class="card-hd"><div><div class="card-t">Posts by Language</div><div class="card-s">Distribution across languages</div></div></div>
+      <div style="display:flex;align-items:center;gap:24px;">
+        <svg viewBox="0 0 120 120" style="width:120px;height:120px;flex-shrink:0;">
+          <circle cx="60" cy="60" r="45" fill="none" stroke="#e5e9f2" stroke-width="18"/>
+          <circle cx="60" cy="60" r="45" fill="none" stroke="#5b5fc7" stroke-width="18" stroke-dasharray="127 156" stroke-dashoffset="0" stroke-linecap="round"/>
+          <circle cx="60" cy="60" r="45" fill="none" stroke="#7c3aed" stroke-width="18" stroke-dasharray="85 198" stroke-dashoffset="-127" stroke-linecap="round"/>
+          <circle cx="60" cy="60" r="45" fill="none" stroke="#16a34a" stroke-width="18" stroke-dasharray="42 241" stroke-dashoffset="-212" stroke-linecap="round"/>
+          <circle cx="60" cy="60" r="45" fill="none" stroke="#ca8a04" stroke-width="18" stroke-dasharray="29 254" stroke-dashoffset="-254" stroke-linecap="round"/>
+          <text x="60" y="56" text-anchor="middle" font-size="13" font-weight="800" fill="#111827" font-family="Plus Jakarta Sans">12.4k</text>
+          <text x="60" y="70" text-anchor="middle" font-size="8" fill="#9ca3af" font-family="Plus Jakarta Sans">total</text>
+        </svg>
+        <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;"><div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#5b5fc7;"></div><span style="font-size:12px;color:var(--text2);">🇮🇩 Indonesian</span></div><span style="font-size:12px;font-weight:700;">45%</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;"><div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#7c3aed;"></div><span style="font-size:12px;color:var(--text2);">🇩🇪 German</span></div><span style="font-size:12px;font-weight:700;">30%</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;"><div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#16a34a;"></div><span style="font-size:12px;color:var(--text2);">🇬🇧 English</span></div><span style="font-size:12px;font-weight:700;">15%</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;"><div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#ca8a04;"></div><span style="font-size:12px;color:var(--text2);">All langs</span></div><span style="font-size:12px;font-weight:700;">10%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM ROW -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+    <!-- BY SITE PAIR -->
+    <div class="card">
+      <div class="card-hd"><div><div class="card-t">Posts by Site Pair</div><div class="card-s">Total synced per connection</div></div></div>
+      <div class="br-row"><div class="br-lbl" style="display:flex;align-items:center;gap:5px;"><div class="fav" style="width:16px;height:16px;border-radius:3px;"><img src="https://www.google.com/s2/favicons?domain=site1.com&sz=32" style="width:10px;height:10px;" onerror="this.style.display='none'"/></div>site1→site2</div><div class="br-bg"><div class="br-fill" style="width:92%;background:linear-gradient(90deg,#5b5fc7,#818cf8);"></div></div><div class="br-n">4.2k</div></div>
+      <div class="br-row"><div class="br-lbl" style="display:flex;align-items:center;gap:5px;"><div class="fav" style="width:16px;height:16px;border-radius:3px;"><img src="https://www.google.com/s2/favicons?domain=site1.com&sz=32" style="width:10px;height:10px;" onerror="this.style.display='none'"/></div>site1→site3</div><div class="br-bg"><div class="br-fill" style="width:74%;background:linear-gradient(90deg,#7c3aed,#a78bfa);"></div></div><div class="br-n">3.1k</div></div>
+      <div class="br-row"><div class="br-lbl" style="display:flex;align-items:center;gap:5px;"><div class="fav" style="width:16px;height:16px;border-radius:3px;"><img src="https://www.google.com/s2/favicons?domain=news-hub.com&sz=32" style="width:10px;height:10px;" onerror="this.style.display='none'"/></div>news→blog</div><div class="br-bg"><div class="br-fill" style="width:55%;background:linear-gradient(90deg,#ca8a04,#fbbf24);"></div></div><div class="br-n">2.4k</div></div>
+      <div class="br-row"><div class="br-lbl" style="display:flex;align-items:center;gap:5px;"><div class="fav" style="width:16px;height:16px;border-radius:3px;"><img src="https://www.google.com/s2/favicons?domain=tech-daily.io&sz=32" style="width:10px;height:10px;" onerror="this.style.display='none'"/></div>tech→mysite</div><div class="br-bg"><div class="br-fill" style="width:30%;background:linear-gradient(90deg,#dc2626,#f87171);"></div></div><div class="br-n">1.8k</div></div>
+    </div>
+
+    <!-- PERFORMANCE TABLE -->
+    <div class="card">
+      <div class="card-hd"><div><div class="card-t">Sync Performance</div><div class="card-s">Speed & reliability per pair</div></div></div>
+      <table class="tbl">
+        <thead><tr><th>Site Pair</th><th>Avg Time</th><th>Success</th><th>Last Error</th></tr></thead>
+        <tbody>
+          <tr><td style="font-size:11.5px;">site1→site2</td><td style="font-size:11.5px;">1.2s</td><td><span class="cfo" style="font-size:11.5px;">99.8%</span></td><td style="font-size:11px;color:var(--muted2);">None</td></tr>
+          <tr><td style="font-size:11.5px;">site1→site3</td><td style="font-size:11.5px;">1.4s</td><td><span class="cfo" style="font-size:11.5px;">99.5%</span></td><td style="font-size:11px;color:var(--muted2);">None</td></tr>
+          <tr><td style="font-size:11.5px;">news→blog</td><td style="font-size:11.5px;">2.1s</td><td><span class="cfw" style="font-size:11.5px;">97.2%</span></td><td style="font-size:11px;color:var(--red);">Timeout</td></tr>
+          <tr><td style="font-size:11.5px;">tech→mysite</td><td style="font-size:11.5px;">—</td><td><span class="cfe" style="font-size:11.5px;">0%</span></td><td style="font-size:11px;color:var(--red);">Auth fail</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="sec" id="sec-scheduler"><div class="pg-hd"><div><div class="pg-ttl">Scheduler</div><div class="pg-sub">Automated sync jobs</div></div></div><div class="card"><div class="card-hd"><div class="card-t">Scheduled Jobs</div><div class="run-pill" style="font-size:11px;padding:4px 10px;"><span class="pdot"></span>Running</div></div><table class="tbl"><thead><tr><th>Site Pair</th><th>Language</th><th>Interval</th><th>Next Run</th><th>Status</th></tr></thead><tbody><tr><td>site1 → site2</td><td><span class="bdg b">🇮🇩 ID</span></td><td>1 hour</td><td style="color:var(--accent);font-weight:700;" id="sch-t1">in 14m</td><td><span class="stpill sy"><svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>Running</span></td></tr><tr><td>site1 → site3</td><td><span class="bdg p">🇩🇪 DE</span></td><td>1 hour</td><td style="color:var(--accent);font-weight:700;">in 14m</td><td><span class="stpill sy"><svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>Running</span></td></tr><tr><td>news → blog</td><td><span class="bdg" style="background:var(--surface2);color:var(--muted);border:1px solid var(--border);">All</span></td><td>12 hours</td><td style="color:var(--accent);font-weight:700;">in 5h 12m</td><td><span class="stpill pe"><svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>Paused</span></td></tr><tr><td>tech → mysite</td><td><span class="bdg" style="background:var(--surface2);color:var(--muted);border:1px solid var(--border);">All</span></td><td>1 hour</td><td style="color:var(--red);font-weight:700;">Paused</td><td><span class="stpill fa"><svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>Error</span></td></tr></tbody></table></div></div>
+<div class="sec" id="sec-fieldmapping">
+  <div class="pg-hd">
+    <div><div class="pg-ttl">Field Mapping</div><div class="pg-sub">Map custom field names from source to destination per site pair</div></div>
+    <button class="btn btn-p" onclick="openModal('modal-field-mapping')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Mapping
+    </button>
+  </div>
+
+  <!-- INFO BOX -->
+  <div style="background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:10px;padding:13px 16px;margin-bottom:16px;font-size:12.5px;color:var(--accent);display:flex;gap:10px;align-items:flex-start;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <div><strong>When do you need field mapping?</strong> Only when the custom field names are different between source and destination. If both sites use the same field name (e.g. <code style="background:var(--accent-mid);padding:1px 5px;border-radius:4px;">video_code</code> on both), no mapping is needed — it copies automatically.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd">
+      <div><div class="card-t">Field Mappings</div><div class="card-s">Source field name → Destination field name</div></div>
+      <select class="fsel" style="width:180px;padding:5px 10px;font-size:12px;" onchange="toast('Filtered by site pair','in')">
+        <option>All site pairs</option>
+        <option>site1.com → site2.com</option>
+        <option>site1.com → site3.com</option>
+        <option>news-hub.com → blog-net.com</option>
+      </select>
+    </div>
+    <table class="tbl" id="mapping-table">
+      <thead>
+        <tr>
+          <th>Site Pair</th>
+          <th>Source Field Name</th>
+          <th></th>
+          <th>Destination Field Name</th>
+          <th>Type</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="mapping-tbody">
+        <tr>
+          <td style="font-size:11.5px;color:var(--muted2);">site1 → site2</td>
+          <td><code style="background:var(--surface2);border:1px solid var(--border);padding:3px 8px;border-radius:5px;font-size:12px;">video_code</code></td>
+          <td style="color:var(--muted2);font-size:16px;text-align:center;">→</td>
+          <td><code style="background:var(--green-light);border:1px solid var(--green-mid);padding:3px 8px;border-radius:5px;font-size:12px;color:var(--green);">fc2_code</code></td>
+          <td><span class="bdg b">Text</span></td>
+          <td><div class="pac">
+            <button class="pb" onclick="editMapping(this)" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+            <button class="pb del" onclick="confirmDel(this,'mapping')" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>
+          </div></td>
+        </tr>
+        <tr>
+          <td style="font-size:11.5px;color:var(--muted2);">site1 → site2</td>
+          <td><code style="background:var(--surface2);border:1px solid var(--border);padding:3px 8px;border-radius:5px;font-size:12px;">actress_name</code></td>
+          <td style="color:var(--muted2);font-size:16px;text-align:center;">→</td>
+          <td><code style="background:var(--green-light);border:1px solid var(--green-mid);padding:3px 8px;border-radius:5px;font-size:12px;color:var(--green);">performer</code></td>
+          <td><span class="bdg b">Text</span></td>
+          <td><div class="pac">
+            <button class="pb" onclick="editMapping(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+            <button class="pb del" onclick="confirmDel(this,'mapping')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>
+          </div></td>
+        </tr>
+        <tr>
+          <td style="font-size:11.5px;color:var(--muted2);">site1 → site3</td>
+          <td><code style="background:var(--surface2);border:1px solid var(--border);padding:3px 8px;border-radius:5px;font-size:12px;">release_date</code></td>
+          <td style="color:var(--muted2);font-size:16px;text-align:center;">→</td>
+          <td><code style="background:var(--green-light);border:1px solid var(--green-mid);padding:3px 8px;border-radius:5px;font-size:12px;color:var(--green);">publish_date</code></td>
+          <td><span class="bdg p">Date</span></td>
+          <td><div class="pac">
+            <button class="pb" onclick="editMapping(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+            <button class="pb del" onclick="confirmDel(this,'mapping')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>
+          </div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="sec" id="sec-settings"><div class="pg-hd"><div><div class="pg-ttl">Settings</div></div></div><div class="card" style="max-width:520px;"><div class="card-t" style="margin-bottom:16px;">General Settings</div><div class="fg"><label class="flbl">Default Sync Interval</label><select class="fsel"><option>Every 1 hour</option><option>Every 30 minutes</option><option>Every 6 hours</option><option>Every 24 hours</option></select></div><div class="fg"><label class="flbl">Post Status on Destination</label><select class="fsel"><option selected>Draft (recommended)</option><option>Publish immediately</option><option>Pending review</option></select></div><div class="fg"><label class="flbl">Database URL</label><input class="fi" type="text" value="postgresql://supabase..."/></div><div style="display:flex;gap:8px;margin-top:4px;"><button class="btn btn-p" onclick="toast('Settings saved!','su')">Save Settings</button><button class="btn btn-o" onclick="toast('Settings reset','in')">Reset</button></div></div></div>
+
+</div></main>
+
+<!-- ════════ MODAL: ADD SITE ════════ -->
+<div class="ov" id="modal-add-site" onclick="ovClick(event,'modal-add-site')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="mhd"><div class="mhd-t">Add WordPress Site</div><button class="mcl" onclick="closeModal('modal-add-site')">×</button></div>
+    <div class="mbd">
+      <div class="fg"><label class="flbl">WordPress URL</label><input class="fi" type="url" id="site-url" placeholder="https://yoursite.com" oninput="resetConn()"/><div class="fhint">Must have SSL (https) and REST API enabled</div></div>
+      <div class="frow">
+        <div class="fg"><label class="flbl">Username</label><input class="fi" type="text" id="site-user" placeholder="admin"/></div>
+        <div class="fg"><label class="flbl">Application Password</label><input class="fi" type="password" id="site-pass" placeholder="xxxx xxxx xxxx xxxx"/></div>
+      </div>
+      <button class="btn btn-o" style="width:100%;justify-content:center;margin-top:4px;" onclick="verifyConn()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+        Verify & Connect
+      </button>
+      <div class="conn-box" id="conn-status"></div>
+
+      <!-- Polylang section (shows if detected) -->
+      <div class="poly-section" id="poly-section">
+        <div class="poly-badge">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+          🌍 Polylang detected! Multiple languages available.
+        </div>
+        <div class="fg" style="margin-bottom:0;"><label class="flbl">Available Languages</label><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;" id="lang-badges"></div></div>
+      </div>
+
+      <!-- Categories (shows after connect) -->
+      <div id="cats-section" style="display:none;margin-top:14px;">
+        <hr class="fdiv" style="margin-top:0;">
+        <div class="fsect">Categories found on this site</div>
+        <div class="cat-grid" id="cats-grid"></div>
+        <div style="margin-top:8px;display:flex;gap:6px;">
+          <button class="btn btn-o btn-sm" onclick="selectAllCats(true)">Select All</button>
+          <button class="btn btn-o btn-sm" onclick="selectAllCats(false)">Deselect All</button>
+        </div>
+      </div>
+    </div>
+    <div class="mft">
+      <button class="btn btn-o" onclick="closeModal('modal-add-site')">Cancel</button>
+      <button class="btn btn-p" id="save-site-btn" disabled onclick="saveSite()">Save Site</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ MODAL: ADD SITE PAIR ════════ -->
+<div class="ov" id="modal-add-pair" onclick="ovClick(event,'modal-add-pair')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="mhd"><div class="mhd-t">Add Site Pair</div><button class="mcl" onclick="closeModal('modal-add-pair')">×</button></div>
+    <div class="mbd">
+      <div class="frow">
+        <div class="fg"><label class="flbl">Source Site</label>
+          <select class="fsel" id="pair-src" onchange="onSourceChange()">
+            <option value="">— Select source site —</option>
+            <option value="site1.com">site1.com ✓</option>
+            <option value="news-hub.com">news-hub.com ✓</option>
+          </select>
+        </div>
+        <div class="fg"><label class="flbl">Destination Site</label>
+          <select class="fsel" id="pair-dst">
+            <option value="">— Select destination —</option>
+            <option value="site2.com">site2.com ✓</option>
+            <option value="site3.com">site3.com ✓</option>
+            <option value="blog-net.com">blog-net.com ✓</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Polylang lang picker (shows if source has polylang) -->
+      <div id="pair-poly" style="display:none;">
+        <div class="conn-box ok" style="margin-bottom:12px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+          🌍 Polylang detected on site1.com — select language to sync
+        </div>
+        <div class="fg"><label class="flbl">Language to Sync</label>
+          <select class="fsel" id="pair-lang" onchange="loadPairCats()">
+            <option value="">— Select language —</option>
+            <option value="id">🇮🇩 Indonesian (id)</option>
+            <option value="de">🇩🇪 German (de)</option>
+            <option value="en">🇬🇧 English (en)</option>
+            <option value="fr">🇫🇷 French (fr)</option>
+          </select>
+          <div class="fhint">Categories below will update based on selected language</div>
+        </div>
+      </div>
+
+      <!-- Categories -->
+      <div id="pair-cats-wrap" style="display:none;">
+        <div class="fg" style="margin-bottom:6px;"><div class="fsect" style="margin-bottom:8px;">Filter Categories <span class="fhint" style="display:inline;margin-left:4px;">(all selected by default)</span></div>
+          <div class="cat-grid" id="pair-cats-grid"></div>
+          <div style="margin-top:8px;display:flex;gap:6px;">
+            <button class="btn btn-o btn-sm" onclick="selPairCats(true)">Select All</button>
+            <button class="btn btn-o btn-sm" onclick="selPairCats(false)">Deselect All</button>
+          </div>
+        </div>
+      </div>
+
+      <hr class="fdiv">
+      <div class="fsect">Sync Settings</div>
+      <div class="frow">
+        <div class="fg"><label class="flbl">Sync Interval</label>
+          <select class="fsel">
+            <option>Every 15 minutes</option><option>Every 30 minutes</option>
+            <option selected>Every 1 hour</option><option>Every 6 hours</option>
+            <option>Every 12 hours</option><option>Every 24 hours</option>
+          </select>
+        </div>
+        <div class="fg"><label class="flbl">First Sync</label>
+          <select class="fsel" id="first-sync" onchange="toggleDate()">
+            <option value="all">Import all posts</option>
+            <option value="date">From specific date</option>
+            <option value="new">New posts only</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg" id="date-grp" style="display:none;">
+        <label class="flbl">Start Date</label>
+        <input class="fi" type="date"/>
+        <div class="fhint">Only import posts published after this date</div>
+      </div>
+
+      <div class="fg" style="margin-top:4px;">
+        <label class="flbl">Sync Behavior on Destination</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;">
+          <div id="opt-draft" onclick="selectBehavior('draft')" style="border:2px solid var(--accent);background:var(--accent-light);border-radius:9px;padding:12px;cursor:pointer;transition:all 0.15s;">
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              <span style="font-size:12.5px;font-weight:700;color:var(--accent);">Save as Draft</span>
+            </div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.5;">Posts saved as drafts. You review and publish manually from dashboard.</div>
+          </div>
+          <div id="opt-publish" onclick="selectBehavior('publish')" style="border:2px solid var(--border2);background:var(--surface2);border-radius:9px;padding:12px;cursor:pointer;transition:all 0.15s;">
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>
+              <span style="font-size:12.5px;font-weight:700;color:var(--green);">Publish Automatically</span>
+            </div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.5;">Posts go live immediately on destination after sync.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mft">
+      <button class="btn btn-o" onclick="closeModal('modal-add-pair')">Cancel</button>
+      <button class="btn btn-p" onclick="savePair()">Save Site Pair</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ CONFIRM DELETE ════════ -->
+<div class="ov" id="modal-confirm" onclick="ovClick(event,'modal-confirm')">
+  <div class="modal sm" onclick="event.stopPropagation()">
+    <div class="mhd"><div class="mhd-t" id="conf-title">Confirm Delete</div><button class="mcl" onclick="closeModal('modal-confirm')">×</button></div>
+    <div class="mbd"><p id="conf-msg" style="color:var(--text2);line-height:1.7;font-size:13px;"></p></div>
+    <div class="mft">
+      <button class="btn btn-o" onclick="closeModal('modal-confirm')">Cancel</button>
+      <button class="btn btn-d" onclick="doDelete()">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="tst-wrap" id="toasts"></div>
+
+<script>
+// ── LOGIN / LOGOUT ──
+let loginAttempts = 0;
+
+function doLogin(){
+  const user = document.getElementById('login-user').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  const btn = document.getElementById('login-btn');
+  const btnTxt = document.getElementById('login-btn-text');
+  const errBox = document.getElementById('login-error');
+
+  if(!user || !pass){ errBox.style.display='flex'; errBox.querySelector('svg+*') || null; errBox.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Please enter username and password.'; return; }
+
+  // Simulate loading
+  btn.disabled = true;
+  btnTxt.textContent = 'Signing in...';
+  btn.querySelector('svg').classList.add('spin');
+
+  setTimeout(() => {
+    btn.disabled = false;
+    btnTxt.textContent = 'Sign In';
+    btn.querySelector('svg').classList.remove('spin');
+
+    // Demo credentials: admin / admin123
+    if(user === 'admin' && pass === 'admin123'){
+      loginAttempts = 0;
+      errBox.style.display = 'none';
+      document.getElementById('login-page').style.display = 'none';
+      toast('Welcome back, admin! 👋','su');
+    } else {
+      loginAttempts++;
+      errBox.style.display = 'flex';
+      errBox.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Invalid username or password.${loginAttempts >= 3 ? ' Too many attempts — wait 30 seconds.' : ''}`;
+      document.getElementById('login-pass').value = '';
+      if(loginAttempts >= 3){ btn.disabled = true; setTimeout(()=>{ btn.disabled=false; loginAttempts=0; },30000); }
+    }
+  }, 1200);
+}
+
+function doLogout(){
+  document.getElementById('login-page').style.display = 'flex';
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+  document.getElementById('login-error').style.display = 'none';
+  toast('Logged out successfully.','in');
+}
+
+function togglePass(){
+  const input = document.getElementById('login-pass');
+  const icon = document.getElementById('eye-icon');
+  if(input.type === 'password'){
+    input.type = 'text';
+    icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  } else {
+    input.type = 'password';
+    icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+}
+
+// ── PAGE NAV ──
+const pageTitles={dashboard:'Dashboard',sites:'Sites',sitepairs:'Site Pairs',synclogs:'Sync Logs',drafts:'Draft Posts',analytics:'Analytics',scheduler:'Scheduler',fieldmapping:'Field Mapping',settings:'Settings'};
+function goPage(id,el){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.nav').forEach(n=>n.classList.remove('on'));
+  document.getElementById('sec-'+id).classList.add('on');
+  if(el)el.classList.add('on');
+  document.getElementById('pg-title').textContent=pageTitles[id]||id;
+  document.getElementById('pg-bc').textContent=(pageTitles[id]||id).toUpperCase();
+}
+
+// ── MODALS ──
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function ovClick(e,id){if(e.target===document.getElementById(id))closeModal(id);}
+
+// ── TOAST ──
+const icons={su:'<svg class="tst-ic" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="20,6 9,17 4,12"/></svg>',er:'<svg class="tst-ic" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',in:'<svg class="tst-ic" viewBox="0 0 24 24" fill="none" stroke="#5b5fc7" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'};
+function toast(msg,type='in'){
+  const c=document.getElementById('toasts');
+  const t=document.createElement('div');
+  t.className=`tst ${type}`;
+  t.innerHTML=`${icons[type]}<span class="tst-t">${msg}</span><button class="tst-x" onclick="this.parentElement.remove()">×</button>`;
+  c.appendChild(t);
+  setTimeout(()=>t.remove(),3500);
+}
+
+// ── SYNC NOW ──
+function doSync(btn){
+  const ic=document.getElementById('sync-ic'),tx=document.getElementById('sync-txt');
+  ic.classList.add('spin');tx.textContent='Syncing...';btn.disabled=true;
+  setTimeout(()=>{ic.classList.remove('spin');tx.textContent='Sync Now';btn.disabled=false;toast('Sync complete! 12 new posts fetched.','su');},2500);
+}
+
+// ── CHART TABS ──
+function selTab(el){
+  document.querySelectorAll('#ch-tabs .tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  toast(`Showing ${el.textContent} data`,'in');
+}
+
+// ── COUNTDOWN ──
+let m=14,s=0;
+setInterval(()=>{
+  if(s===0){if(m===0){m=59;s=59;toast('Sync started for site1→site2','in');}else{m--;s=59;}}else s--;
+  const v=m>0?`${m}m`:`${s}s`;
+  ['countdown','t1','sch-t1'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=id==='countdown'?v:`in ${v}`;});
+},1000);
+
+// ── VERIFY SITE CONNECTION ──
+let connected=false;
+function resetConn(){connected=false;document.getElementById('conn-status').className='conn-box';document.getElementById('save-site-btn').disabled=true;document.getElementById('poly-section').classList.remove('show');document.getElementById('cats-section').style.display='none';}
+
+function verifyConn(){
+  const url=document.getElementById('site-url').value;
+  const box=document.getElementById('conn-status');
+  if(!url){toast('Please enter a WordPress URL','er');return;}
+  box.className='conn-box loading';
+  box.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" class="spin" style="flex-shrink:0"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg> Connecting to '+url+'...';
+  setTimeout(()=>{
+    // Simulate: site1.com has Polylang, others don't
+    const hasPoly=url.includes('site1');
+    connected=true;
+    box.className='conn-box ok';
+    box.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="20,6 9,17 4,12"/></svg> Connected! WordPress REST API accessible${hasPoly?' · Polylang detected':''}`;
+    document.getElementById('save-site-btn').disabled=false;
+    if(hasPoly){
+      document.getElementById('poly-section').classList.add('show');
+      document.getElementById('lang-badges').innerHTML=['🇮🇩 Indonesian','🇩🇪 German','🇬🇧 English','🇫🇷 French'].map(l=>`<span class="bdg b" style="font-size:11px;">${l}</span>`).join('');
+    }
+    loadCats();
+  },1500);
+}
+
+function loadCats(){
+  const sec=document.getElementById('cats-section');
+  const grid=document.getElementById('cats-grid');
+  sec.style.display='block';
+  grid.innerHTML='<div class="cat-loading">Loading categories...</div>';
+  const cats=['Technology','News','Business','Lifestyle','Sports','Politics','Entertainment','Science'];
+  setTimeout(()=>{
+    grid.innerHTML=cats.map((c,i)=>`<div class="cat-item"><input type="checkbox" id="sc${i}" checked><label for="sc${i}">${c}</label></div>`).join('');
+  },800);
+}
+function selectAllCats(v){document.querySelectorAll('#cats-grid input[type=checkbox]').forEach(c=>c.checked=v);}
+
+// ── SAVE SITE ──
+function saveSite(){
+  if(!connected){toast('Please verify connection first','er');return;}
+  const url=document.getElementById('site-url').value||'newsite.com';
+  closeModal('modal-add-site');
+  toast(`${url} added successfully!`,'su');
+  const c=parseInt(document.getElementById('sv-sites').textContent)+1;
+  document.getElementById('sv-sites').textContent=c;
+  document.getElementById('nb-sites').textContent=c;
+  // Reset
+  connected=false;document.getElementById('conn-status').className='conn-box';
+  document.getElementById('save-site-btn').disabled=true;
+  document.getElementById('poly-section').classList.remove('show');
+  document.getElementById('cats-section').style.display='none';
+  document.getElementById('site-url').value='';
+}
+
+// ── SITE PAIR SOURCE CHANGE ──
+function onSourceChange(){
+  const src=document.getElementById('pair-src').value;
+  const polyWrap=document.getElementById('pair-poly');
+  const catsWrap=document.getElementById('pair-cats-wrap');
+  if(!src){polyWrap.style.display='none';catsWrap.style.display='none';return;}
+  // site1.com has Polylang
+  if(src==='site1.com'){
+    polyWrap.style.display='block';
+    catsWrap.style.display='none';
+  } else {
+    polyWrap.style.display='none';
+    loadPairCatsAll();
+  }
+}
+
+function loadPairCats(){
+  const lang=document.getElementById('pair-lang').value;
+  if(!lang)return;
+  const catsWrap=document.getElementById('pair-cats-wrap');
+  const grid=document.getElementById('pair-cats-grid');
+  catsWrap.style.display='block';
+  grid.innerHTML='<div class="cat-loading">Loading categories for selected language...</div>';
+  const catsByLang={
+    id:['Teknologi','Berita','Bisnis','Olahraga','Politik','Hiburan'],
+    de:['Technologie','Nachrichten','Wirtschaft','Sport','Politik','Unterhaltung'],
+    en:['Technology','News','Business','Sports','Politics','Entertainment'],
+    fr:['Technologie','Actualités','Affaires','Sports','Politique','Divertissement']
+  };
+  setTimeout(()=>{
+    const cats=catsByLang[lang]||['Technology','News','Business'];
+    grid.innerHTML=cats.map((c,i)=>`<div class="cat-item"><input type="checkbox" id="pc${i}" checked><label for="pc${i}">${c}</label></div>`).join('');
+    toast(`${cats.length} ${lang.toUpperCase()} categories loaded — all selected by default`,'su');
+  },800);
+}
+
+function loadPairCatsAll(){
+  const catsWrap=document.getElementById('pair-cats-wrap');
+  const grid=document.getElementById('pair-cats-grid');
+  catsWrap.style.display='block';
+  grid.innerHTML='<div class="cat-loading">Loading categories...</div>';
+  setTimeout(()=>{
+    const cats=['Technology','News','Business','Lifestyle','Sports','Politics'];
+    grid.innerHTML=cats.map((c,i)=>`<div class="cat-item"><input type="checkbox" id="pc${i}" checked><label for="pc${i}">${c}</label></div>`).join('');
+    toast(`${cats.length} categories loaded — all selected by default`,'su');
+  },800);
+}
+
+function selPairCats(v){document.querySelectorAll('#pair-cats-grid input[type=checkbox]').forEach(c=>c.checked=v);}
+
+// ── FIRST SYNC DATE TOGGLE ──
+function toggleDate(){document.getElementById('date-grp').style.display=document.getElementById('first-sync').value==='date'?'block':'none';}
+
+// ── SAVE PAIR ──
+function savePair(){
+  const src=document.getElementById('pair-src').value;
+  const dst=document.getElementById('pair-dst').value;
+  if(!src||!dst){toast('Please select source and destination sites','er');return;}
+  closeModal('modal-add-pair');
+  toast('Site pair saved! First sync will start shortly.','su');
+  const c=parseInt(document.getElementById('nb-pairs').textContent)+1;
+  document.getElementById('nb-pairs').textContent=c;
+}
+
+// ── DELETE ──
+let delTarget=null,delType='';
+function confirmDel(btn,type){
+  delTarget=btn.closest(type==='site'?'.site-card':type==='post'?'tr':'tr');
+  delType=type;
+  const msgs={site:['Delete Site','Are you sure you want to remove this site? All site pairs using it will also stop syncing.'],pair:['Delete Site Pair','Are you sure you want to delete this site pair? All future syncs will stop. Existing posts remain.'],post:['Delete Post','Are you sure you want to delete this post from the destination site? This cannot be undone.']};
+  document.getElementById('conf-title').textContent=msgs[type][0];
+  document.getElementById('conf-msg').textContent=msgs[type][1];
+  openModal('modal-confirm');
+}
+function doDelete(){
+  if(delTarget)delTarget.remove();
+  closeModal('modal-confirm');
+  const msgs={site:'Site removed.','pair':'Site pair deleted.','post':'Post deleted from destination.'};
+  toast(msgs[delType]||'Deleted.','su');
+  if(delType==='site'){const c=Math.max(0,parseInt(document.getElementById('sv-sites').textContent)-1);document.getElementById('sv-sites').textContent=c;document.getElementById('nb-sites').textContent=c;}
+  else if(delType==='pair'){const c=Math.max(0,parseInt(document.getElementById('nb-pairs').textContent)-1);document.getElementById('nb-pairs').textContent=c;}
+  updateBulkBar();
+}
+
+// ── SYNC BEHAVIOR TOGGLE ──
+let syncBehavior='draft';
+function selectBehavior(v){
+  syncBehavior=v;
+  const d=document.getElementById('opt-draft'),p=document.getElementById('opt-publish');
+  if(v==='draft'){
+    d.style.border='2px solid var(--accent)';d.style.background='var(--accent-light)';
+    p.style.border='2px solid var(--border2)';p.style.background='var(--surface2)';
+  } else {
+    p.style.border='2px solid var(--green)';p.style.background='var(--green-light)';
+    d.style.border='2px solid var(--border2)';d.style.background='var(--surface2)';
+  }
+}
+
+// ── POST ACTION (publish/draft single post) ──
+function postAction(btn,action){
+  const row=btn.closest('tr');
+  const pill=row.querySelector('.stpill');
+  const actionCell=btn.parentElement;
+  if(action==='publish'){
+    pill.className='stpill sy';
+    pill.innerHTML='<svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>Live';
+    actionCell.innerHTML=`
+      <div style="display:flex;gap:5px;">
+        <button class="btn btn-sm" style="background:var(--yellow-light);color:var(--yellow);border:1px solid #fde68a;" onclick="postAction(this,'draft')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Draft
+        </button>
+        <button class="pb del" onclick="confirmDel(this,'post')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>
+      </div>`;
+    row.dataset.status='published';
+    toast('Post published on destination site! ✅','su');
+  } else {
+    pill.className='stpill pe';
+    pill.innerHTML='<svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>Draft';
+    actionCell.innerHTML=`
+      <div style="display:flex;gap:5px;">
+        <button class="btn btn-g btn-sm" onclick="postAction(this,'publish')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>
+          Publish
+        </button>
+        <button class="pb del" onclick="confirmDel(this,'post')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>
+      </div>`;
+    row.dataset.status='draft';
+    toast('Post reverted to draft.','in');
+  }
+}
+
+// ── BULK ACTIONS ──
+function toggleAllDrafts(cb){
+  document.querySelectorAll('.draft-cb').forEach(c=>c.checked=cb.checked);
+  updateBulkBar();
+}
+
+function updateBulkBar(){
+  const checked=document.querySelectorAll('.draft-cb:checked').length;
+  const bar=document.getElementById('bulk-bar');
+  bar.style.display=checked>0?'flex':'none';
+  document.getElementById('bulk-count').textContent=`${checked} selected`;
+}
+
+function bulkAction(action){
+  const rows=[...document.querySelectorAll('.draft-cb:checked')].map(cb=>cb.closest('tr'));
+  if(rows.length===0){toast('No posts selected','er');return;}
+  if(action==='delete'){
+    rows.forEach(r=>r.remove());
+    toast(`${rows.length} post(s) deleted.`,'su');
+  } else if(action==='publish'){
+    rows.forEach(r=>{
+      const pill=r.querySelector('.stpill');
+      pill.className='stpill sy';
+      pill.innerHTML='<svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>Live';
+      r.dataset.status='published';
+      const ac=r.querySelector('.draft-cb').closest('td').nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling;
+      ac.innerHTML=`<div style="display:flex;gap:5px;"><button class="btn btn-sm" style="background:var(--yellow-light);color:var(--yellow);border:1px solid #fde68a;" onclick="postAction(this,'draft')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Draft</button><button class="pb del" onclick="confirmDel(this,'post')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button></div>`;
+    });
+    toast(`${rows.length} post(s) published! ✅`,'su');
+  } else if(action==='draft'){
+    rows.forEach(r=>{
+      const pill=r.querySelector('.stpill');
+      pill.className='stpill pe';
+      pill.innerHTML='<svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>Draft';
+      r.dataset.status='draft';
+    });
+    toast(`${rows.length} post(s) moved to draft.`,'in');
+  }
+  document.querySelectorAll('.draft-cb').forEach(c=>c.checked=false);
+  document.getElementById('select-all-drafts').checked=false;
+  updateBulkBar();
+}
+
+// ── TOGGLE PAIR STATUS ──
+function toggleStatus(btn){
+  const chip=btn.closest('tr').querySelector('.sc-pill');
+  if(chip.classList.contains('a')){chip.className='sc-pill p';chip.textContent='Paused';toast('Sync paused.','in');}
+  else if(chip.classList.contains('p')){chip.className='sc-pill a';chip.textContent='Active';toast('Sync resumed!','su');}
+}
+
+// ── FILTER DRAFTS ──
+function filterDrafts(val){
+  document.querySelectorAll('#drafts-tbody tr').forEach(row=>{
+    if(val==='all') row.style.display='';
+    else row.style.display=row.dataset.status===val?'':'none';
+  });
+  toast(`Showing ${val==='all'?'all posts':val+' posts'}`,'in');
+}
+</script>
+<!-- ════════ MODAL: WEBHOOKS ════════ -->
+<div class="ov" id="modal-webhooks" onclick="ovClick(event,'modal-webhooks')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="mhd"><div class="mhd-t">Configure Webhooks</div><button class="mcl" onclick="closeModal('modal-webhooks')">×</button></div>
+    <div class="mbd">
+
+      <!-- What are webhooks info -->
+      <div style="background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:9px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:var(--accent);display:flex;gap:9px;align-items:flex-start;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div><strong>What are Webhooks?</strong> Webhooks let your source WordPress sites notify your app instantly when a new post is published — instead of waiting for the next scheduled sync. This means near real-time syncing!</div>
+      </div>
+
+      <div class="fsect">Webhook URL</div>
+      <div class="fg">
+        <label class="flbl">Your App Webhook URL</label>
+        <div style="display:flex;gap:8px;">
+          <input class="fi" type="text" value="https://your-app.com/api/webhook/sync" readonly style="background:var(--surface2);color:var(--muted);font-size:12px;"/>
+          <button class="btn btn-o btn-sm" onclick="copyWebhook()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy
+          </button>
+        </div>
+        <div class="fhint">Add this URL to your source WordPress sites to enable instant sync on new post publish</div>
+      </div>
+
+      <hr class="fdiv">
+      <div class="fsect">How to Add to WordPress Source Site</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:13px;">
+        <div style="margin-bottom:6px;"><strong>Option 1 — Plugin (easiest):</strong></div>
+        <div style="color:var(--muted);margin-bottom:12px;">Install <strong>WP Webhooks</strong> plugin on source site → Add your webhook URL → Trigger on "Post Published"</div>
+        <div style="margin-bottom:6px;"><strong>Option 2 — functions.php:</strong></div>
+        <code style="display:block;background:var(--text);color:#a5f3fc;padding:11px;border-radius:7px;font-size:11px;line-height:1.7;">
+          add_action('publish_post', function($post_id) {<br>
+          &nbsp;&nbsp;wp_remote_post('https://your-app.com/api/webhook/sync',<br>
+          &nbsp;&nbsp;['body' => json_encode(['post_id' => $post_id])]);<br>
+          });
+        </code>
+      </div>
+
+      <hr class="fdiv">
+      <div class="fsect">Webhook Status Per Site</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;">
+          <div><div style="font-size:12.5px;font-weight:600;">site1.com</div><div style="font-size:11px;color:var(--muted2);">Polylang · ID, DE, EN, FR</div></div>
+          <span class="stpill sy"><svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>Active</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;">
+          <div><div style="font-size:12.5px;font-weight:600;">news-hub.com</div><div style="font-size:11px;color:var(--muted2);">No Polylang · All posts</div></div>
+          <span class="stpill fa"><svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>Not configured</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;">
+          <div><div style="font-size:12.5px;font-weight:600;">tech-daily.io</div><div style="font-size:11px;color:var(--muted2);">Connection failed</div></div>
+          <span class="stpill pe"><svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>Unknown</span>
+        </div>
+      </div>
+
+    </div>
+    <div class="mft">
+      <button class="btn btn-o" onclick="closeModal('modal-webhooks')">Close</button>
+      <button class="btn btn-p" onclick="toast('Webhook settings saved!','su');closeModal('modal-webhooks')">Save Settings</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ MODAL: ADD FIELD MAPPING ════════ -->
+<div class="ov" id="modal-field-mapping" onclick="ovClick(event,'modal-field-mapping')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="mhd"><div class="mhd-t">Add Field Mapping</div><button class="mcl" onclick="closeModal('modal-field-mapping')">×</button></div>
+    <div class="mbd">
+
+      <div class="fg">
+        <label class="flbl">Site Pair</label>
+        <select class="fsel" id="map-pair">
+          <option value="">— Select site pair —</option>
+          <option>site1.com → site2.com</option>
+          <option>site1.com → site3.com</option>
+          <option>news-hub.com → blog-net.com</option>
+        </select>
+        <div class="fhint">Which site pair does this field mapping apply to?</div>
+      </div>
+
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px;">
+        <div class="frow" style="align-items:center;">
+          <div class="fg" style="margin-bottom:0;">
+            <label class="flbl">Source Field Name</label>
+            <input class="fi" id="map-src-field" type="text" placeholder="e.g. video_code"/>
+            <div class="fhint">Exact field name used on source WordPress site</div>
+          </div>
+          <div style="text-align:center;padding-top:18px;font-size:22px;color:var(--muted2);flex-shrink:0;">→</div>
+          <div class="fg" style="margin-bottom:0;">
+            <label class="flbl">Destination Field Name</label>
+            <input class="fi" id="map-dst-field" type="text" placeholder="e.g. fc2_code"/>
+            <div class="fhint">Exact field name used on destination WordPress site</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fg">
+        <label class="flbl">Field Type</label>
+        <select class="fsel" id="map-type">
+          <option value="text">Text</option>
+          <option value="number">Number</option>
+          <option value="date">Date</option>
+          <option value="url">URL</option>
+          <option value="image">Image</option>
+          <option value="boolean">True/False</option>
+        </select>
+        <div class="fhint">Helps your app handle the value correctly during sync</div>
+      </div>
+
+      <!-- Quick add more rows -->
+      <div id="extra-mappings"></div>
+      <button class="btn btn-o btn-sm" style="margin-top:4px;" onclick="addMappingRow()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Another Field
+      </button>
+
+    </div>
+    <div class="mft">
+      <button class="btn btn-o" onclick="closeModal('modal-field-mapping')">Cancel</button>
+      <button class="btn btn-p" onclick="saveMapping()">Save Mapping</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── COPY WEBHOOK URL ──
+function copyWebhook(){
+  navigator.clipboard.writeText('https://your-app.com/api/webhook/sync').then(()=>{
+    toast('Webhook URL copied to clipboard!','su');
+  }).catch(()=>{
+    toast('Copy: https://your-app.com/api/webhook/sync','in');
+  });
+}
+
+// ── FIELD MAPPING ──
+function addMappingRow(){
+  const container=document.getElementById('extra-mappings');
+  const row=document.createElement('div');
+  row.style.cssText='background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-top:10px;position:relative;';
+  row.innerHTML=`
+    <button onclick="this.parentElement.remove()" style="position:absolute;top:8px;right:8px;background:var(--red-light);border:1px solid #fecaca;color:var(--red);border-radius:5px;padding:2px 7px;cursor:pointer;font-size:11px;font-weight:700;">✕</button>
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;">
+      <div><label class="flbl">Source Field</label><input class="fi" type="text" placeholder="e.g. actress_name"/></div>
+      <div style="text-align:center;padding-top:18px;font-size:20px;color:var(--muted2);">→</div>
+      <div><label class="flbl">Destination Field</label><input class="fi" type="text" placeholder="e.g. performer"/></div>
+    </div>`;
+  container.appendChild(row);
+}
+
+function saveMapping(){
+  const pair=document.getElementById('map-pair').value;
+  const src=document.getElementById('map-src-field').value;
+  const dst=document.getElementById('map-dst-field').value;
+  const type=document.getElementById('map-type').value;
+  if(!pair||!src||!dst){toast('Please fill in all required fields','er');return;}
+  const tbody=document.getElementById('mapping-tbody');
+  const pairShort=pair.replace('.com','').replace(' → ','→');
+  const typeColors={text:'b',number:'p',date:'p',url:'b',image:'g',boolean:'y'};
+  const row=document.createElement('tr');
+  row.innerHTML=`
+    <td style="font-size:11.5px;color:var(--muted2);">${pairShort}</td>
+    <td><code style="background:var(--surface2);border:1px solid var(--border);padding:3px 8px;border-radius:5px;font-size:12px;">${src}</code></td>
+    <td style="color:var(--muted2);font-size:16px;text-align:center;">→</td>
+    <td><code style="background:var(--green-light);border:1px solid var(--green-mid);padding:3px 8px;border-radius:5px;font-size:12px;color:var(--green);">${dst}</code></td>
+    <td><span class="bdg ${typeColors[type]||'b'}">${type.charAt(0).toUpperCase()+type.slice(1)}</span></td>
+    <td><div class="pac">
+      <button class="pb" onclick="editMapping(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+      <button class="pb del" onclick="confirmDel(this,'mapping')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>
+    </div></td>`;
+  tbody.appendChild(row);
+  closeModal('modal-field-mapping');
+  toast(`Field mapping saved: ${src} → ${dst}`,'su');
+  // Reset form
+  document.getElementById('map-pair').value='';
+  document.getElementById('map-src-field').value='';
+  document.getElementById('map-dst-field').value='';
+  document.getElementById('extra-mappings').innerHTML='';
+}
+
+function editMapping(btn){
+  const row=btn.closest('tr');
+  const cells=row.querySelectorAll('td');
+  const src=cells[1].querySelector('code').textContent;
+  const dst=cells[3].querySelector('code').textContent;
+  document.getElementById('map-src-field').value=src;
+  document.getElementById('map-dst-field').value=dst;
+  row.remove();
+  openModal('modal-field-mapping');
+  toast('Edit the mapping and save','in');
+}
+</script>
+</body></html>

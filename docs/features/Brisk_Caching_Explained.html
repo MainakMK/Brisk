@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brisk — Caching concepts (plain English)</title>
+<style>
+  :root { color-scheme: light; }
+  body { font-family: system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; max-width: 840px;
+         margin: 2rem auto; padding: 0 1.2rem 4rem; color: #1f1f1d; line-height: 1.65; background: #fff; }
+  h1 { font-size: 26px; font-weight: 600; margin-bottom: .2rem; }
+  h2 { font-size: 20px; font-weight: 600; margin-top: 2.4rem; border-top: 1px solid #ece9e2; padding-top: 1.4rem; }
+  h3 { font-size: 16px; font-weight: 600; margin-top: 1.4rem; }
+  p, li { font-size: 16px; }
+  .muted { color: #5f5e5a; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; background: #f3f1ea; padding: .08em .35em; border-radius: 4px; font-size: .92em; }
+  .fig { border: 1px solid #e7e5df; border-radius: 12px; padding: 14px 16px; margin: 1rem 0; background: #fafafa; }
+  table { border-collapse: collapse; width: 100%; margin: .8rem 0; font-size: 15px; }
+  th, td { border: 1px solid #e7e5df; padding: 6px 10px; text-align: left; }
+  th { background: #f3f1ea; font-weight: 600; }
+  .note { border-left: 3px solid #BA7517; background: #faf3e8; padding: .6rem .9rem; border-radius: 0 8px 8px 0; margin: 1rem 0; }
+  .ok { border-left-color: #639922; background: #f0f6e6; }
+  svg .th { fill: #1f1f1d; font: 500 14px system-ui, sans-serif; }
+  svg .ts { fill: #5f5e5a; font: 400 12px system-ui, sans-serif; }
+  svg .c-gray > rect, svg rect.box { fill: #F1EFE8; stroke: #B4B2A9; stroke-width: 1; }
+  svg .c-teal > rect { fill: #E1F5EE; stroke: #5DCAA5; stroke-width: 1; }
+  svg .c-green > rect { fill: #EAF3DE; stroke: #97C459; stroke-width: 1; }
+  svg .arr { stroke: #888780; stroke-width: 1.5; fill: none; }
+  footer { margin-top: 3rem; color: #8a8980; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<h1>Brisk — Caching concepts, in plain English</h1>
+<p class="muted">A quick reference for the Analytics terms: <strong>Origin offload</strong>, the <strong>P50 / P95 / P99</strong> response-time percentiles, and the <strong>Origin shield</strong> role. Open this file in any browser.</p>
+
+<h2>1. Origin offload</h2>
+<p><strong>Origin offload = how much of your traffic Brisk's edge servers answered on their own, so your real website server (your "origin") never had to.</strong> Higher % is better — faster pages for visitors, and less load + bandwidth cost on your server.</p>
+
+<div class="fig">
+<svg width="100%" viewBox="0 0 680 320" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>How origin offload works</title>
+<desc>Visitor requests reach the Brisk edge cache. A cache hit is served from the edge and your origin server is never touched; a miss is fetched from your origin. Offload is the share the edge answered itself.</desc>
+<defs><marker id="arrowA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<g class="c-gray"><rect x="40" y="100" width="130" height="56" rx="8"/><text class="th" x="105" y="124" text-anchor="middle">Visitors</text><text class="ts" x="105" y="142" text-anchor="middle">your users</text></g>
+<g class="c-teal"><rect x="235" y="100" width="140" height="56" rx="8"/><text class="th" x="305" y="124" text-anchor="middle">Brisk edge</text><text class="ts" x="305" y="142" text-anchor="middle">cache</text></g>
+<g class="c-green"><rect x="485" y="56" width="155" height="56" rx="8"/><text class="th" x="562" y="80" text-anchor="middle">Served from cache</text><text class="ts" x="562" y="98" text-anchor="middle">origin untouched</text></g>
+<g class="c-gray"><rect x="485" y="160" width="155" height="56" rx="8"/><text class="th" x="562" y="184" text-anchor="middle">Your origin</text><text class="ts" x="562" y="202" text-anchor="middle">fetched on a miss</text></g>
+<line class="arr" x1="170" y1="128" x2="233" y2="128" marker-end="url(#arrowA)"/>
+<line x1="377" y1="118" x2="483" y2="90" fill="none" stroke="#639922" stroke-width="1.5" marker-end="url(#arrowA)"/>
+<line x1="377" y1="138" x2="483" y2="184" fill="none" stroke="#BA7517" stroke-width="1.5" marker-end="url(#arrowA)"/>
+<circle cx="120" cy="244" r="5" fill="#639922"/><text class="ts" x="133" y="248">served from cache (HIT) — good</text>
+<circle cx="372" cy="244" r="5" fill="#BA7517"/><text class="ts" x="385" y="248">missed → fetched from origin (MISS)</text>
+<g><rect class="box" x="40" y="266" width="180" height="46" rx="8"/><text class="th" x="130" y="288" text-anchor="middle">% by request</text><text class="ts" x="130" y="304" text-anchor="middle">share of requests</text></g>
+<g><rect class="box" x="250" y="266" width="180" height="46" rx="8"/><text class="th" x="340" y="288" text-anchor="middle">% by bytes</text><text class="ts" x="340" y="304" text-anchor="middle">share of data</text></g>
+<g><rect class="box" x="460" y="266" width="180" height="46" rx="8"/><text class="th" x="550" y="288" text-anchor="middle">MB saved</text><text class="ts" x="550" y="304" text-anchor="middle">origin transfer saved</text></g>
+</svg>
+</div>
+
+<ul>
+<li><strong>HIT</strong> = found in cache → served instantly, origin untouched.</li>
+<li><strong>MISS → origin</strong> = not in cache → had to fetch from your origin (the first request for any file is always a miss).</li>
+<li><strong>BYPASS</strong> = deliberately never cached (e.g. dynamic content, <code>.m3u8</code> playlists).</li>
+<li><strong>Other</strong> = requests with no cache decision (404s, redirects, errors).</li>
+<li><strong>by request</strong> = share of cacheable requests served from cache. <strong>by bytes</strong> = share of <em>data</em> served from cache (and the MB that saved on your origin's bandwidth).</li>
+</ul>
+<p class="muted">A cold cache shows low offload (lots of misses). As the same files get requested again they become HITs, and offload climbs on its own. A healthy CDN often sits at 80–95%.</p>
+
+<h2>2. Response time — P50 / P95 / P99</h2>
+<p>These are <strong>percentiles</strong> of how long the edge took to serve each request. Sort every request from fastest to slowest:</p>
+<table>
+<tr><th>Label</th><th>Term</th><th>Means</th></tr>
+<tr><td>Typical</td><td>P50 (median)</td><td>Half of requests were faster than this — the typical visitor.</td></tr>
+<tr><td>Slow</td><td>P95</td><td>95% were faster; only the slowest 5% were worse.</td></tr>
+<tr><td>Slowest</td><td>P99</td><td>99% were faster; only the slowest 1% (worst tail) were worse.</td></tr>
+<tr><td>Average</td><td>mean</td><td>Plain average — easily skewed by outliers, so percentiles are more honest.</td></tr>
+</table>
+<p class="muted">Always <code>P99 ≥ P95 ≥ P50</code>. Percentiles matter more than the average because the average hides the painful tail. High latency usually means lots of cache <em>misses</em> proxying to a slow origin — it drops as the cache warms.</p>
+
+<h2>3. Origin shield</h2>
+<p><strong>Origin shield = you designate one Brisk PoP as a middle cache layer between all the other edges and your origin server.</strong> Instead of every edge hitting your origin on a miss, they all go through the shield first — and the shield has its own cache, so most misses are answered there. Many edge misses <strong>collapse into a single origin fetch</strong>.</p>
+
+<div class="fig">
+<svg width="100%" viewBox="0 0 680 325" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>How the origin shield role works</title>
+<desc>Three edge PoPs send their cache misses to a single shield PoP, which has its own cache. Only when the shield itself misses does it fetch from your origin once.</desc>
+<defs><marker id="arrowB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<g class="c-gray"><rect x="40" y="56" width="130" height="44" rx="8"/><text class="th" x="105" y="82" text-anchor="middle">NY edge</text></g>
+<g class="c-gray"><rect x="40" y="118" width="130" height="44" rx="8"/><text class="th" x="105" y="144" text-anchor="middle">FRA edge</text></g>
+<g class="c-gray"><rect x="40" y="180" width="130" height="44" rx="8"/><text class="th" x="105" y="206" text-anchor="middle">BLR edge</text></g>
+<g class="c-teal"><rect x="288" y="110" width="150" height="78" rx="8"/><text class="th" x="363" y="144" text-anchor="middle">Origin shield</text><text class="ts" x="363" y="162" text-anchor="middle">shared mid-tier cache</text></g>
+<g class="c-gray"><rect x="510" y="119" width="130" height="60" rx="8"/><text class="th" x="575" y="144" text-anchor="middle">Your origin</text><text class="ts" x="575" y="162" text-anchor="middle">one fetch</text></g>
+<line x1="170" y1="78" x2="286" y2="126" fill="none" stroke="#378ADD" stroke-width="1.5" marker-end="url(#arrowB)"/>
+<line x1="170" y1="140" x2="286" y2="149" fill="none" stroke="#378ADD" stroke-width="1.5" marker-end="url(#arrowB)"/>
+<line x1="170" y1="202" x2="286" y2="172" fill="none" stroke="#378ADD" stroke-width="1.5" marker-end="url(#arrowB)"/>
+<line x1="438" y1="149" x2="508" y2="149" fill="none" stroke="#BA7517" stroke-width="1.5" marker-end="url(#arrowB)"/>
+<circle cx="70" cy="246" r="5" fill="#378ADD"/><text class="ts" x="83" y="250">edge miss → shield (inside Brisk)</text>
+<circle cx="372" cy="246" r="5" fill="#BA7517"/><text class="ts" x="385" y="250">shield miss → your origin (rare)</text>
+<g><rect class="box" x="200" y="270" width="280" height="46" rx="8"/><text class="th" x="340" y="292" text-anchor="middle">Origin load: 3× → ~1×</text><text class="ts" x="340" y="308" text-anchor="middle">misses collapse into one fetch</text></g>
+</svg>
+</div>
+
+<h3>If you make NY the shield, does it also stay a public edge?</h3>
+<div class="note"><strong>No.</strong> In Brisk, <code>shield</code> is a dedicated server role. The moment a server's role is <code>shield</code>, the control plane <strong>removes it from public DNS</strong> — visitors are never routed to it directly. So NY-as-shield stops being a user-facing PoP and becomes the hidden middle layer only. The role is <strong>server-wide</strong> (it affects every zone, not just one site). With a 3-edge fleet, that means you'd drop to 2 public edges (FRA + BLR) plus NY as the shield.</div>
+<div class="note ok"><strong>What you got right:</strong> yes — FRA and BLR, on a cache miss, send their request to <strong>NY (the shield) first</strong>; NY answers from its cache, and only on NY's own miss does it fetch from your origin once.</div>
+
+<p><strong>When it's worth it:</strong> a shield shines with <em>many</em> edges and a <em>weak</em> origin (e.g. shared-hosting WordPress) — collapsing everyone's misses into one fetch really protects the origin. For a small 3-box fleet, a shield is usually a <strong>separate dedicated box near your origin</strong>, or just left off.</p>
+<p><strong>Safety:</strong> if the shield is down, the other edges <strong>automatically fall back to the origin directly</strong> — "shield down" is never an outage. It's per-zone and <strong>off by default</strong> (enable it in a zone's Settings → Origin Shield).</p>
+
+<h3>One-line summary</h3>
+<p><strong>Origin offload</strong> = how much your edges already shield your server. <strong>Origin shield</strong> = an extra cache layer that strengthens that protection by funneling all the misses through one place instead of hitting your origin from everywhere.</p>
+
+<footer>Brisk CDN — generated reference. Diagrams render standalone (no external assets). Concepts match the live behaviour as of 2026-06-12.</footer>
+
+</body>
+</html>

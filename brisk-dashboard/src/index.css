@@ -1,0 +1,172 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Brisk Dashboard — Voltage design tokens (indigo/violet), dark-first.
+   Source of truth: dashboard-reference/brisk-design-tokens.md (Option C "Voltage").
+   shadcn reads these exact CSS-variable names; Tailwind v4 maps them via @theme inline,
+   so every shadcn primitive AND our Recharts/Tremor charts inherit Brisk's identity. */
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --radius: 0.625rem;
+
+  /* Voltage — light */
+  --background: #faf9fc;
+  --foreground: #15121f;
+  --card: #ffffff;
+  --card-foreground: #15121f;
+  --popover: #ffffff;
+  --popover-foreground: #15121f;
+  --primary: #6366f1; /* indigo-500 — Brisk Voltage accent */
+  --primary-foreground: #ffffff;
+  --secondary: #f2f1f8;
+  --secondary-foreground: #15121f;
+  --muted: #f2f1f8;
+  --muted-foreground: #6b6880;
+  --accent: #e0e7ff;
+  --accent-foreground: #3730a3;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #e7e5ee;
+  --input: #e7e5ee;
+  --ring: #6366f1;
+
+  /* chart series (single-accent-forward, muted secondaries) */
+  --chart-1: #6366f1;
+  --chart-2: #818cf8;
+  --chart-3: #0ea5e9;
+  --chart-4: #14b8a6;
+  --chart-5: #f59e0b;
+
+  /* sidebar surface (slightly distinct from page bg) */
+  --sidebar: #f4f3f9;
+  --sidebar-foreground: #15121f;
+  --sidebar-primary: #6366f1;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e0e7ff;
+  --sidebar-accent-foreground: #3730a3;
+  --sidebar-border: #e7e5ee;
+  --sidebar-ring: #6366f1;
+
+  /* status (color + always paired with label/icon) */
+  --success: #16a34a;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --info: #2563eb;
+}
+
+.dark {
+  /* Voltage — dark (default) */
+  --background: #0c0a14; /* near-black violet, not pure black */
+  --foreground: #e4e2ef;
+  --card: #14111f; /* elevated surface */
+  --card-foreground: #e4e2ef;
+  --popover: #14111f;
+  --popover-foreground: #e4e2ef;
+  --primary: #818cf8; /* brighter indigo in dark */
+  --primary-foreground: #0a0814;
+  --secondary: #1d1930;
+  --secondary-foreground: #e4e2ef;
+  --muted: #1d1930;
+  --muted-foreground: #9a96b5;
+  --accent: #241f3d;
+  --accent-foreground: #c7d2fe;
+  --destructive: #ef4444;
+  --destructive-foreground: #0c0a14;
+  --border: rgba(255, 255, 255, 0.08); /* low-contrast hairline */
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: #818cf8;
+
+  --chart-1: #818cf8;
+  --chart-2: #6366f1;
+  --chart-3: #38bdf8;
+  --chart-4: #2dd4bf;
+  --chart-5: #fbbf24;
+
+  --sidebar: #0a0812;
+  --sidebar-foreground: #e4e2ef;
+  --sidebar-primary: #818cf8;
+  --sidebar-primary-foreground: #0a0814;
+  --sidebar-accent: #241f3d;
+  --sidebar-accent-foreground: #c7d2fe;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: #818cf8;
+
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #f87171;
+  --info: #3b82f6;
+}
+
+/* Map tokens to Tailwind v4 theme so utilities (bg-primary, text-muted-foreground,
+   rounded-lg, border-border, etc.) resolve to the Voltage palette. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  /* Typography: Inter (UI) + JetBrains Mono (numbers/logs/IDs) */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  html {
+    font-family: var(--font-sans);
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  /* Tabular numerics so KPIs don't jitter on refresh */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}

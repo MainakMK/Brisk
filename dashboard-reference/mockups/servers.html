@@ -1,0 +1,177 @@
+<!doctype html>
+<!-- Brisk dashboard CONCEPT MOCKUP — Servers (PoPs). Throwaway direction art, mock data only.
+     Not the real app (built in Step 6.1+). Tailwind via CDN. Palette: "Brisk Blue" (dark-first). -->
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Brisk — Servers (concept)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root{ --bg:#0b1220; --card:#111a2b; --bd:rgba(255,255,255,.08); --accent:#38bdf8; }
+  body{ background:var(--bg); color:#e2e8f0; font-family:ui-sans-serif,Inter,system-ui,sans-serif; }
+  .card{ background:var(--card); border:1px solid var(--bd); border-radius:12px; }
+  .num{ font-variant-numeric:tabular-nums; font-family:ui-monospace,"JetBrains Mono",monospace; }
+  .navi.active{ background:rgba(56,189,248,.12); box-shadow:inset 3px 0 0 var(--accent); color:#fff; }
+  .navi{ color:#9aa7bd; } .navi:hover{ background:rgba(255,255,255,.04); }
+  .dot{ width:8px;height:8px;border-radius:9999px;display:inline-block; }
+  .gauge{ height:6px;border-radius:9999px;background:rgba(255,255,255,.08);overflow:hidden; }
+  .gauge>i{ display:block;height:100%;border-radius:9999px; }
+</style>
+</head>
+<body class="min-h-screen">
+<div class="flex min-h-screen">
+  <!-- SIDEBAR -->
+  <aside class="w-60 shrink-0 border-r relative" style="border-color:var(--bd);background:#0c1424">
+    <div class="h-14 flex items-center gap-2 px-4 border-b" style="border-color:var(--bd)">
+      <div class="grid place-items-center h-7 w-7 rounded-lg" style="background:linear-gradient(135deg,#38bdf8,#6366f1)">
+        <span class="text-[#06121f] font-black">⚡</span></div>
+      <span class="font-semibold tracking-tight text-white">Brisk</span>
+      <span class="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-slate-400">CDN</span>
+    </div>
+    <nav class="p-2 space-y-0.5 text-sm">
+      <a class="navi flex items-center gap-3 px-3 py-2 rounded-lg">▦ <span>Overview</span></a>
+      <a class="navi active flex items-center gap-3 px-3 py-2 rounded-lg">▤ <span>Servers</span></a>
+      <a class="navi flex items-center gap-3 px-3 py-2 rounded-lg">◳ <span>Zones</span></a>
+      <a class="navi flex items-center gap-3 px-3 py-2 rounded-lg">📈 <span>Analytics</span></a>
+      <a class="navi flex items-center gap-3 px-3 py-2 rounded-lg">≣ <span>Logs</span></a>
+      <a class="navi flex items-center gap-3 px-3 py-2 rounded-lg">⟳ <span>Purge</span></a>
+      <div class="pt-3 pb-1 px-3 text-[10px] uppercase tracking-wider text-slate-600">Soon</div>
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600">🛡 <span>Security</span></a>
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600">⚙ <span>Settings</span></a>
+    </nav>
+    <div class="absolute bottom-0 w-60 p-3 border-t" style="border-color:var(--bd)">
+      <div class="flex items-center gap-2 px-2 py-1.5 rounded-lg">
+        <div class="h-7 w-7 rounded-full bg-sky-500/30 grid place-items-center text-xs">MG</div>
+        <div class="text-xs leading-tight"><div class="text-slate-200">admin</div><div class="text-slate-500">brisk.local</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="flex-1 min-w-0">
+    <header class="h-14 border-b flex items-center gap-4 px-5" style="border-color:var(--bd)">
+      <div class="text-sm text-slate-400">Servers</div>
+      <div class="flex-1 max-w-md mx-auto">
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border text-slate-400 text-sm" style="border-color:var(--bd)">
+          <span>⌘K</span><span class="text-slate-500">Search…</span></div></div>
+      <button class="text-slate-400 hover:text-white">☾</button>
+      <button class="text-sm font-medium px-3 py-1.5 rounded-lg text-[#06121f]" style="background:var(--accent)">＋ Add Server</button>
+    </header>
+
+    <main class="p-5 space-y-5">
+      <!-- header row -->
+      <div class="flex items-center gap-3">
+        <h1 class="text-lg font-semibold text-white">Edge servers (PoPs)</h1>
+        <span class="text-sm text-slate-400 num">7 online · 1 offline · 8 total</span>
+        <div class="ml-auto flex gap-1 text-xs">
+          <span class="px-2 py-1 rounded-md text-[#06121f]" style="background:var(--accent)">Tiles</span>
+          <span class="px-2 py-1 rounded-md bg-white/5 text-slate-300">Table</span></div>
+      </div>
+
+      <!-- PoP tile grid -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+        <!-- online -->
+        <div class="card p-4">
+          <div class="flex items-center gap-2">
+            <span class="dot bg-emerald-400"></span>
+            <div class="font-medium text-white">BLR1-01</div>
+            <span class="text-xs text-slate-500">IN-BLR · 1Gbps</span>
+            <span class="ml-auto text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300">online</span>
+          </div>
+          <div class="mt-4 space-y-2 text-xs">
+            <div><div class="flex justify-between mb-1"><span class="text-slate-400">CPU</span><span class="num text-slate-300">38%</span></div><div class="gauge"><i style="width:38%;background:var(--accent)"></i></div></div>
+            <div><div class="flex justify-between mb-1"><span class="text-slate-400">RAM</span><span class="num text-slate-300">52%</span></div><div class="gauge"><i style="width:52%;background:var(--accent)"></i></div></div>
+            <div><div class="flex justify-between mb-1"><span class="text-slate-400">Disk</span><span class="num text-slate-300">61%</span></div><div class="gauge"><i style="width:61%;background:var(--accent)"></i></div></div>
+          </div>
+          <div class="mt-4 flex justify-between text-xs text-slate-400 num">
+            <span>4,102 req/s</span><span>2.8 Gbps</span><span>seen 3s ago</span></div>
+        </div>
+
+        <!-- online -->
+        <div class="card p-4">
+          <div class="flex items-center gap-2"><span class="dot bg-emerald-400"></span><div class="font-medium text-white">SGP1-02</div>
+            <span class="text-xs text-slate-500">SG · 1Gbps</span>
+            <span class="ml-auto text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300">online</span></div>
+          <div class="mt-4 space-y-2 text-xs">
+            <div><div class="flex justify-between mb-1"><span class="text-slate-400">CPU</span><span class="num text-slate-300">44%</span></div><div class="gauge"><i style="width:44%;background:var(--accent)"></i></div></div>
+            <div><div class="flex justify-between mb-1"><span class="text-slate-400">RAM</span><span class="num text-slate-300">49%</span></div><div class="gauge"><i style="width:49%;background:var(--accent)"></i></div></div>
+            <div><div class="flex justify-between mb-1"><span class="text-slate-400">Disk</span><span class="num text-slate-300">55%</span></div><div class="gauge"><i style="width:55%;background:var(--accent)"></i></div></div></div>
+          <div class="mt-4 flex justify-between text-xs text-slate-400 num"><span>3,740 req/s</span><span>2.4 Gbps</span><span>seen 1s ago</span></div>
+        </div>
+
+        <!-- degraded -->
+        <div class="card p-4" style="border-color:rgba(217,119,6,.35)">
+          <div class="flex items-center gap-2"><span class="dot bg-amber-400"></span><div class="font-medium text-white">IAD1-03</div>
+            <span class="text-xs text-slate-500">US-VA · 10Gbps</span>
+            <span class="ml-auto text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300">degraded</span></div>
+          <div class="mt-4 space-y-2 text-xs">
+            <div><div class="flex justify-between mb-1"><span class="text-slate-400">CPU</span><span class="num text-amber-300">91%</span></div><div class="gauge"><i style="width:91%;background:#f59e0b"></i></div></div>
+            <div><div class="flex justify-between mb-1"><span class="text-slate-400">RAM</span><span class="num text-slate-300">73%</span></div><div class="gauge"><i style="width:73%;background:var(--accent)"></i></div></div>
+            <div><div class="flex justify-between mb-1"><span class="text-slate-400">Disk</span><span class="num text-slate-300">66%</span></div><div class="gauge"><i style="width:66%;background:var(--accent)"></i></div></div></div>
+          <div class="mt-4 flex justify-between text-xs text-slate-400 num"><span>6,980 req/s</span><span>7.1 Gbps</span><span>seen 2s ago</span></div>
+        </div>
+
+        <!-- provisioning -->
+        <div class="card p-4">
+          <div class="flex items-center gap-2"><span class="dot bg-sky-400 animate-pulse"></span><div class="font-medium text-white">CDG1-01</div>
+            <span class="text-xs text-slate-500">FR · 10Gbps</span>
+            <span class="ml-auto text-[10px] px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-300">provisioning…</span></div>
+          <div class="mt-3 rounded-lg bg-black/40 border p-2 font-mono text-[11px] text-slate-400 h-[92px] overflow-hidden" style="border-color:var(--bd)">
+            <div>bootstrap: installing nginx 1.30.x ✓</div>
+            <div>bootstrap: building headers-more ✓</div>
+            <div>bootstrap: building brotli ✓</div>
+            <div class="text-sky-300">bootstrap: applying TLS + starting nginx…</div>
+          </div>
+        </div>
+
+        <!-- offline -->
+        <div class="card p-4 opacity-80">
+          <div class="flex items-center gap-2"><span class="dot bg-slate-600"></span><div class="font-medium text-slate-300">NRT1-01</div>
+            <span class="text-xs text-slate-500">JP · 1Gbps</span>
+            <span class="ml-auto text-[10px] px-2 py-0.5 rounded-full bg-slate-600/20 text-slate-400">offline</span></div>
+          <div class="mt-6 text-center text-sm text-slate-500">No heartbeat<br/><span class="text-xs">last seen 14m ago</span></div>
+          <div class="mt-5 flex justify-center"><button class="text-xs px-3 py-1.5 rounded-lg bg-white/5 text-slate-300 border" style="border-color:var(--bd)">Reprovision</button></div>
+        </div>
+
+        <!-- add tile -->
+        <button class="card p-4 border-dashed grid place-items-center text-slate-400 hover:text-white hover:border-sky-400/40 min-h-[176px]">
+          <div class="text-center"><div class="text-2xl">＋</div><div class="text-sm mt-1">Add server</div>
+            <div class="text-xs text-slate-500 mt-1">Onboard a new PoP over SSH</div></div>
+        </button>
+      </section>
+
+      <!-- Add-Server drawer concept (shown inline for the mockup) -->
+      <section class="card p-5">
+        <div class="flex items-center"><div class="text-sm font-medium text-white">Add server — drawer concept</div>
+          <span class="ml-auto text-xs text-slate-500">slide-over in the real app</span></div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-4">
+          <div class="space-y-3 text-sm">
+            <div><label class="text-xs text-slate-400">Name</label><div class="mt-1 px-3 py-2 rounded-lg bg-white/5 border num" style="border-color:var(--bd)">CDG1-01</div></div>
+            <div class="grid grid-cols-2 gap-3">
+              <div><label class="text-xs text-slate-400">Region</label><div class="mt-1 px-3 py-2 rounded-lg bg-white/5 border" style="border-color:var(--bd)">FR-PAR</div></div>
+              <div><label class="text-xs text-slate-400">Edge ID</label><div class="mt-1 px-3 py-2 rounded-lg bg-white/5 border num" style="border-color:var(--bd)">CDG1-01</div></div></div>
+            <div class="grid grid-cols-2 gap-3">
+              <div><label class="text-xs text-slate-400">IP</label><div class="mt-1 px-3 py-2 rounded-lg bg-white/5 border num" style="border-color:var(--bd)">203.0.113.7</div></div>
+              <div><label class="text-xs text-slate-400">SSH user / port</label><div class="mt-1 px-3 py-2 rounded-lg bg-white/5 border num" style="border-color:var(--bd)">root : 22</div></div></div>
+            <button class="mt-1 w-full text-sm font-medium px-3 py-2 rounded-lg text-[#06121f]" style="background:var(--accent)">Provision server →</button>
+          </div>
+          <div class="rounded-lg bg-black/40 border p-3 font-mono text-[11px] leading-relaxed text-slate-400 overflow-auto" style="border-color:var(--bd)">
+            <div class="text-slate-500">// live provision log (GET /servers/{id}/provision-log)</div>
+            <div>connected to 203.0.113.7 as root ✓</div>
+            <div>installed control-plane SSH key ✓</div>
+            <div>copied brisk-agent (17.5 MB) ✓</div>
+            <div>wrote /etc/brisk/agent.yaml (token, perms 600) ✓</div>
+            <div>bootstrap: nginx + modules ✓</div>
+            <div>bootstrap: TCP BBR + systemd ✓</div>
+            <div class="text-emerald-300">heartbeat ok → status: online</div>
+          </div>
+        </div>
+      </section>
+
+      <p class="text-center text-xs text-slate-600 pt-1">Brisk concept mockup · mock data · not the real app (Step 6.1+ builds it)</p>
+    </main>
+  </div>
+</div>
+</body>
+</html>

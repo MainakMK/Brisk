@@ -1,0 +1,13 @@
+.env
+.creds
+ssh/
+*.key
+id_ed25519*
+agent-*.yaml
+.*-token
+id_ed25519
+id_ed25519.pub
+secrets/
+pwtest.sh
+keyinstall.sh
+blrinstall.sh

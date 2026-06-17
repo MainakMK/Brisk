@@ -1,0 +1,80 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Brisk CDN — root .gitignore
+# Keeps secrets, private keys, DB dumps, large built binaries, and local tooling
+# OUT of version control. Nested .gitignore files (brisk-control, tunnels,
+# brisk-dashboard) still apply within their subtrees; this is the belt-and-
+# suspenders layer so nothing sensitive can slip through from the repo root.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Secrets / environment (NEVER commit; .example templates are tracked) ──
+.env
+.env.*
+*.env
+!.env.example
+!**/.env.example
+
+# ── Private keys & credentials (SSH tunnel keys, TLS keys, tokens) ──
+*.key
+*.pem
+id_ed25519
+id_ed25519*
+id_rsa*
+.creds
+**/secrets/
+# agent.yaml files carry live agent bearer tokens
+agent-*.yaml
+# one-off provisioning scripts that may embed passwords
+pwtest.sh
+keyinstall.sh
+blrinstall.sh
+
+# ── Database dumps / backups (contain hashed creds, agent tokens, configs) ──
+brisk-control/backups/
+*.dump
+*.sql.gz
+servers-backup-*.sql
+bunny-records-*.json
+
+# ── Built binaries / compiled artifacts (regenerate from source) ──
+# rolled/built agent binaries (~20MB each) — staged in tunnels/ and brisk-agent/
+brisk-control/tunnels/brisk-agent-*
+brisk-agent/brisk-agent-*
+brisk-agent-linux-amd64
+brisk-agent-su-linux
+# compiled briskctl CLI output (the cmd/briskctl SOURCE dir stays tracked)
+brisk-control/briskctl
+# embedded agent asset baked into the control image (regenerated from ../brisk-agent)
+brisk-control/internal/provision/assets/brisk-agent
+# bare Go output binaries (NOTE: do NOT use "/brisk-agent" or "/brisk-control" —
+# those are the SOURCE directory names and would exclude the whole tree)
+brisk-agent/brisk-agent
+brisk-control/brisk-control
+*.exe
+*.test
+*.out
+
+# ── Node / dashboard ──
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# ── Logs ──
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# ── Local agent / editor / OS tooling ──
+.gstack/
+.claude/
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+*.sw?
+
+# ── Accidental shell-mangled "<name>;C" directories (junk) ──
+*;C/

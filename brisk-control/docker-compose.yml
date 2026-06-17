@@ -1,0 +1,129 @@
+services:
+  timescaledb:
+    image: timescale/timescaledb:2.24.0-pg17   # PIN the tag, never :latest
+    environment:
+      POSTGRES_USER: brisk
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: brisk
+    volumes:
+      - brisk_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U brisk -d brisk"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "127.0.0.1:5432:5432"   # bind to localhost only — never publicly reachable
+
+  nats:
+    image: nats:2.10-alpine
+    command: ["-js"]                       # enable JetStream (durable, at-least-once)
+    volumes:
+      - brisk_nats:/data
+    ports:
+      - "127.0.0.1:4222:4222"   # bind to localhost only — never publicly reachable
+
+  brisk-control:
+    build: .
+    environment:
+      DATABASE_URL: "postgres://brisk:${DB_PASSWORD}@timescaledb:5432/brisk?sslmode=disable"
+      LISTEN_ADDR: ":8080"
+      LOG_LEVEL: "info"
+      ENV: "dev"
+      # NATS JetStream — instant purge channel (Step 5). Data plane stays
+      # independent: if NATS is down, edges keep serving; purges queue/replay.
+      NATS_URL: "${NATS_URL:-nats://nats:4222}"
+      # URL written into each edge's agent.yaml so the edge can reach NATS.
+      # In production set the public NATS endpoint; empty = edges get no purge URL.
+      AGENT_NATS_URL: "${AGENT_NATS_URL:-}"
+      # URL written into each agent's config so it can reach the control plane.
+      # For local testing the VPS reaches this laptop via a reverse SSH tunnel
+      # (VPS:127.0.0.1:8088 -> control plane). In production set the public URL.
+      AGENT_CONTROL_PLANE_URL: "${AGENT_CONTROL_PLANE_URL:-http://127.0.0.1:8088}"
+      # Bunny DNS (Phase 3) — read from .env; empty disables DNS integration.
+      # The API key is passed via env only, never baked into the image or logged.
+      BUNNY_API_KEY: "${BUNNY_API_KEY:-}"
+      BUNNY_DNS_ZONE_ID: "${BUNNY_DNS_ZONE_ID:-}"
+      BUNNY_DNS_ZONE: "${BUNNY_DNS_ZONE:-}"
+      BRISK_CDN_RECORD: "${BRISK_CDN_RECORD:-cdn}"
+      # TTL ~15s for fast failover (Phase 3 Step 4); clamp floor lowered to 10s.
+      BRISK_DNS_TTL: "${BRISK_DNS_TTL:-15}"
+      # Smart-Record routing mode (Phase 3 Step 3): geographic | latency.
+      BRISK_DNS_ROUTING_MODE: "${BRISK_DNS_ROUTING_MODE:-geographic}"
+      # Bunny native DNS monitor (Layer-2 failover backstop) — GATED, off by
+      # default. On => reconciler stamps MonitorType on managed A records so Bunny's
+      # own infra probes each edge (~30s, 3 regions) and drops a dead one even if
+      # the control plane is down. ping (safest) | http | none.
+      BRISK_DNS_MONITOR: "${BRISK_DNS_MONITOR:-false}"
+      BRISK_DNS_MONITOR_TYPE: "${BRISK_DNS_MONITOR_TYPE:-ping}"
+      # Self-driven health checker (Phase 3 Step 4 — fast failover).
+      # detection ≈ interval × fail_threshold (10s×2 ≈ 20s); failover ≈ detection + TTL.
+      BRISK_HEALTH_ENABLED: "${BRISK_HEALTH_ENABLED:-true}"
+      BRISK_HEALTH_INTERVAL: "${BRISK_HEALTH_INTERVAL:-10}"
+      BRISK_HEALTH_TIMEOUT: "${BRISK_HEALTH_TIMEOUT:-3}"
+      BRISK_HEALTH_FAIL_THRESHOLD: "${BRISK_HEALTH_FAIL_THRESHOLD:-2}"
+      BRISK_HEALTH_RISE_THRESHOLD: "${BRISK_HEALTH_RISE_THRESHOLD:-3}"
+      BRISK_HEALTH_PATH: "${BRISK_HEALTH_PATH:-/healthz}"
+      BRISK_HEALTH_SCHEME: "${BRISK_HEALTH_SCHEME:-https}"
+      BRISK_HEALTH_PORT: "${BRISK_HEALTH_PORT:-0}"
+      # Managed wildcard TLS (Phase 3.7 Step 2, Part 3 — lego Bunny DNS-01).
+      # Reuses BUNNY_API_KEY for the DNS-01 TXT challenge. STAGING first; flip to
+      # false at cutover. Empty/false disables it (edges keep their current certs).
+      BRISK_TLS_MANAGED: "${BRISK_TLS_MANAGED:-false}"
+      BRISK_TLS_EMAIL: "${BRISK_TLS_EMAIL:-}"
+      BRISK_TLS_STAGING: "${BRISK_TLS_STAGING:-true}"
+      BRISK_TLS_DOMAINS: "${BRISK_TLS_DOMAINS:-}"
+      BRISK_TLS_CERT_NAME: "${BRISK_TLS_CERT_NAME:-}"
+      BRISK_TLS_ACME_DIR: "/var/lib/brisk-control/acme"
+      # Custom-domain TLS (Phase 4 Step 2) — INDEPENDENT staging flag so customer
+      # domains iterate on LE staging while the managed wildcard stays production.
+      # Flip to false only at the custom-domain cutover.
+      BRISK_CUSTOM_TLS_STAGING: "${BRISK_CUSTOM_TLS_STAGING:-true}"
+      # Admin auth (Phase 3.7 Step 3). Cookie Secure stays false for local http dev
+      # (set true behind TLS in prod). Dashboard origin is the credentialed-CORS
+      # allow-list. Admin bootstrap creds come from .env (gitignored), seeded once.
+      BRISK_COOKIE_SECURE: "${BRISK_COOKIE_SECURE:-false}"
+      BRISK_DASHBOARD_ORIGIN: "${BRISK_DASHBOARD_ORIGIN:-http://localhost:5173}"
+      BRISK_ADMIN_EMAIL: "${BRISK_ADMIN_EMAIL:-}"
+      BRISK_ADMIN_PASSWORD: "${BRISK_ADMIN_PASSWORD:-}"
+      # Agent self-service rollout (Phase 8). Trusted ed25519 PUBLIC key(s), comma-separated —
+      # MUST match the keys compiled into the agent (selfupdate/keys.go). Empty => release
+      # uploads fail closed. Engine gated by BRISK_ROLLOUT_ENABLED (default true; idles until a
+      # rollout is created). Private signing key NEVER lives here — only the public half.
+      BRISK_AGENT_PUBKEYS: "${BRISK_AGENT_PUBKEYS:-}"
+      BRISK_ROLLOUT_ENABLED: "${BRISK_ROLLOUT_ENABLED:-true}"
+    volumes:
+      # Persist the ACME account key across restarts (so renewals reuse the account).
+      - brisk_acme:/var/lib/brisk-control/acme
+    depends_on:
+      timescaledb:
+        condition: service_healthy   # wait until DB is actually ready
+      nats:
+        condition: service_started
+    ports:
+      - "8080:8080"
+
+  # --- Step 6.1: admin dashboard (dev image, HMR) ---
+  # Lives in ../brisk-dashboard (sibling of brisk-control). The BROWSER calls the
+  # control plane directly, so VITE_API_URL points at the host-mapped port, not the
+  # Docker service name. Source is bind-mounted for hot-reload; node_modules stays
+  # in the container via an anonymous volume.
+  brisk-dashboard:
+    build:
+      context: ../brisk-dashboard
+      dockerfile: Dockerfile.dev
+    environment:
+      VITE_API_URL: "${VITE_API_URL:-http://localhost:8080}"
+    volumes:
+      - ../brisk-dashboard:/app
+      - /app/node_modules
+    depends_on:
+      - brisk-control
+    ports:
+      # Canonical dev port 5173; override DASHBOARD_PORT if it's taken on the host.
+      - "${DASHBOARD_PORT:-5173}:5173"
+
+volumes:
+  brisk_db:
+  brisk_nats:
+  brisk_acme:
